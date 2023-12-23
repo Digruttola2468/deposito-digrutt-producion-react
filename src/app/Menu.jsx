@@ -49,7 +49,7 @@ export default function Menu() {
               <a
                 onClick={() => {
                   setMenuActive({ produccion: true, paradaMaquina: false });
-                  navegate("/deposito-digrutt-producion-react/");
+                  navegate("/");
                 }}
                 className={`block py-2 px-3 rounded md:bg-transparent ${
                   menuActive.produccion
@@ -64,7 +64,7 @@ export default function Menu() {
               <a
                 onClick={() => {
                   setMenuActive({ produccion: false, paradaMaquina: true });
-                  navegate("/deposito-digrutt-producion-react/maquinaParada");
+                  navegate("/maquinaParada");
                 }}
                 className={`block py-2 px-3 rounded md:bg-transparent ${
                   menuActive.paradaMaquina

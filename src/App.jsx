@@ -14,7 +14,7 @@ function App() {
       <Menu />
       <Routes>
         <Route
-          path="/deposito-digrutt-producion-react/"
+          path="/"
           element={
             <ProduccionContextProvider>
               <TableProducion />
@@ -22,7 +22,7 @@ function App() {
             </ProduccionContextProvider>
           }
         />
-        <Route path="/deposito-digrutt-producion-react//maquinaParada" element={
+        <Route path="/maquinaParada" element={
           <MaquinaParadaProvider>
             <TableMaquinaParada />
             <PostMaquinaParada />
