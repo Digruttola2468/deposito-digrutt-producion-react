@@ -76,7 +76,7 @@ export default function PostMaquinaParada() {
   return (
     <>
       <Divider><h1 className="uppercase font-bold text-2xl">Agregar Maquina Parada</h1></Divider> 
-      <form className="flex flex-col">
+      <form className="flex flex-col max-w-[500px]">
         <div className="flex flex-row">
           <TextField
             type="number"
@@ -116,13 +116,15 @@ export default function PostMaquinaParada() {
             sx={{ margin: 1 }}
           />
         </div>
-
+        <div className="flex flex-row justify-between">
         <Button type="submit" variant="text" onClick={empty}>
           Borrar
         </Button>
         <Button type="submit" variant="outlined" onClick={handleClickSend}>
           Enviar
         </Button>
+        </div>
+        
         <Snackbar
           anchorOrigin={{ vertical: "top", horizontal: "right" }}
           TransitionComponent={Slide}

@@ -16,7 +16,7 @@ export default function TableMaquinaParada() {
   };
 
   return (
-    <div className="flex flex-col lg:flex-row lg:justify-center lg:items-center ">
+    <div className="flex flex-col  lg:justify-center lg:items-center ">
       <div className="overflow-x-auto sm:-mx-6 lg:-mx-8">
         <div className="inline-block min-w-full sm:max-w-[1000px] py-2 sm:px-6 lg:px-8">
           <div className="overflow-hidden ">
