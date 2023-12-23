@@ -1,6 +1,7 @@
 import axios from "axios";
-import { createContext } from "react";
+import { createContext, useContext } from "react";
 import useSWR from "swr";
+import { UserContext } from "./UserContext";
 
 export const MaquinaParadaContext = createContext();
 
@@ -15,11 +16,11 @@ const fetcherToken = ([url, token]) => {
 };
 
 export default function MaquinaParadaProvider(props) {
-  const TOKEN = import.meta.env.VITE_TOKEN;
+  const {userSupabase} = useContext(UserContext);
   const BASE_URL = import.meta.env.VITE_BASE_URL;
   
   const { data, isLoading, error, mutate } = useSWR(
-    [`${BASE_URL}/maquinaParada`, TOKEN],
+    [`${BASE_URL}/maquinaParada`, userSupabase.token],
     fetcherToken
   );
 
@@ -31,7 +32,7 @@ export default function MaquinaParadaProvider(props) {
       value={{
         tableOriginal: data,
         refreshTable: mutate,
-        token: TOKEN,
+        token: userSupabase.token,
         base_url: BASE_URL,
         fetcherToken,
       }}
