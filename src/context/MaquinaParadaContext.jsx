@@ -2,7 +2,7 @@ import axios from "axios";
 import { createContext } from "react";
 import useSWR from "swr";
 
-export const ProducionContext = createContext();
+export const MaquinaParadaContext = createContext();
 
 const fetcherToken = ([url, token]) => {
   return axios
@@ -14,12 +14,12 @@ const fetcherToken = ([url, token]) => {
     .then((result) => result.data);
 };
 
-export default function ProduccionContextProvider(props) {
+export default function MaquinaParadaProvider(props) {
   const TOKEN = import.meta.env.VITE_TOKEN;
   const BASE_URL = import.meta.env.VITE_BASE_URL;
-
+  
   const { data, isLoading, error, mutate } = useSWR(
-    [`${BASE_URL}/producion`, TOKEN],
+    [`${BASE_URL}/maquinaParada`, TOKEN],
     fetcherToken
   );
 
@@ -27,7 +27,7 @@ export default function ProduccionContextProvider(props) {
   if (error) return <></>;
 
   return (
-    <ProducionContext.Provider
+    <MaquinaParadaContext.Provider
       value={{
         tableOriginal: data,
         refreshTable: mutate,
@@ -37,6 +37,6 @@ export default function ProduccionContextProvider(props) {
       }}
     >
       {props.children}
-    </ProducionContext.Provider>
+    </MaquinaParadaContext.Provider>
   );
 }

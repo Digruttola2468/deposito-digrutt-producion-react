@@ -1,9 +1,9 @@
 import { Pagination } from "@mui/material";
 import { useContext, useState } from "react";
-import { ProducionContext } from "../context/ProduccionContext";
+import { MaquinaParadaContext } from "../context/MaquinaParadaContext";
 
-export default function TableProducion() {
-  const { tableOriginal } = useContext(ProducionContext);
+export default function TableMaquinaParada() {
+  const { tableOriginal } = useContext(MaquinaParadaContext);
 
   const [index, setIndex] = useState(null);
 
@@ -24,50 +24,45 @@ export default function TableProducion() {
               <thead className="border-b font-medium dark:border-neutral-500">
                 <tr>
                   <th scope="col" className="px-6 py-4">
-                    Articulo
-                  </th>
-                  <th scope="col" className="px-6 py-4">
-                    Descripcion
+                    Maquina
                   </th>
                   <th scope="col" className="px-6 py-4">
                     N° Maquina
                   </th>
+
                   <th scope="col" className="px-6 py-4">
-                    Golpes Reales
+                    Hrs Parada
                   </th>
                   <th scope="col" className="px-6 py-4">
-                    Piezas Producidas
+                    Motivo Maquina Parada
                   </th>
                   <th scope="col" className="px-6 py-4">
-                    Promedio Golpes/hr
+                    Fecha
                   </th>
                 </tr>
               </thead>
               <tbody>
-                {tableOriginal.slice(start, end).map((elem) => {
+                {tableOriginal.slice(start, end).map((elem, index) => {
                   return (
                     <tr
                       className={`border-b dark:border-neutral-500 hover:border-info-200 hover:bg-red-200 hover:text-neutral-800`}
-                      key={elem.id}
+                      key={index}
                       onClick={() => setIndex(elem.id)}
                     >
-                      <td className="whitespace-nowrap px-6 py-4 font-medium">
+                      <td className="whitespace-nowrap px-6 py-4  font-medium">
                         {elem.nombre}
                       </td>
                       <td className="whitespace-nowrap px-6 py-4">
+                        {elem.numberSerie}
+                      </td>
+                      <td className="whitespace-nowrap px-6 py-4">
+                        {elem.hrs}
+                      </td>
+                      <td className="whitespace-nowrap px-6 py-4 ">
                         {elem.descripcion}
                       </td>
-                      <td className="whitespace-nowrap px-6 py-4">
-                        {elem.num_maquina}
-                      </td>
-                      <td className="whitespace-nowrap px-6 py-4">
-                        {elem.golpesReales}
-                      </td>
                       <td className="whitespace-nowrap px-6 py-4 ">
-                        {elem.piezasProducidas}
-                      </td>
-                      <td className="whitespace-nowrap px-6 py-4 ">
-                        {elem.prom_golpeshora}
+                        {elem.fecha}
                       </td>
                     </tr>
                   );
