@@ -1,5 +1,5 @@
-import { Pagination } from "@mui/material";
-import { useContext, useState } from "react";
+import { Alert, Button, Pagination, Slide, Snackbar, TextField } from "@mui/material";
+import { useContext, useEffect, useState } from "react";
 import { MaquinaParadaContext } from "../context/MaquinaParadaContext";
 
 export default function TableMaquinaParada() {
@@ -7,8 +7,26 @@ export default function TableMaquinaParada() {
 
   const [index, setIndex] = useState(null);
 
+  const [table, setTable] = useState([]);
   const [start, setStart] = useState(0);
   const [end, setEnd] = useState(10);
+
+  const [startFecha, setStartFecha] = useState("");
+  const [endFecha, setEndFecha] = useState("");
+
+  const [openDialog, setOpenDialog] = useState({
+    done: false,
+    message: "Operacion Exitosa!",
+    error: null,
+  });
+
+  useEffect(() => {
+    getPreviuos();
+  }, []);
+
+  const getPreviuos = () => {
+    setTable(tableOriginal);
+  };
 
   const resetTable = () => {
     setStart(0);
@@ -16,7 +34,65 @@ export default function TableMaquinaParada() {
   };
 
   return (
-    <div className="flex flex-col  lg:justify-center lg:items-center ">
+    <div className="flex flex-col lg:justify-center lg:items-center ">
+      <div className="flex flex-col md:flex-row justify-self-start items-center">
+        <div className="flex flex-row items-center">
+          <span className="pr-1">Empieza</span>
+          <TextField
+            type="date"
+            value={startFecha}
+            onChange={(evt) => {
+              const fechaString = evt.target.value;
+              setStartFecha(fechaString);
+              if (fechaString != "") {
+                const filterDate = tableOriginal.filter(
+                  (elem) => new Date(elem.fecha) >= new Date(fechaString)
+                );
+                if (filterDate.length == 0) {
+                  setOpenDialog({
+                    done: true,
+                    message: "No hay datos",
+                    error: true,
+                  });
+                } else {
+                  setTable(filterDate);
+                  resetTable();
+                }
+              } else getPreviuos();
+            }}
+            sx={{ width: "150px" }}
+          />
+        </div>
+        <div className="flex flex-row items-center mt-2">
+          <span className="pr-1">Termina</span>
+          <TextField
+            type="date"
+            value={endFecha}
+            onChange={(evt) => {
+              const fechaString = evt.target.value;
+              setEndFecha(fechaString);
+              if (fechaString != "") {
+                const filterDate = tableOriginal.filter(
+                  (elem) => new Date(elem.fecha) <= new Date(fechaString)
+                );
+                if (filterDate.length == 0) {
+                  setOpenDialog({
+                    done: true,
+                    message: "No hay datos",
+                    error: true,
+                  });
+                } else {
+                  setTable(filterDate);
+                  resetTable();
+                }
+              } else getPreviuos();
+            }}
+            sx={{ width: "150px" }}
+          />
+        </div>
+        <Button onClick={() => {resetTable();getPreviuos();setEndFecha("");setStartFecha("");}}>Borrar</Button>
+      </div>
+
       <div className="overflow-x-auto sm:-mx-6 lg:-mx-8">
         <div className="inline-block min-w-full sm:max-w-[1000px] py-2 sm:px-6 lg:px-8">
           <div className="overflow-hidden ">
@@ -42,7 +118,7 @@ export default function TableMaquinaParada() {
                 </tr>
               </thead>
               <tbody>
-                {tableOriginal.slice(start, end).map((elem, index) => {
+                {table.slice(start, end).map((elem, index) => {
                   return (
                     <tr
                       className={`border-b dark:border-neutral-500 hover:border-info-200 hover:bg-red-200 hover:text-neutral-800`}
@@ -80,6 +156,23 @@ export default function TableMaquinaParada() {
           }}
         />
       </div>
+      <Snackbar
+        anchorOrigin={{ vertical: "top", horizontal: "right" }}
+        TransitionComponent={Slide}
+        open={openDialog.done}
+        autoHideDuration={5000}
+        onClose={() => setOpenDialog({ done: false, error: openDialog.error })}
+      >
+        <Alert
+          onClose={() =>
+            setOpenDialog({ done: false, error: openDialog.error })
+          }
+          severity={openDialog.error != null ? "error" : "success"}
+          sx={{ width: "100%" }}
+        >
+          {openDialog.message}
+        </Alert>
+      </Snackbar>
     </div>
   );
 }
