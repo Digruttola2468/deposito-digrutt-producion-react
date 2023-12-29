@@ -14,6 +14,7 @@ import { useContext, useState } from "react";
 import useSWR from "swr";
 import { ProducionContext } from "../../context/ProduccionContext";
 import { CiSquarePlus } from "react-icons/ci";
+import { AiOutlineDelete } from "react-icons/ai";
 
 export default function PostProduccion() {
   const { token, base_url, fetcherToken, refreshTable } =
@@ -80,6 +81,12 @@ export default function PostProduccion() {
     list.push({ id: increment });
     setList(list);
   };
+  const handleClickDeletePost = (unique) => {
+    const decrement = length - 1;
+    setLength(decrement);
+    const filterList = list.filter(elem => elem.id != unique)
+    setList(filterList);
+  }
 
   const empty = (evt) => {
     evt.preventDefault();
@@ -94,7 +101,7 @@ export default function PostProduccion() {
   const renderPost = (unique) => {
     return (
       <>
-        <div key={unique} className="flex flex-col sm:flex-row">
+        <div key={unique} className="flex flex-col sm:flex-row items-center">
           <div className="flex flex-col lg:flex-row">
             <div>
               <TextField
@@ -157,6 +164,14 @@ export default function PostProduccion() {
               />
             </div>
           </div>
+          <Tooltip
+              title="Agregar Nuevo Produccion"
+              onClick={() => {handleClickDeletePost(unique)}}
+            >
+              <IconButton>
+                <AiOutlineDelete className="cursor-pointer hover:text-red-500 " />
+              </IconButton>
+            </Tooltip>
         </div>
         <Divider />
       </>
