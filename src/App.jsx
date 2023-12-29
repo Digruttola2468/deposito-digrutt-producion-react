@@ -16,6 +16,8 @@ import SignUp from "./pages/SignUp";
 import LogIn from "./pages/LogIn";
 import SendEmail from "./pages/SendEmail";
 import WaitForVerificacion from "./pages/WaitVerfication";
+import MatricesContextProvider from "./context/MatricesContext";
+import TableMatrices from "./app/TableMatrices";
 
 function App() {
   const { userSupabase } = useContext(UserContext);
@@ -26,7 +28,6 @@ function App() {
         <section className="relative">
           <TableProducion />
           <PostProduccion />
-          
         </section>
       </ProduccionContextProvider>
     );
@@ -40,6 +41,16 @@ function App() {
           <PostMaquinaParada />
         </section>
       </MaquinaParadaProvider>
+    );
+  };
+
+  const renderMatriz = () => {
+    return (
+      <MatricesContextProvider>
+        <section>
+          <TableMatrices />
+        </section>
+      </MatricesContextProvider>
     );
   };
 
@@ -75,6 +86,7 @@ function App() {
           <Route path="/signUp" element={<SignUp />} />
           <Route path="/sendGmail" element={<SendEmail />} />
           <Route path="/notVerificed" element={<WaitForVerificacion />} />
+          <Route path="/matrices" element={renderMatriz()} />
         </Routes>
       </main>
     </>
