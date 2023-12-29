@@ -1,4 +1,4 @@
-import { Pagination } from "@mui/material";
+import {  Pagination } from "@mui/material";
 import { useContext, useState } from "react";
 import { ProducionContext } from "../context/ProduccionContext";
 
@@ -18,7 +18,7 @@ export default function TableProducion() {
   return (
     <div className="flex flex-col lg:justify-center lg:items-center ">
       <div className="overflow-x-auto sm:-mx-6 lg:-mx-8">
-        <div className="inline-block min-w-full sm:max-w-[1000px] py-2 sm:px-6 lg:px-8">
+        <div className="inline-block min-w-full py-2 sm:px-6 lg:px-8">
           <div className="overflow-hidden ">
             <table className="min-w-full text-left text-sm font-light ">
               <thead className="border-b font-medium dark:border-neutral-500">
@@ -40,6 +40,9 @@ export default function TableProducion() {
                   </th>
                   <th scope="col" className="px-6 py-4">
                     Promedio Golpes/hr
+                  </th>
+                  <th scope="col" className="px-6 py-4">
+                    Fecha
                   </th>
                 </tr>
               </thead>
@@ -68,6 +71,9 @@ export default function TableProducion() {
                       </td>
                       <td className="whitespace-nowrap px-6 py-4 ">
                         {elem.prom_golpeshora}
+                      </td>
+                      <td className="whitespace-nowrap px-6 py-4 ">
+                        {elem.fecha}
                       </td>
                     </tr>
                   );

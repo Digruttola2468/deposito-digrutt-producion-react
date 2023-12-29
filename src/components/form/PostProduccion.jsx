@@ -3,14 +3,17 @@ import {
   Autocomplete,
   Button,
   Divider,
+  IconButton,
   Slide,
   Snackbar,
   TextField,
+  Tooltip,
 } from "@mui/material";
 import axios from "axios";
 import { useContext, useState } from "react";
 import useSWR from "swr";
 import { ProducionContext } from "../../context/ProduccionContext";
+import { CiSquarePlus } from "react-icons/ci";
 
 export default function PostProduccion() {
   const { token, base_url, fetcherToken, refreshTable } =
@@ -27,26 +30,31 @@ export default function PostProduccion() {
     error: null,
   });
 
-  const [numMaquina, setNumMaquina] = useState("");
+  const [codProducto, setCodProducto] = useState([]);
+  const [length, setLength] = useState(0);
+  const [list, setList] = useState([{ id: length }]);
   const [fecha, setFecha] = useState("");
-  const [codProducto, setCodProducto] = useState(null);
-  const [golpesReales, setGolpesReales] = useState("");
-  const [piezasProducidas, setPiezasProducidas] = useState("");
-  const [promGolpesHora, setPromGolpesHora] = useState("");
 
-  const handleClickSend = (evt) => {
+  const handleSubmitSend = (evt) => {
     evt.preventDefault();
-    const enviar = {
-      numMaquina,
-      fecha,
-      idInventario: parseInt(codProducto.id),
-      golpesReales,
-      piezasProducidas,
-      promGolpesHora: parseInt(promGolpesHora),
-    };
+
+    let enviar = [];
+    for (let i = 0; i < list.length; i++) {
+      const element = list[i];
+
+      const enviarElem = {
+        numMaquina: evt.target[`numMaquina-${element.id}`].value,
+        fecha,
+        idInventario: parseInt(element.codProducto),
+        golpesReales: evt.target[`golpes-${element.id}`].value,
+        piezasProducidas: evt.target[`piezas-${element.id}`].value,
+        promGolpesHora: parseInt(evt.target[`promedio-${element.id}`].value),
+      };
+      enviar.push(enviarElem);
+    }
 
     axios
-      .post(`${base_url}/producion`, enviar, {
+      .post(`${base_url}/producion/list`, enviar, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -66,88 +74,136 @@ export default function PostProduccion() {
       });
   };
 
-  const empty = () => {
-    setCodProducto(null);
+  const handleClickAddPost = () => {
+    const increment = length + 1;
+    setLength(increment);
+    list.push({ id: increment });
+    setList(list);
+  };
+
+  const empty = (evt) => {
+    evt.preventDefault();
+    /*setCodProducto(null);
     setFecha("");
     setGolpesReales("");
     setNumMaquina("");
     setPiezasProducidas("");
-    setPromGolpesHora("");
+    setPromGolpesHora("");*/
+  };
+
+  const renderPost = (unique) => {
+    return (
+      <>
+        <div key={unique} className="flex flex-col sm:flex-row">
+          <div className="flex flex-col lg:flex-row">
+            <div>
+              <TextField
+                type="number"
+                label="N° Maquina"
+                sx={{ margin: 1, width: "110px" }}
+                size="small"
+                id={`numMaquina-${unique}`}
+              />
+            </div>
+            <div>
+              <Autocomplete
+                sx={{ margin: 1, width: "250px" }}
+                options={data}
+                getOptionLabel={(elem) => elem.nombre}
+                isOptionEqualToValue={(option, value) => option.id === value.id}
+                onChange={(evt, value) => {
+                  const result = list.map((elem) => {
+                    if (elem.id === unique)
+                      return { ...elem, codProducto: value ? value.id : null };
+                    else return elem;
+                  });
+                  setList(result);
+                }}
+                renderInput={(params) => (
+                  <TextField
+                    {...params}
+                    label="Cod Producto"
+                    variant="outlined"
+                  />
+                )}
+                size="small"
+              />
+            </div>
+          </div>
+          <div className="flex flex-col lg:flex-row">
+            <div>
+              <TextField
+                type="number"
+                label="Golpes Reales"
+                sx={{ margin: 1, width: "140px" }}
+                size="small"
+                id={`golpes-${unique}`}
+              />
+              <TextField
+                type="number"
+                label="Piezas Producidas"
+                sx={{ margin: 1, width: "160px" }}
+                size="small"
+                id={`piezas-${unique}`}
+              />
+            </div>
+            <div>
+              <TextField
+                type="number"
+                label="Promedio Golpes/hr"
+                sx={{ margin: 1 }}
+                size="small"
+                id={`promedio-${unique}`}
+              />
+            </div>
+          </div>
+        </div>
+        <Divider />
+      </>
+    );
   };
 
   if (isLoading) return <></>;
   if (error) return <></>;
 
   return (
-    <>
-      <Divider>
+    <section className=" flex flex-col justify-center items-center">
+      <Divider className="w-full">
         <h1 className="uppercase text-2xl font-bold">Agregar Producion</h1>
       </Divider>
-      <form className="flex flex-col max-w-[500px]">
-        <div>
-          <TextField
-            type="number"
-            value={numMaquina}
-            onChange={(evt) => setNumMaquina(evt.target.value)}
-            label="N° Maquina"
-            sx={{ margin: 1 }}
-          />
+      <div className="max-w-[1200px]">
+        <form className="flex flex-col" onSubmit={handleSubmitSend}>
           <TextField
             type="date"
+            sx={{ margin: 1, width: "150px" }}
+            size="small"
             value={fecha}
             onChange={(evt) => setFecha(evt.target.value)}
-            sx={{ margin: 1 }}
           />
-        </div>
-        <div>
-          <Autocomplete
-            sx={{ margin: 1, maxWidth: "350px" }}
-            options={data}
-            getOptionLabel={(elem) => elem.nombre}
-            value={codProducto}
-            isOptionEqualToValue={(option, value) => option.id === value.id}
-            onChange={(evt, value) => {
-              console.log(value);
-              setCodProducto(value);
-            }}
-            renderInput={(params) => (
-              <TextField {...params} label="Cod Producto" variant="outlined" />
-            )}
-          />
-        </div>
-        <div>
-          <TextField
-            type="number"
-            value={golpesReales}
-            onChange={(evt) => setGolpesReales(evt.target.value)}
-            label="Golpes Reales"
-            sx={{ margin: 1 }}
-          />
-          <TextField
-            type="number"
-            value={piezasProducidas}
-            onChange={(evt) => setPiezasProducidas(evt.target.value)}
-            label="Piezas Producidas"
-            sx={{ margin: 1 }}
-          />
-        </div>
-        <div>
-          <TextField
-            type="number"
-            value={promGolpesHora}
-            onChange={(evt) => setPromGolpesHora(evt.target.value)}
-            label="Promedio Golpes/hr"
-            sx={{ margin: 1 }}
-          />
-        </div>
-        <div className="flex flex-row justify-between">
-          <Button type="submit" variant="text" onClick={empty}>
-            Borrar
-          </Button>
-          <Button type="submit" variant="outlined" onClick={handleClickSend}>
-            Enviar
-          </Button>
-        </div>
+          {list.map((elem) => {
+            return <div key={elem.id}>{renderPost(elem.id)}</div>;
+          })}
+
+          <span>
+            <Tooltip
+              title="Agregar Nuevo Produccion"
+              onClick={handleClickAddPost}
+            >
+              <IconButton>
+                <CiSquarePlus className="cursor-pointer hover:text-blue-500 " />
+              </IconButton>
+            </Tooltip>
+          </span>
+          <div className="flex flex-row justify-between">
+            <Button type="submit" variant="text" onClick={empty}>
+              Borrar
+            </Button>
+            <Button type="submit" variant="outlined">
+              Enviar
+            </Button>
+          </div>
+        </form>
+
         <Snackbar
           anchorOrigin={{ vertical: "top", horizontal: "right" }}
           TransitionComponent={Slide}
@@ -163,7 +219,7 @@ export default function PostProduccion() {
             {openDialog.message}
           </Alert>
         </Snackbar>
-      </form>
-    </>
+      </div>
+    </section>
   );
 }

@@ -22,43 +22,44 @@ function App() {
 
   const renderProduccion = () => {
     return (
-      <section>
-        <ProduccionContextProvider>
+      <ProduccionContextProvider>
+        <section className="relative">
           <TableProducion />
           <PostProduccion />
-        </ProduccionContextProvider>
-      </section>
+          
+        </section>
+      </ProduccionContextProvider>
     );
   };
 
   const renderMaquinaParada = () => {
     return (
-      <section>
-        <MaquinaParadaProvider>
+      <MaquinaParadaProvider>
+        <section>
           <TableMaquinaParada />
           <PostMaquinaParada />
-        </MaquinaParadaProvider>
-      </section>
+        </section>
+      </MaquinaParadaProvider>
     );
+  };
+
+  const renderNotPermissos = () => {
+    return <></>;
   };
 
   function validarProduccion() {
     if (userSupabase != null) {
-      if (userSupabase.is_admin) {
-        return renderProduccion();
-      } else if (userSupabase.is_produccion) {
-        return renderProduccion();
-      } else return <></>;
-    } else return <></>;
+      if (userSupabase.is_admin) return renderProduccion();
+      else if (userSupabase.is_produccion) return renderProduccion();
+      else return renderNotPermissos();
+    } else return renderNotPermissos();
   }
   function validarMaquinaParada() {
     if (userSupabase != null) {
-      if (userSupabase.is_admin) {
-        return renderMaquinaParada();
-      } else if (userSupabase.is_produccion) {
-        return renderMaquinaParada();
-      } else return <></>;
-    } else return <></>;
+      if (userSupabase.is_admin) return renderMaquinaParada();
+      else if (userSupabase.is_produccion) return renderMaquinaParada();
+      else return renderNotPermissos();
+    } else return renderNotPermissos();
   }
 
   return (
