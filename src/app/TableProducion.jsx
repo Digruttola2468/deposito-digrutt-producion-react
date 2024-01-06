@@ -1,4 +1,4 @@
-import {  Pagination } from "@mui/material";
+import { Pagination, TextField } from "@mui/material";
 import { useContext, useState } from "react";
 import { ProducionContext } from "../context/ProduccionContext";
 
@@ -7,8 +7,14 @@ export default function TableProducion() {
 
   const [index, setIndex] = useState(null);
 
+  const [table,setTable] = useState(() => tableOriginal)
+
   const [start, setStart] = useState(0);
   const [end, setEnd] = useState(10);
+
+  const getPrevius = () => {
+    setTable(tableOriginal);
+  }
 
   const resetTable = () => {
     setStart(0);
@@ -17,6 +23,20 @@ export default function TableProducion() {
 
   return (
     <div className="flex flex-col lg:justify-center lg:items-center ">
+      <TextField
+        label="Buscar Descripcion"
+        size="small"
+        onChange={(evt) => {
+          const text = evt.target.value;
+          if (text != "") {
+            const filterByDescripcion = tableOriginal.filter((elem) => {
+              return elem.descripcion.toLowerCase().includes(text.toLowerCase());
+            });
+            setTable(filterByDescripcion)
+          } else getPrevius();
+
+        }}
+      />
       <div className="overflow-x-auto sm:-mx-6 lg:-mx-8">
         <div className="inline-block min-w-full py-2 sm:px-6 lg:px-8">
           <div className="overflow-hidden ">
@@ -47,7 +67,7 @@ export default function TableProducion() {
                 </tr>
               </thead>
               <tbody>
-                {tableOriginal.slice(start, end).map((elem) => {
+                {table.slice(start, end).map((elem) => {
                   return (
                     <tr
                       className={`border-b dark:border-neutral-500 hover:border-info-200 hover:bg-red-200 hover:text-neutral-800`}
