@@ -5,7 +5,7 @@ import { UserContext } from "./context/UserContext";
 import MaquinaParadaProvider from "./context/MaquinaParadaContext";
 import ProduccionContextProvider from "./context/ProduccionContext";
 
-import Menu from "./app/Menu";
+import Menu, { MenuLogInAndRegister } from "./app/Menu";
 import TableMaquinaParada from "./app/TableMaquinaParada";
 import TableProducion from "./app/TableProducion";
 
@@ -57,7 +57,7 @@ function App() {
   };
 
   const renderNotPermissos = () => {
-    return <></>;
+    return <><h1>No tiene Permisos</h1></>;
   };
 
   function validarProduccion() {
@@ -75,10 +75,24 @@ function App() {
     } else return renderNotPermissos();
   }
 
+  function validarMatrices() {
+    if (userSupabase != null) {
+      if (userSupabase.is_admin) return renderMatriz();
+      else if (userSupabase.is_matriceria) return renderMatriz();
+      else return renderNotPermissos();
+    } else return renderNotPermissos();
+  }
+
+  function validarMenus() {
+    if (userSupabase != null) {
+      return <Menu />
+    } else return <MenuLogInAndRegister />;
+  }
+
   return (
     <>
       <header className="">
-        <Menu />
+        {validarMenus()}
       </header>
       <main>
         <Routes>
@@ -88,7 +102,7 @@ function App() {
           <Route path="/signUp" element={<SignUp />} />
           <Route path="/sendGmail" element={<SendEmail />} />
           <Route path="/notVerificed" element={<WaitForVerificacion />} />
-          <Route path="/matrices" element={renderMatriz()} />
+          <Route path="/matrices" element={validarMatrices()} />
         </Routes>
       </main>
     </>
