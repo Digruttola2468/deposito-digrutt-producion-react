@@ -101,20 +101,20 @@ export default function PostProduccion() {
   const renderPost = (unique) => {
     return (
       <>
-        <div key={unique} className="flex flex-col sm:flex-row items-center">
+        <div key={unique} className="flex flex-col sm:flex-row items-start sm:items-center">
           <div className="flex flex-col lg:flex-row">
-            <div>
+            <div >
               <TextField
                 type="number"
                 label="N° Maquina"
-                sx={{ margin: 1, width: "110px" }}
+                sx={{ margin: 1 }}
                 size="small"
                 id={`numMaquina-${unique}`}
               />
             </div>
             <div>
               <Autocomplete
-                sx={{ margin: 1, width: "250px" }}
+                sx={{ margin: 1, width: '200px'}}
                 options={data}
                 getOptionLabel={(elem) => elem.nombre}
                 isOptionEqualToValue={(option, value) => option.id === value.id}
@@ -165,7 +165,7 @@ export default function PostProduccion() {
             </div>
           </div>
           <Tooltip
-              title="Agregar Nuevo Produccion"
+              title="Eliminar Item"
               onClick={() => {handleClickDeletePost(unique)}}
             >
               <IconButton>
