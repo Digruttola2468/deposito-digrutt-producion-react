@@ -1,4 +1,11 @@
-import { Alert, Button, Pagination, Slide, Snackbar, TextField } from "@mui/material";
+import {
+  Alert,
+  Button,
+  Pagination,
+  Slide,
+  Snackbar,
+  TextField,
+} from "@mui/material";
 import { useContext, useEffect, useState } from "react";
 import { MatricesContext } from "../context/MatricesContext";
 
@@ -7,7 +14,7 @@ export default function TableMatrices() {
 
   const [index, setIndex] = useState(null);
 
-  const [table, setTable] = useState([]);
+  const [table, setTable] = useState(() => tableOriginal);
   const [start, setStart] = useState(0);
   const [end, setEnd] = useState(10);
 
@@ -21,13 +28,8 @@ export default function TableMatrices() {
   });
 
   useEffect(() => {
-    getPreviuos();
-    console.log(tableOriginal);
-  }, []);
-
-  useEffect(() => {
-    setStart(end - 10)
-  }, [end])
+    setStart(end - 10);
+  }, [end]);
 
   const getPreviuos = () => {
     setTable(tableOriginal);
@@ -40,6 +42,17 @@ export default function TableMatrices() {
 
   return (
     <div className="flex flex-col lg:justify-center lg:items-center ">
+      <div>
+        <TextField label="Buscar Descripcion" size="small" onChange={(evt) => {
+          const text = evt.target.value;
+          if (text != "") {
+            const filter = tableOriginal.filter((elem) => {
+              return elem.descripcion.toLowerCase().includes(text.toLowerCase());
+            })
+            setTable(filter)
+          }else getPreviuos();
+        }} />
+      </div>
       <div className="overflow-x-auto sm:-mx-6 lg:-mx-8">
         <div className="inline-block min-w-full sm:max-w-[1000px] py-2 sm:px-6 lg:px-8">
           <div className="overflow-hidden ">
