@@ -13,7 +13,7 @@ export default function Menu() {
   });
 
   return (
-    <nav className="bg-white border-gray-200 dark:bg-gray-900">
+    <nav className="bg-white border-gray-200 dark:bg-gray-900 shadow-md">
       <div className="relative max-w-screen-xl flex flex-wrap items-center justify-between mx-auto  ">
         <a className=" flex items-center space-x-3 rtl:space-x-reverse">
           <img src={logo} className=" h-[46px]" alt="Flowbite Logo" />
@@ -108,7 +108,7 @@ export function MenuLogInAndRegister() {
   });
 
   return (
-    <nav className="bg-white border-gray-200 dark:bg-gray-900">
+    <nav className="bg-white border-gray-200 dark:bg-gray-900 shadow-md">
       <div className="relative max-w-screen-xl flex flex-wrap items-center justify-between mx-auto  ">
         <a className=" flex items-center space-x-3 rtl:space-x-reverse">
           <img src={logo} className=" h-[46px]" alt="Flowbite Logo" />

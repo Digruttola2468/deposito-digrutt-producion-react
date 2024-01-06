@@ -101,7 +101,7 @@ export default function PostProduccion() {
   const renderPost = (unique) => {
     return (
       <>
-        <div key={unique} className="flex flex-col sm:flex-row items-start sm:items-center">
+        <div key={unique} className="flex flex-col sm:flex-row items-start sm:items-center ">
           <div className="flex flex-col lg:flex-row">
             <div >
               <TextField
@@ -182,7 +182,7 @@ export default function PostProduccion() {
   if (error) return <></>;
 
   return (
-    <section className=" flex flex-col justify-center items-center">
+    <section className=" flex flex-col justify-center items-center mt-10">
       <Divider className="w-full">
         <h1 className="uppercase text-2xl font-bold">Agregar Producion</h1>
       </Divider>

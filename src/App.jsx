@@ -19,6 +19,7 @@ import WaitForVerificacion from "./pages/WaitVerfication";
 import MatricesContextProvider from "./context/MatricesContext";
 import TableMatrices from "./app/TableMatrices";
 import GraficaProduccion from "./app/GraficaProduccion";
+import PostHistorialFalloseMatrices from "./components/form/PostHistorialFallosMatrices";
 
 function App() {
   const { userSupabase } = useContext(UserContext);
@@ -26,7 +27,7 @@ function App() {
   const renderProduccion = () => {
     return (
       <ProduccionContextProvider>
-        <section className="relative">
+        <section className="relative mt-2">
           <TableProducion />
           <PostProduccion />
           <GraficaProduccion />
@@ -40,7 +41,6 @@ function App() {
       <MaquinaParadaProvider>
         <section>
           <TableMaquinaParada />
-          <PostMaquinaParada />
         </section>
       </MaquinaParadaProvider>
     );
@@ -49,7 +49,7 @@ function App() {
   const renderMatriz = () => {
     return (
       <MatricesContextProvider>
-        <section>
+        <section className="mt-2">
           <TableMatrices />
         </section>
       </MatricesContextProvider>

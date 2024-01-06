@@ -49,9 +49,19 @@ export default function GraficaProduccion() {
 
   return (
     <>
-      <section>
+      <section className="mt-10">
         <Divider>
+          <div className="flex flex-row items-center">
           <h1 className="uppercase font-bold text-2xl">Grafica Semanal</h1>
+            <Tooltip
+              title="Exportar Excel"
+              onClick={handleClickExcel}
+            >
+              <IconButton>
+                <FaFileExcel className="hover:text-green-700"/>
+              </IconButton>
+            </Tooltip>
+          </div>
         </Divider>
         <div className="flex flex-row items-center justify-center">
           <div className="mr-1">
@@ -82,16 +92,7 @@ export default function GraficaProduccion() {
               }}
             />
           </div>
-          <div>
-            <Tooltip
-              title="Exportar Excel"
-              onClick={handleClickExcel}
-            >
-              <IconButton>
-                <FaFileExcel className="hover:text-green-700"/>
-              </IconButton>
-            </Tooltip>
-          </div>
+          
         </div>
         <div className="flex flex-col justify-center items-center">
           {listGraficas.length != 0 ? (

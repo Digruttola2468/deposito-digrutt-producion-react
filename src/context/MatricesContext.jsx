@@ -1,5 +1,5 @@
 import axios from "axios";
-import { createContext, useContext } from "react";
+import { createContext, useContext, useState } from "react";
 import useSWR from "swr";
 import { UserContext } from "./UserContext";
 
@@ -24,6 +24,12 @@ export default function MatricesContextProvider(props) {
     fetcherToken
   );
 
+  const [index, setIndex] = useState();
+  
+  const getOne = () => {
+    return data.find(elem => elem.id == index)
+  }
+
   if (isLoading) return <></>;
   if (error) return <></>;
 
@@ -35,6 +41,8 @@ export default function MatricesContextProvider(props) {
         token: userSupabase.token,
         base_url: BASE_URL,
         fetcherToken,
+        getOne, 
+        setIndex
       }}
     >
       {props.children}

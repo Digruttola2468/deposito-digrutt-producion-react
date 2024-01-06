@@ -74,19 +74,19 @@ export default function PostMaquinaParada() {
   if (error) return <></>;
 
   return (
-    <>
-      <Divider><h1 className="uppercase font-bold text-2xl">Agregar Maquina Parada</h1></Divider> 
-      <form className="flex flex-col max-w-[500px]">
+    <section className="mt-10 lg:mt-0">
+      <h1 className="uppercase font-bold text-2xl">Agregar Maquina Parada</h1>
+      <form className="flex flex-col">
         <div className="flex flex-row">
           <TextField
             type="number"
             value={numMaquina}
             onChange={(evt) => setNumMaquina(evt.target.value)}
             label="N° Maquina"
-            sx={{ margin: 1 }}
+            sx={{ margin: 1, width: '100%' , maxWidth: '120px'}}
           />
           <Autocomplete
-            sx={{ margin: 1, width: "100%" }}
+            sx={{ margin: 1, width: '100%' , maxWidth: '250px' }}
             options={data}
             getOptionLabel={(elem) => elem.descripcion}
             value={motivoMaquina}
@@ -106,17 +106,17 @@ export default function PostMaquinaParada() {
             type="date"
             value={fecha}
             onChange={(evt) => setFecha(evt.target.value)}
-            sx={{ margin: 1 }}
+            sx={{ margin: 1, width: '100%' , maxWidth: '150px' }}
           />
           <TextField
             type="number"
             value={hrs}
             onChange={(evt) => setHrs(evt.target.value)}
             label="Hrs Maquina Parada"
-            sx={{ margin: 1 }}
+            sx={{ margin: 1, width: '100%' , maxWidth: '220px' }}
           />
         </div>
-        <div className="flex flex-row justify-between">
+        <div className="flex flex-row justify-between max-w-[400px]">
         <Button type="submit" variant="text" onClick={empty}>
           Borrar
         </Button>
@@ -141,6 +141,6 @@ export default function PostMaquinaParada() {
           </Alert>
         </Snackbar>
       </form>
-    </>
+    </section>
   );
 }
