@@ -18,6 +18,7 @@ import SendEmail from "./pages/SendEmail";
 import WaitForVerificacion from "./pages/WaitVerfication";
 import MatricesContextProvider from "./context/MatricesContext";
 import TableMatrices from "./app/TableMatrices";
+import GraficaProduccion from "./app/GraficaProduccion";
 
 function App() {
   const { userSupabase } = useContext(UserContext);
@@ -28,6 +29,7 @@ function App() {
         <section className="relative">
           <TableProducion />
           <PostProduccion />
+          <GraficaProduccion />
         </section>
       </ProduccionContextProvider>
     );
