@@ -31,7 +31,7 @@ export default function PostProduccion() {
     error: null,
   });
 
-  const [codProducto, setCodProducto] = useState([]);
+  const [requesterror, setRequeterror] = useState({ campo: null, index: null });
   const [length, setLength] = useState(0);
   const [list, setList] = useState([{ id: length }]);
   const [fecha, setFecha] = useState("");
@@ -61,13 +61,15 @@ export default function PostProduccion() {
         },
       })
       .then((result) => {
-        console.log(result);
         setOpenDialog({ done: true, message: "Operacion Exitosa!" });
         refreshTable();
       })
       .catch((error) => {
-        console.log(error);
-        setOpen({
+        setRequeterror({
+          campo: error.response.data.campo,
+          index: error.response.data.index,
+        });
+        setOpenDialog({
           done: true,
           message: error.response.data.message,
           error: true,
@@ -84,9 +86,9 @@ export default function PostProduccion() {
   const handleClickDeletePost = (unique) => {
     const decrement = length - 1;
     setLength(decrement);
-    const filterList = list.filter(elem => elem.id != unique)
+    const filterList = list.filter((elem) => elem.id != unique);
     setList(filterList);
-  }
+  };
 
   const empty = (evt) => {
     evt.preventDefault();
@@ -98,23 +100,35 @@ export default function PostProduccion() {
     setPromGolpesHora("");*/
   };
 
+  const emptyRequestError = () => {
+    setRequeterror({ campo: null, index: null });
+  };
+
   const renderPost = (unique) => {
+    const campo = requesterror.index == unique ? requesterror.campo : null;
     return (
       <>
-        <div key={unique} className="flex flex-col sm:flex-row items-start sm:items-center ">
+        <div
+          key={unique}
+          className="flex flex-col sm:flex-row items-start sm:items-center"
+        >
           <div className="flex flex-col lg:flex-row">
-            <div >
+            <div>
               <TextField
                 type="number"
                 label="N° Maquina"
                 sx={{ margin: 1 }}
                 size="small"
                 id={`numMaquina-${unique}`}
+                error={campo == "numMaquina" ? true : false}
+                onChange={(evt) => {
+                  if (evt.target.value != "") emptyRequestError();
+                }}
               />
             </div>
             <div>
               <Autocomplete
-                sx={{ margin: 1, width: '200px'}}
+                sx={{ margin: 1, width: "200px" }}
                 options={data}
                 getOptionLabel={(elem) => elem.nombre}
                 isOptionEqualToValue={(option, value) => option.id === value.id}
@@ -124,6 +138,7 @@ export default function PostProduccion() {
                       return { ...elem, codProducto: value ? value.id : null };
                     else return elem;
                   });
+                  emptyRequestError();
                   setList(result);
                 }}
                 renderInput={(params) => (
@@ -131,6 +146,7 @@ export default function PostProduccion() {
                     {...params}
                     label="Cod Producto"
                     variant="outlined"
+                    error={campo == "idInventario" ? true : false}
                   />
                 )}
                 size="small"
@@ -145,6 +161,10 @@ export default function PostProduccion() {
                 sx={{ margin: 1, width: "140px" }}
                 size="small"
                 id={`golpes-${unique}`}
+                error={campo == "golpeReale" ? true : false}
+                onChange={(evt) => {
+                  if (evt.target.value != "") emptyRequestError();
+                }}
               />
               <TextField
                 type="number"
@@ -152,6 +172,10 @@ export default function PostProduccion() {
                 sx={{ margin: 1, width: "160px" }}
                 size="small"
                 id={`piezas-${unique}`}
+                error={campo == "piezasProducidas" ? true : false}
+                onChange={(evt) => {
+                  if (evt.target.value != "") emptyRequestError();
+                }}
               />
             </div>
             <div>
@@ -160,18 +184,24 @@ export default function PostProduccion() {
                 label="Promedio Golpes/hr"
                 sx={{ margin: 1 }}
                 size="small"
+                error={campo == "promGolpHr" ? true : false}
+                onChange={(evt) => {
+                  if (evt.target.value != "") emptyRequestError();
+                }}
                 id={`promedio-${unique}`}
               />
             </div>
           </div>
           <Tooltip
-              title="Eliminar Item"
-              onClick={() => {handleClickDeletePost(unique)}}
-            >
-              <IconButton>
-                <AiOutlineDelete className="cursor-pointer hover:text-red-500 " />
-              </IconButton>
-            </Tooltip>
+            title="Eliminar Item"
+            onClick={() => {
+              handleClickDeletePost(unique);
+            }}
+          >
+            <IconButton>
+              <AiOutlineDelete className="cursor-pointer hover:text-red-500 " />
+            </IconButton>
+          </Tooltip>
         </div>
         <Divider />
       </>
@@ -193,7 +223,11 @@ export default function PostProduccion() {
             sx={{ margin: 1, width: "150px" }}
             size="small"
             value={fecha}
-            onChange={(evt) => setFecha(evt.target.value)}
+            onChange={(evt) => {
+              setFecha(evt.target.value);
+              emptyRequestError();
+            }}
+            error={requesterror.campo == "fecha" ? true : false}
           />
           {list.map((elem) => {
             return <div key={elem.id}>{renderPost(elem.id)}</div>;

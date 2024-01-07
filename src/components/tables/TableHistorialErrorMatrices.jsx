@@ -77,7 +77,6 @@ export default function TableHistorialErrorMatrices() {
                       <tr
                         className={`border-b dark:border-neutral-500 hover:border-info-200 hover:bg-red-200 hover:text-neutral-800`}
                         key={elem.id}
-                        onClick={() => setIndex(elem.id)}
                       >
                         <td className="whitespace-nowrap px-6 py-4 font-medium">
                           {elem.cod_matriz}
