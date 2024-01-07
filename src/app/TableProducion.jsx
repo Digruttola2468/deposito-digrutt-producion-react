@@ -1,5 +1,5 @@
 import { Pagination, TextField } from "@mui/material";
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { ProducionContext } from "../context/ProduccionContext";
 
 export default function TableProducion() {
@@ -11,6 +11,10 @@ export default function TableProducion() {
 
   const [start, setStart] = useState(0);
   const [end, setEnd] = useState(10);
+
+  useEffect(() => {
+    setStart(end - 10)
+  }, [end])
 
   const getPrevius = () => {
     setTable(tableOriginal);

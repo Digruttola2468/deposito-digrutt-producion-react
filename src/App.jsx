@@ -20,6 +20,7 @@ import MatricesContextProvider from "./context/MatricesContext";
 import TableMatrices from "./app/TableMatrices";
 import GraficaProduccion from "./app/GraficaProduccion";
 import PostHistorialFalloseMatrices from "./components/form/PostHistorialFallosMatrices";
+import TableHistorialErrorMatrices from "./components/tables/TableHistorialErrorMatrices";
 
 function App() {
   const { userSupabase } = useContext(UserContext);
@@ -51,6 +52,7 @@ function App() {
       <MatricesContextProvider>
         <section className="mt-2">
           <TableMatrices />
+          <TableHistorialErrorMatrices />
         </section>
       </MatricesContextProvider>
     );

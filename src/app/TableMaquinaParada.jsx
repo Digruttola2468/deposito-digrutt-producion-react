@@ -15,7 +15,7 @@ export default function TableMaquinaParada() {
 
   const [index, setIndex] = useState(null);
 
-  const [table, setTable] = useState([]);
+  const [table, setTable] = useState(() => tableOriginal);
   const [start, setStart] = useState(0);
   const [end, setEnd] = useState(10);
 
@@ -29,8 +29,8 @@ export default function TableMaquinaParada() {
   });
 
   useEffect(() => {
-    getPreviuos();
-  }, []);
+    setStart(end - 10);
+  }, [end]);
 
   const getPreviuos = () => {
     setTable(tableOriginal);
