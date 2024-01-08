@@ -12,7 +12,7 @@ import TableProducion from "./app/TableProducion";
 import PostProduccion from "./components/form/PostProduccion";
 
 import SignUp from "./pages/SignUp";
-import LogIn from "./pages/LogIn";
+import IniciarSesion from "./pages/Iniciar";
 import SendEmail from "./pages/SendEmail";
 import WaitForVerificacion from "./pages/WaitVerfication";
 import MatricesContextProvider from "./context/MatricesContext";
@@ -121,7 +121,7 @@ function App() {
           <Route path="/maquinaParada" element={validarMaquinaParada()} />
           <Route path="/matrices" element={validarMatrices()} />
           <Route path="/pedidos" element={validarPedidos()} />
-          <Route path="/login" element={<LogIn />} />
+          <Route path="/login" element={<IniciarSesion />} />
           <Route path="/signUp" element={<SignUp />} />
           <Route path="/sendGmail" element={<SendEmail />} />
           <Route path="/notVerificed" element={<WaitForVerificacion />} />
