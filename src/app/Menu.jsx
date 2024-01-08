@@ -9,7 +9,8 @@ export default function Menu() {
   const [menuActive, setMenuActive] = useState({
     produccion: true,
     paradaMaquina: false,
-    matrices: false
+    matrices: false,
+    pedidos: false
   });
 
   return (
@@ -49,7 +50,7 @@ export default function Menu() {
             <li>
               <a
                 onClick={() => {
-                  setMenuActive({ produccion: true, paradaMaquina: false, matrices: false });
+                  setMenuActive({ produccion: true, paradaMaquina: false, matrices: false,pedidos: false });
                   navegate("/");
                 }}
                 className={`block py-2 px-3 rounded md:bg-transparent ${
@@ -64,7 +65,7 @@ export default function Menu() {
             <li>
               <a
                 onClick={() => {
-                  setMenuActive({ produccion: false, paradaMaquina: true, matrices: false });
+                  setMenuActive({ produccion: false, paradaMaquina: true, matrices: false,pedidos: false });
                   navegate("/maquinaParada");
                 }}
                 className={`block py-2 px-3 rounded md:bg-transparent ${
@@ -79,7 +80,7 @@ export default function Menu() {
             <li>
               <a
                 onClick={() => {
-                  setMenuActive({ produccion: false, paradaMaquina: false, matrices: true });
+                  setMenuActive({ produccion: false, paradaMaquina: false, matrices: true,pedidos: false });
                   navegate("/matrices");
                 }}
                 className={`block py-2 px-3 rounded md:bg-transparent ${
@@ -89,6 +90,21 @@ export default function Menu() {
                 } md:p-0 `}
               >
                 Matrices
+              </a>
+            </li>
+            <li>
+              <a
+                onClick={() => {
+                  setMenuActive({ produccion: false, paradaMaquina: false, matrices: false,pedidos: true });
+                  navegate("/pedidos");
+                }}
+                className={`block py-2 px-3 rounded md:bg-transparent ${
+                  menuActive.pedidos
+                    ? "text-white bg-blue-700 md:text-blue-700 cursor-default"
+                    : "text-gray-900 md:text-gray-900 cursor-pointer"
+                } md:p-0 `}
+              >
+                Pedidos
               </a>
             </li>
           </ul>
