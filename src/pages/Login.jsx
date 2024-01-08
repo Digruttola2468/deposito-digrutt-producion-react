@@ -36,7 +36,11 @@ export default function LogIn() {
   const handleClick_registrarse = () => navegate("/signUp");
 
   return (
-    <div className="w-full flex items-center justify-center h-screen bg-slate-200">
+      <h1>Hola soy una session</h1>
+  );
+}
+
+/**<div className="w-full flex items-center justify-center h-screen bg-slate-200">
       <div className="bg-white px-10 py-20 rounded-3xl border-2 ">
         <h1 className="text-4xl font-semibold text-center">DIGRUTT S.R.L</h1>
         <div className="mt-8">
@@ -107,6 +111,4 @@ export default function LogIn() {
           </div>
         </div>
       </div>
-    </div>
-  );
-}
+    </div> */
