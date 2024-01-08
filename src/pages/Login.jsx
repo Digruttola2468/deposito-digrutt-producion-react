@@ -17,8 +17,6 @@ export default function LogIn() {
 
   const [showPassword, setShowPassword] = useState(false);
 
-  const handleClick_forgotPassword = () => navegate("/forgotPassword");
-
   const handleClick_signIn = () => {
     //verificamos los campos vacios
     if (email != "" && password != "") {
@@ -26,10 +24,9 @@ export default function LogIn() {
       const pattern = /^[^ ]+@[^ ]+\.[a-z]{2,3}$/;
 
       if (email.match(pattern)) {
-        //
         logIn(email, password);
       }
-    } else toast.error("Completar los campos");
+    }
   };
 
   const handleClick_signInWithGoogle = async () => {
@@ -73,15 +70,6 @@ export default function LogIn() {
               )}
             </span>
           </div>
-
-          {/* <div className=" flex justify-end">
-          <button
-            className="font-medium text-base text-violet-500 hover:text-violet-400"
-            onClick={handleClick_forgotPassword}
-          >
-            ¿Olvidaste tu contraseña?
-          </button>
-        </div> */}
           <div className="mt-8 flex flex-col gap-y-4">
             <button
               className="flex justify-center items-center active:scale-[.98] active:duration-75 transition-all hover:scale-[1.01] ease-in-out py-3 rounded-xl bg-violet-500 text-white text-lg font-bold"
