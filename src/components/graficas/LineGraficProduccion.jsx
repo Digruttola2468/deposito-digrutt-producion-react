@@ -58,7 +58,7 @@ export default function ProduccionLineGrafic({
       datasets: grafica,
     },
     options: {
-      //  responsive: true,
+      responsive: true,
       maintainAspectRatio: false,
     },
   };
@@ -73,7 +73,10 @@ export default function ProduccionLineGrafic({
       <div className={`absolute left-[50%] top-[50%] ${showButton.show ? "" : 'hidden'}`}>
         <Button onClick={handle}>Mostrar Grafica</Button>
       </div>
-      <canvas id={`chart${index}`}></canvas>
+      <div id="container" className="w-full h-full border border-red-400">
+        <canvas id={`chart${index}`}></canvas>
+      </div>
+      
     </div>
   );
 }
