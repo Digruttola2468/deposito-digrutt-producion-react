@@ -51,7 +51,7 @@ export default function ProduccionLineGrafic({
     return list;
   });
 
-  const config = {
+  /*const config = {
     type: "line",
     data: {
       labels: semana,
@@ -61,20 +61,35 @@ export default function ProduccionLineGrafic({
       responsive: true,
       maintainAspectRatio: false,
     },
-  };
+  };*/
+
+  const miData = {
+    labels: semana,
+    datasets: grafica
+  }
+
+  const myOption = {
+    responsive: true,
+      maintainAspectRatio: false,
+      scales: {
+        y: {
+          min: 0
+        }
+      }
+  }
 
   const handle = () => {
     setShowButton({id: index, show: false})
-    new ChartJS(document.getElementById(`chart${index}`), config);
+    //new ChartJS(document.getElementById(`chart${index}`), config);
   };
 
   return (
     <div className="relative m-auto h-[40vh] w-[80vw] max-w-[600px]">
-      <div className={`absolute left-[50%] top-[50%] ${showButton.show ? "" : 'hidden'}`}>
+      {/**<div className={`absolute left-[50%] top-[50%] ${showButton.show ? "" : 'hidden'}`}>
         <Button onClick={handle}>Mostrar Grafica</Button>
-      </div>
-      <div id="container" className="w-full h-full border border-red-400">
-        <canvas id={`chart${index}`}></canvas>
+      </div> */}
+      <div id="container" className="w-full h-full ">
+        <Line data={miData} options={myOption} />
       </div>
       
     </div>

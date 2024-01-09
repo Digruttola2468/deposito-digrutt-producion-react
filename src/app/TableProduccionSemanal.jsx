@@ -59,19 +59,19 @@ export default function TableProduccionSemanal({ rangeDate, numMaquina }) {
                         className={`border-b dark:border-neutral-500 hover:border-info-200 hover:bg-red-200 hover:text-neutral-800`}
                         key={elem.id}
                       >
-                        <td className="whitespace-nowrap py-4 font-medium">
+                        <td className="whitespace-nowrap py-4 font-medium text-center">
                           {elem.nombre}
                         </td>
-                        <td className="whitespace-nowrap  py-4">
+                        <td className="whitespace-nowrap  py-4 text-center">
                           {elem.fecha}
                         </td>
-                        <td className="whitespace-nowrap  py-4">
+                        <td className="whitespace-nowrap  py-4 text-center">
                           {elem.golpesReales}
                         </td>
-                        <td className="whitespace-nowrap  py-4 ">
+                        <td className="whitespace-nowrap  py-4 text-center">
                           {elem.piezasProducidas}
                         </td>
-                        <td className="whitespace-nowrap py-4 ">
+                        <td className="whitespace-nowrap py-4 text-center">
                           {elem.prom_golpeshora}
                         </td>
                       </tr>
