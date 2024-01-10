@@ -20,6 +20,7 @@ import TableMatrices from "./app/TableMatrices";
 import GraficaProduccion from "./app/GraficaProduccion";
 import TableHistorialErrorMatrices from "./components/tables/TableHistorialErrorMatrices";
 import PedidosProvider from "./context/PedidosContext";
+import TablePedidos from "./components/tables/TablePedidos";
 
 function App() {
   const { userSupabase } = useContext(UserContext);
@@ -61,7 +62,7 @@ function App() {
     return (
       <PedidosProvider>
         <section className="mt-2">
-
+          <TablePedidos />
         </section>
       </PedidosProvider>
     );
