@@ -1,32 +1,84 @@
 import { useContext, useEffect, useState } from "react";
 import { MatricesContext } from "../../context/MatricesContext";
-import { Autocomplete, Button, TextField } from "@mui/material";
+import { Autocomplete, Avatar, Button, Icon, TextField } from "@mui/material";
+import axios from "axios";
+import useSWR from "swr";
+import { UserContext } from "../../context/UserContext";
+
+import toast from "react-hot-toast";
+import logoDigruttD from "../../assets/digrutt_logo_d.png";
+
+const fetcherToken = ([url, token]) => {
+  return axios
+    .get(url, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    })
+    .then((result) => result.data);
+};
 
 export default function PostHistorialFalloseMatrices() {
-  const { getOne, tableOriginal } = useContext(MatricesContext);
+  const { userSupabase, BASE_URL } = useContext(UserContext);
+  const { apiOne } = useContext(MatricesContext);
+
+  const { data, isLoading, error, mutate } = useSWR(
+    [
+      `https://deposito-digrutt-express-production.up.railway.app/api/matrices`,
+      userSupabase.token,
+    ],
+    fetcherToken
+  );
 
   const [codMatriz, setCodMatriz] = useState(null);
-    const [descripcionDeterioro, setDescripcionDeterioro] = useState("");
+  const [descripcionDeterioro, setDescripcionDeterioro] = useState("");
 
   useEffect(() => {
-    if (getOne() != null) 
-        setCodMatriz(getOne())
-    
-    console.log("useEffect");
-  },[getOne])
+    if (apiOne != null) setCodMatriz(apiOne);
+  }, [apiOne]);
 
   const handleEnviar = (evt) => {
     evt.preventDefault();
-  }
+
+    toast.promise(
+      axios
+        .post(
+          `${BASE_URL}/historialMatriz`,
+          {
+            idMatriz: codMatriz.id,
+            descripcion_deterioro: descripcionDeterioro,
+          },
+          {
+            headers: {
+              Authorization: `Bearer ${userSupabase.token}`,
+            },
+          }
+        )
+        .then((result) => {
+          setCodMatriz(null);
+          setDescripcionDeterioro("");
+        }),
+      {
+        loading: "Cargando...",
+        success: "Se agrego con exito",
+        error: (err) => err.response.data.message,
+      }
+    );
+  };
+
+  if (isLoading) return <></>;
+  if (error) return <></>;
 
   return (
     <>
       <section className="mt-10 lg:mt-0">
-        <h1 className="text-center uppercase font-bold text-lg">Nuevo Error Matriz</h1>
+        <h1 className="text-center uppercase font-bold text-lg">
+          Nuevo Error Matriz
+        </h1>
         <form className="flex flex-col items-center justify-center">
           <Autocomplete
-            sx={{ margin: 1, width: '100%' , maxWidth: '400px' }}
-            options={tableOriginal}
+            sx={{ margin: 1, width: "100%", maxWidth: "400px" }}
+            options={data}
             getOptionLabel={(elem) => elem.cod_matriz}
             value={codMatriz}
             isOptionEqualToValue={(option, value) => option.id === value.id}
@@ -38,16 +90,15 @@ export default function PostHistorialFalloseMatrices() {
               <TextField {...params} label="Cod Matriz" variant="outlined" />
             )}
           />
-          <TextField 
-            sx={{ width: '100%' , maxWidth: '400px'}}
+          <TextField
+            sx={{ width: "100%", maxWidth: "400px" }}
             multiline
             value={descripcionDeterioro}
-            onChange={(evt) => 
-                setDescripcionDeterioro(evt.target.value)
-            }
+            onChange={(evt) => setDescripcionDeterioro(evt.target.value)}
             label="Descripcion Falla"
+            rows={2}
           />
-          <Button onSubmit={handleEnviar}>Enviar</Button>
+          <Button onClick={handleEnviar}>Enviar</Button>
         </form>
       </section>
     </>

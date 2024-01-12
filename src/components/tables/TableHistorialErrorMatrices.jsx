@@ -2,9 +2,13 @@ import { Divider, IconButton, Pagination, Tooltip } from "@mui/material";
 import axios from "axios";
 import { useContext, useEffect, useState } from "react";
 import { UserContext } from "../../context/UserContext";
-import useSWR from "swr";
 import { FaCheck, FaLongArrowAltDown, FaLongArrowAltUp } from "react-icons/fa";
 import { FaXmark } from "react-icons/fa6";
+import useSWR from "swr";
+import { BiTrashAlt } from "react-icons/bi";
+import { FaPen } from "react-icons/fa";
+import toast from "react-hot-toast";
+import { useNavigate } from "react-router-dom";
 
 const fetcherToken = ([url, token]) => {
   return axios
@@ -18,19 +22,61 @@ const fetcherToken = ([url, token]) => {
 
 export default function TableHistorialErrorMatrices() {
   const { userSupabase, BASE_URL } = useContext(UserContext);
+  const navegate = useNavigate();
 
+  const { data, isLoading, error, mutate } = useSWR(
+    [`${BASE_URL}/historialMatriz`, userSupabase.token],
+    fetcherToken,
+    {
+      onSuccess: (data, key, config) => {
+        setTable(data);
+      },
+    }
+  );
+
+  const [table, setTable] = useState([]);
   const [start, setStart] = useState(0);
   const [end, setEnd] = useState(10);
   const [arrow, setArrow] = useState({ order: "ASC", campus: null });
-  const [table, setTable] = useState([]);
 
   useEffect(() => {
     setStart(end - 10);
   }, [end]);
 
+  const handleUpdateIsDone = (idHistorial, isDone) => {
+    const value = isDone ? "1" : "0";
+    toast.promise(
+      axios
+        .put(`${BASE_URL}/historialMatriz/${idHistorial}/${value}`, null, {
+          headers: {
+            Authorization: `Bearer ${userSupabase.token}`,
+          },
+        })
+        .then((result) => {
+          const response = result.data;
+          setTable(
+            table.map((elem) => {
+              if (idHistorial == elem.id) return response;
+              else return elem;
+            })
+          );
+        }),
+      {
+        loading: "Cargando...",
+        success: "Se actualizo correctamente",
+        error: (err) => err.response.data.message,
+      }
+    );
+  };
+
   const resetTable = () => {
     setStart(0);
     setEnd(10);
+  };
+
+  const getPrevius = () => {
+    resetTable();
+    setTable(data);
   };
 
   const handleOrderIsDone = (campus) => {
@@ -98,44 +144,23 @@ export default function TableHistorialErrorMatrices() {
     return <></>;
   };
 
-  const { data, isLoading, error, mutate } = useSWR(
-    [`${BASE_URL}/historialMatriz`, userSupabase.token],
-    fetcherToken,
-    {
-      onSuccess: (data, key, config) => {
-        setTable(data);
-        console.log("data onSucces", data);
-      },
-    }
-  );
-
-  const handleUpdateIsDone = (idHistorial, isDone) => {
-    const value = isDone ? "1" : "0";
-    axios
-      .put(`${BASE_URL}/historialMatriz/${idHistorial}/${value}`, null, {
-        headers: {
-          Authorization: `Bearer ${userSupabase.token}`,
-        },
-      })
-      .then((result) => {
-        const response = result.data;
-        setTable(
-          table.map((elem) => {
-            if (idHistorial == elem.id) return { ...response };
-            else return elem;
-          })
-        );
-        mutate();
-        
-      })
-      .catch((e) => {
-        console.log(e);
-      });
-  };
-
-  const getPrevius = () => {
-    resetTable();
-    setTable(data);
+  const handleDeleteItem = (idHistorial) => {
+    toast.promise(
+      axios
+        .delete(`${BASE_URL}/historialMatriz/${idHistorial}`, {
+          headers: {
+            Authorization: `Bearer ${userSupabase.token}`,
+          },
+        })
+        .then((result) => {
+          setTable(table.filter((elem) => elem.id != idHistorial));
+        }),
+      {
+        loading: "Cargando...",
+        success: "Se elimino correctamente",
+        error: "Something wrong",
+      }
+    );
   };
 
   if (isLoading) return <></>;
@@ -197,7 +222,7 @@ export default function TableHistorialErrorMatrices() {
                         handleOrderIsDone("fechaEnd");
                       }}
                     >
-                      Fecha Que se Reparo
+                      Fecha Que Se Reparo
                       {arrow.campus == "fechaEnd" ? (
                         renderIconArrowIsDone(orderByDateDoneMistake)
                       ) : (
@@ -231,7 +256,7 @@ export default function TableHistorialErrorMatrices() {
                           {elem.fecha}
                         </td>
                         <td
-                          className={`whitespace-nowrap px-6 py-4 ${
+                          className={`whitespace-nowrap px-6 py-4 font-bold text-center ${
                             elem.isSolved >= 1
                               ? "text-green-400"
                               : "text-red-400"
@@ -254,7 +279,7 @@ export default function TableHistorialErrorMatrices() {
                             </Tooltip>
                           ) : (
                             <Tooltip
-                              title="Marcar como Completado"
+                              title="Marcar como Completo"
                               onClick={() => handleUpdateIsDone(elem.id, true)}
                             >
                               <IconButton size="small">
@@ -262,6 +287,21 @@ export default function TableHistorialErrorMatrices() {
                               </IconButton>
                             </Tooltip>
                           )}
+                          <Tooltip title="Actualizar" onClick={() => {navegate('/matrices/updateHistorial')}}>
+                            <IconButton size="small">
+                              <FaPen className="cursor-pointer hover:text-blue-400 " />
+                            </IconButton>
+                          </Tooltip>
+                          <Tooltip
+                            title="Eliminar"
+                            onClick={() => {
+                              handleDeleteItem(elem.id);
+                            }}
+                          >
+                            <IconButton size="small">
+                              <BiTrashAlt className="cursor-pointer hover:text-red-400 " />
+                            </IconButton>
+                          </Tooltip>
                         </td>
                       </tr>
                     );

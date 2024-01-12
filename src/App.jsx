@@ -18,9 +18,10 @@ import WaitForVerificacion from "./pages/WaitVerfication";
 import MatricesContextProvider from "./context/MatricesContext";
 import TableMatrices from "./app/TableMatrices";
 import GraficaProduccion from "./app/GraficaProduccion";
-import TableHistorialErrorMatrices from "./components/tables/TableHistorialErrorMatrices";
 import PedidosProvider from "./context/PedidosContext";
 import TablePedidos from "./components/tables/TablePedidos";
+import TableHistorialErrorMatrices from "./components/tables/TableHistorialErrorMatrices";
+import UpdateHistorialFallosMatrices from "./components/form/UpdateHistorialFallosMatrices";
 
 function App() {
   const { userSupabase } = useContext(UserContext);
@@ -120,12 +121,13 @@ function App() {
         <Routes>
           <Route path="/" element={validarProduccion()} />
           <Route path="/maquinaParada" element={validarMaquinaParada()} />
-          <Route path="/matrices" element={validarMatrices()} />
+          <Route path="/matrices/*" element={validarMatrices()} />
           <Route path="/pedidos" element={validarPedidos()} />
           <Route path="/login" element={<IniciarSesion />} />
           <Route path="/signUp" element={<SignUp />} />
           <Route path="/sendGmail" element={<SendEmail />} />
           <Route path="/notVerificed" element={<WaitForVerificacion />} />
+          
         </Routes>
       </main>
     </>
