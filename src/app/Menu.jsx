@@ -11,7 +11,8 @@ export default function Menu() {
     paradaMaquina: false,
     matrices: false,
     pedidos: false,
-    oficina: false
+    remitos: false,
+    notaEnvios: false
   });
 
   return (
@@ -51,7 +52,7 @@ export default function Menu() {
             <li>
               <a
                 onClick={() => {
-                  setMenuActive({ produccion: true, paradaMaquina: false, matrices: false,pedidos: false,oficina: false });
+                  setMenuActive({ produccion: true, paradaMaquina: false, matrices: false,pedidos: false,remitos: false,notaEnvios: false });
                   navegate("/");
                 }}
                 className={`block py-2 px-3 rounded md:bg-transparent ${
@@ -66,7 +67,7 @@ export default function Menu() {
             <li>
               <a
                 onClick={() => {
-                  setMenuActive({ produccion: false, paradaMaquina: true, matrices: false,pedidos: false,oficina: false });
+                  setMenuActive({ produccion: false, paradaMaquina: true, matrices: false,pedidos: false,remitos: false,notaEnvios: false });
                   navegate("/maquinaParada");
                 }}
                 className={`block py-2 px-3 rounded md:bg-transparent ${
@@ -81,7 +82,7 @@ export default function Menu() {
             <li>
               <a
                 onClick={() => {
-                  setMenuActive({ produccion: false, paradaMaquina: false, matrices: true,pedidos: false,oficina: false });
+                  setMenuActive({ produccion: false, paradaMaquina: false, matrices: true,pedidos: false,remitos: false,notaEnvios: false });
                   navegate("/matrices");
                 }}
                 className={`block py-2 px-3 rounded md:bg-transparent ${
@@ -96,7 +97,7 @@ export default function Menu() {
             <li>
               <a
                 onClick={() => {
-                  setMenuActive({ produccion: false, paradaMaquina: false, matrices: false,pedidos: true,oficina: false });
+                  setMenuActive({ produccion: false, paradaMaquina: false, matrices: false,pedidos: true,remitos: false,notaEnvios: false });
                   navegate("/pedidos");
                 }}
                 className={`block py-2 px-3 rounded md:bg-transparent ${
@@ -111,16 +112,31 @@ export default function Menu() {
             <li>
               <a
                 onClick={() => {
-                  setMenuActive({ produccion: false, paradaMaquina: false, matrices: false,pedidos: false,oficina: true });
-                  navegate("/oficina");
+                  setMenuActive({ produccion: false, paradaMaquina: false, matrices: false,pedidos: false,remitos: true,notaEnvios: false });
+                  navegate("/remitos");
                 }}
                 className={`block py-2 px-3 rounded md:bg-transparent ${
-                  menuActive.oficina
+                  menuActive.remitos
                     ? "text-white bg-blue-700 md:text-blue-700 cursor-default"
                     : "text-gray-900 md:text-gray-900 cursor-pointer"
                 } md:p-0 `}
               >
-                Oficina
+                Remitos
+              </a>
+            </li>
+            <li>
+              <a
+                onClick={() => {
+                  setMenuActive({ produccion: false, paradaMaquina: false, matrices: false,pedidos: false,remitos: false,notaEnvios: true });
+                  navegate("/notaEnvios");
+                }}
+                className={`block py-2 px-3 rounded md:bg-transparent ${
+                  menuActive.notaEnvios
+                    ? "text-white bg-blue-700 md:text-blue-700 cursor-default"
+                    : "text-gray-900 md:text-gray-900 cursor-pointer"
+                } md:p-0 `}
+              >
+                Nota Envios
               </a>
             </li>
           </ul>

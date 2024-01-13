@@ -57,7 +57,6 @@ export default function TableOficina() {
                   const filterByDescripcion = data.filter((elem) => {
                     return elem.num_remito.slice(4).includes(text)
                   });
-                  console.log(filterByDescripcion);
                   setTable(filterByDescripcion);
                 } else getPrevius();
               }}

@@ -7,6 +7,7 @@ import SearchClientesBox from "../comboBox/SearchClientesBox";
 import { CiSquarePlus } from "react-icons/ci";
 import PostRemito from "../form/PostRemito";
 import { FiTrash } from "react-icons/fi";
+import PostNotaEnvio from "../form/PostNotaEnvio";
 
 const fetcherToken = ([url, token]) => {
   return axios
@@ -18,7 +19,7 @@ const fetcherToken = ([url, token]) => {
     .then((result) => result.data);
 };
 
-export default function TableInventarioNombres() {
+export default function TableInventarioNombres({type}) {
   const { BASE_URL, userSupabase } = useContext(UserContext);
 
   const { data, error, isLoading } = useSWR(
@@ -171,10 +172,15 @@ export default function TableInventarioNombres() {
             />
           </div>
         </div>
-        <PostRemito
+        {type == "remito" && <PostRemito
           listInventario={listInventarioSelects}
           setListInventario={setListInventarioSelects}
-        />
+        />}
+        {type == "notaEnvio" && <PostNotaEnvio
+          listInventario={listInventarioSelects}
+          setListInventario={setListInventarioSelects}
+        />}
+
       </section>
     </>
   );

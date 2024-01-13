@@ -23,6 +23,7 @@ import TablePedidos from "./components/tables/TablePedidos";
 import TableHistorialErrorMatrices from "./components/tables/TableHistorialErrorMatrices";
 import TableOficina from "./components/tables/TableOficina";
 import TableInventarioNombres from "./components/tables/TableInventarioNombres";
+import TableNotaEnvios from "./components/tables/TableNotaEnvios";
 
 function App() {
   const { userSupabase } = useContext(UserContext);
@@ -70,14 +71,27 @@ function App() {
     );
   };
 
-  const renderOficina = () => {
+  const renderRemito = () => {
     return (
       <>
         <section>
           <TableOficina />
         </section>
         <section className="mt-8">
-          <TableInventarioNombres />
+          <TableInventarioNombres type={"remito"} />
+        </section>
+      </>
+    );
+  };
+
+  const renderNotaEnvio = () => {
+    return (
+      <>
+        <section>
+          <TableNotaEnvios />
+        </section>
+        <section className="mt-8">
+          <TableInventarioNombres type={"notaEnvio"} />
         </section>
       </>
     );
@@ -122,10 +136,18 @@ function App() {
     } else return renderNotPermissos();
   }
 
-  function validarOficina() {
+  function validarRemito() {
     if (userSupabase != null) {
-      if (userSupabase.is_admin) return renderOficina();
-      else if (userSupabase.is_oficina) return renderOficina();
+      if (userSupabase.is_admin) return renderRemito();
+      else if (userSupabase.is_oficina) return renderRemito();
+      else return renderNotPermissos();
+    } else return renderNotPermissos();
+  }
+
+  function validarNotaEnvio() {
+    if (userSupabase != null) {
+      if (userSupabase.is_admin) return renderNotaEnvio();
+      else if (userSupabase.is_oficina) return renderNotaEnvio();
       else return renderNotPermissos();
     } else return renderNotPermissos();
   }
@@ -145,7 +167,8 @@ function App() {
           <Route path="/maquinaParada" element={validarMaquinaParada()} />
           <Route path="/matrices" element={validarMatrices()} />
           <Route path="/pedidos" element={validarPedidos()} />
-          <Route path="/oficina" element={validarOficina()} />
+          <Route path="/remitos" element={validarRemito()} />
+          <Route path="/notaEnvios" element={validarNotaEnvio()} />
           <Route path="/login" element={<IniciarSesion />} />
           <Route path="/signUp" element={<SignUp />} />
           <Route path="/sendGmail" element={<SendEmail />} />
