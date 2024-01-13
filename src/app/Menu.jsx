@@ -10,7 +10,8 @@ export default function Menu() {
     produccion: true,
     paradaMaquina: false,
     matrices: false,
-    pedidos: false
+    pedidos: false,
+    oficina: false
   });
 
   return (
@@ -50,7 +51,7 @@ export default function Menu() {
             <li>
               <a
                 onClick={() => {
-                  setMenuActive({ produccion: true, paradaMaquina: false, matrices: false,pedidos: false });
+                  setMenuActive({ produccion: true, paradaMaquina: false, matrices: false,pedidos: false,oficina: false });
                   navegate("/");
                 }}
                 className={`block py-2 px-3 rounded md:bg-transparent ${
@@ -65,7 +66,7 @@ export default function Menu() {
             <li>
               <a
                 onClick={() => {
-                  setMenuActive({ produccion: false, paradaMaquina: true, matrices: false,pedidos: false });
+                  setMenuActive({ produccion: false, paradaMaquina: true, matrices: false,pedidos: false,oficina: false });
                   navegate("/maquinaParada");
                 }}
                 className={`block py-2 px-3 rounded md:bg-transparent ${
@@ -80,7 +81,7 @@ export default function Menu() {
             <li>
               <a
                 onClick={() => {
-                  setMenuActive({ produccion: false, paradaMaquina: false, matrices: true,pedidos: false });
+                  setMenuActive({ produccion: false, paradaMaquina: false, matrices: true,pedidos: false,oficina: false });
                   navegate("/matrices");
                 }}
                 className={`block py-2 px-3 rounded md:bg-transparent ${
@@ -95,7 +96,7 @@ export default function Menu() {
             <li>
               <a
                 onClick={() => {
-                  setMenuActive({ produccion: false, paradaMaquina: false, matrices: false,pedidos: true });
+                  setMenuActive({ produccion: false, paradaMaquina: false, matrices: false,pedidos: true,oficina: false });
                   navegate("/pedidos");
                 }}
                 className={`block py-2 px-3 rounded md:bg-transparent ${
@@ -105,6 +106,21 @@ export default function Menu() {
                 } md:p-0 `}
               >
                 Pedidos
+              </a>
+            </li>
+            <li>
+              <a
+                onClick={() => {
+                  setMenuActive({ produccion: false, paradaMaquina: false, matrices: false,pedidos: false,oficina: true });
+                  navegate("/oficina");
+                }}
+                className={`block py-2 px-3 rounded md:bg-transparent ${
+                  menuActive.oficina
+                    ? "text-white bg-blue-700 md:text-blue-700 cursor-default"
+                    : "text-gray-900 md:text-gray-900 cursor-pointer"
+                } md:p-0 `}
+              >
+                Oficina
               </a>
             </li>
           </ul>

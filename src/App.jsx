@@ -21,7 +21,8 @@ import GraficaProduccion from "./app/GraficaProduccion";
 import PedidosProvider from "./context/PedidosContext";
 import TablePedidos from "./components/tables/TablePedidos";
 import TableHistorialErrorMatrices from "./components/tables/TableHistorialErrorMatrices";
-import UpdateHistorialFallosMatrices from "./components/form/UpdateHistorialFallosMatrices";
+import TableOficina from "./components/tables/TableOficina";
+import TableInventarioNombres from "./components/tables/TableInventarioNombres";
 
 function App() {
   const { userSupabase } = useContext(UserContext);
@@ -69,6 +70,19 @@ function App() {
     );
   };
 
+  const renderOficina = () => {
+    return (
+      <>
+        <section>
+          <TableOficina />
+        </section>
+        <section className="mt-8">
+          <TableInventarioNombres />
+        </section>
+      </>
+    );
+  };
+
   const renderNotPermissos = () => {
     return (
       <>
@@ -108,6 +122,14 @@ function App() {
     } else return renderNotPermissos();
   }
 
+  function validarOficina() {
+    if (userSupabase != null) {
+      if (userSupabase.is_admin) return renderOficina();
+      else if (userSupabase.is_oficina) return renderOficina();
+      else return renderNotPermissos();
+    } else return renderNotPermissos();
+  }
+
   function validarMenus() {
     if (userSupabase != null) {
       return <Menu />;
@@ -121,13 +143,13 @@ function App() {
         <Routes>
           <Route path="/" element={validarProduccion()} />
           <Route path="/maquinaParada" element={validarMaquinaParada()} />
-          <Route path="/matrices/*" element={validarMatrices()} />
+          <Route path="/matrices" element={validarMatrices()} />
           <Route path="/pedidos" element={validarPedidos()} />
+          <Route path="/oficina" element={validarOficina()} />
           <Route path="/login" element={<IniciarSesion />} />
           <Route path="/signUp" element={<SignUp />} />
           <Route path="/sendGmail" element={<SendEmail />} />
           <Route path="/notVerificed" element={<WaitForVerificacion />} />
-          
         </Routes>
       </main>
     </>
