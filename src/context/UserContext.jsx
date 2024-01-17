@@ -18,7 +18,8 @@ export const UserProvider = (props) => {
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    db_supabase.auth.onAuthStateChange(async (event, session) => {
+    /*db_supabase.auth.onAuthStateChange(async (event, session) => {
+      console.log(session);
       if (session != null) {
         //Si se inicio sesion con google
         if (session.user.app_metadata.provider === "google") {
@@ -40,14 +41,14 @@ export const UserProvider = (props) => {
           }
         } else {
           const user = await getUserSupabase();
-
+          console.log(user);
           if (user != null) {
             if (userSupabase != null) navegate("/");
             else navegate("/notVerificed");
           } else navegate("/login");
         }
       } else navegate("/login");
-    });
+    });*/
   }, []);
 
   const addBBDD = async (gmail) => {
@@ -95,26 +96,11 @@ export const UserProvider = (props) => {
 
   const logIn = async (email, password) => {
     setLoading(true);
-    const { data, error } = await db_supabase.auth.signInWithPassword({
-      email,
-      password,
-    });
-
-    if (error != null) {
-      //if (error.message === "Invalid login credentials")
-      //toast.error("El Gmail o Contraseña son incorrectos");
-      //if (error.message === "Email not confirmed")
-      //toast.error("El Email no esta confirmado");
-      setLoading(false);
-      return error;
-    }
-
     //GMAIL ESTA CONFIRMADO
-    await addBBDD(email);
-
+    //await addBBDD(email);
     try {
       const request = await axios.get(
-        `${BASE_URL}/login?email=${email}`
+        `${BASE_URL}/login?email=${email}&password=${password}`
       );
       if (request.status >= 400)
         throw Error(`HTTP status error ${request.status}`);
