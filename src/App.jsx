@@ -28,6 +28,8 @@ import TableNotaEnvios from "./components/tables/TableNotaEnvios";
 function App() {
   const { userSupabase } = useContext(UserContext);
 
+  const role = userSupabase?.role ?? null;
+
   const renderProduccion = () => {
     return (
       <ProduccionContextProvider>
@@ -104,50 +106,53 @@ function App() {
       </>
     );
   };
-
+  /**{"admin": "admin",
+   * "oficina": "oficina",
+   * "mercaderia": "mercaderia",
+   * "matriceria": "matriceria",
+   * "produccion": "produccion",
+   * "inyectora": "inyected",
+   * "empleado": "employed",
+   * "goOut": "user"
+   * }
+ */
   function validarProduccion() {
     if (userSupabase != null) {
-      if (userSupabase.is_admin) return renderProduccion();
-      else if (userSupabase.is_produccion) return renderProduccion();
+      if (role === "admin" || role == "produccion") return renderProduccion();
       else return renderNotPermissos();
     } else return renderNotPermissos();
   }
   function validarMaquinaParada() {
     if (userSupabase != null) {
-      if (userSupabase.is_admin) return renderMaquinaParada();
-      else if (userSupabase.is_produccion) return renderMaquinaParada();
+      if (role === "admin" || role == "produccion") return renderMaquinaParada();
       else return renderNotPermissos();
     } else return renderNotPermissos();
   }
 
   function validarMatrices() {
     if (userSupabase != null) {
-      if (userSupabase.is_admin) return renderMatriz();
-      else if (userSupabase.is_matriceria) return renderMatriz();
+      if (role === "admin" || role == "matriceria" || role == "produccion") return renderMatriz();
       else return renderNotPermissos();
     } else return renderNotPermissos();
   }
+
   function validarPedidos() {
     if (userSupabase != null) {
-      if (userSupabase.is_admin) return renderPedidos();
-      else if (userSupabase.is_mercaderia) return renderPedidos();
-      else if (userSupabase.is_oficina) return renderPedidos();
+      if (role === "admin" || role == "mercaderia" || role == "oficina") return renderPedidos();
       else return renderNotPermissos();
     } else return renderNotPermissos();
   }
 
   function validarRemito() {
     if (userSupabase != null) {
-      if (userSupabase.is_admin) return renderRemito();
-      else if (userSupabase.is_oficina) return renderRemito();
+      if (role === "admin" || role == "oficina") return renderRemito();
       else return renderNotPermissos();
     } else return renderNotPermissos();
   }
 
   function validarNotaEnvio() {
     if (userSupabase != null) {
-      if (userSupabase.is_admin) return renderNotaEnvio();
-      else if (userSupabase.is_oficina) return renderNotaEnvio();
+      if (role === "admin" || role == "oficina") return renderNotaEnvio();
       else return renderNotPermissos();
     } else return renderNotPermissos();
   }
