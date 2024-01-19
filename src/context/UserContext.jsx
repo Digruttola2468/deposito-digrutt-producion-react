@@ -4,6 +4,7 @@ import { db_supabase } from "../supabase/config";
 
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import toast from "react-hot-toast";
 
 export const UserContext = createContext();
 
@@ -18,64 +19,10 @@ export const UserProvider = (props) => {
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    /*db_supabase.auth.onAuthStateChange(async (event, session) => {
-      console.log(session);
-      if (session != null) {
-        //Si se inicio sesion con google
-        if (session.user.app_metadata.provider === "google") {
-          //GMAIL ESTA CONFIRMADO
-          await addBBDD(session.user.email);
-
-          try {
-            const request = await axios.get(
-              `${BASE_URL}/login?email=${session.user.email}`
-            );
-            if (request.status >= 400)
-              throw Error(`HTTP status error ${request.status}`);
-            const result = await request.data;
-
-            setUserSupabase(result);
-            navegate("/");
-          } catch (error) {
-            navegate("/notVerificed");
-          }
-        } else {
-          const user = await getUserSupabase();
-          console.log(user);
-          if (user != null) {
-            if (userSupabase != null) navegate("/");
-            else navegate("/notVerificed");
-          } else navegate("/login");
-        }
-      } else navegate("/login");
-    });*/
+    //Validar el usuario guardado en el local storage
+    if (userSupabase) {
+    } else navegate("/login");
   }, []);
-
-  const addBBDD = async (gmail) => {
-    //Verificamos GMAIL
-    try {
-      const { data, error } = await db_supabase
-        .from("users")
-        .select()
-        .eq("gmail", gmail);
-
-      if (error) throw new Error("Error al momento de verificar Gmail");
-
-      if (data.length === 0) {
-        try {
-          const { error } = await db_supabase.from("users").insert({ gmail });
-          if (error) {
-            console.log("ADD BBDD", error);
-            throw new Error("Ocurrio un error al agregar a la base de datos");
-          }
-        } catch (error) {
-          console.log(error);
-        }
-      }
-    } catch (error) {
-      console.log(error);
-    }
-  };
 
   const signOut = async () => {
     try {
@@ -87,52 +34,48 @@ export const UserProvider = (props) => {
     }
   };
 
-  const getUserSupabase = async () => {
-    const {
-      data: { user },
-    } = await db_supabase.auth.getUser();
-    return user;
-  };
-
-  const logIn = async (email, password) => {
-    setLoading(true);
-    //GMAIL ESTA CONFIRMADO
-    //await addBBDD(email);
-    try {
-      const request = await axios.get(
-        `${BASE_URL}/login?email=${email}&password=${password}`
-      );
-      if (request.status >= 400)
-        throw Error(`HTTP status error ${request.status}`);
-      const result = await request.data;
-
-      setUserSupabase(result);
-      navegate("/");
-    } catch (error) {
-      console.log(error);
-      navegate("/notVerificed");
-    }
-    setLoading(false);
-  };
-
-  const signUp = async (nombre, apellido, email, password) => {
-    setIsDone(true);
-    if (password.length >= 6) {
-      const { data, error } = await db_supabase.auth.signUp({
-        email: email,
-        password: password,
-      });
-
-      if (error) {
-        //toast.error("Ocurrio un error al momento de registrarse");
-        setIsDone(false);
-        throw new Error("Error al momento de registrarse");
+  const logIn = (email, password) => {
+    toast.promise(
+      axios
+        .get(`${BASE_URL}/login?email=${email}&password=${password}`)
+        .then((result) => {
+          setUserSupabase(result.data);
+          toast.success(
+            `Bienvendio ${result.data.nombre} ${result.data.apellido}`
+          );
+          navegate("/");
+        }),
+      {
+        loading: "Cargando...",
+        error: (err) => err.response.data.message,
       }
+    );
+  };
 
-      //toast.success("Se creo correctamente");
-      navegate("/sendGmail");
-    } //else //toast.error("La contraseña es corta");
-    setIsDone(false);
+  const signUp = (nombre, apellido, email, password) => {
+    toast.promise(
+      axios
+        .post(`${BASE_URL}/register`, {
+          nombre: nombre,
+          apellido: apellido,
+          password: password,
+          gmail: email,
+        })
+        .then((result) => {
+          navegate("/sendGmail");
+        }),
+      {
+        loading: "Cargando...",
+        success: (data) => {
+          console.log("Register: ", data);
+          return "Registrado con exito";
+        },
+        error: (err) => {
+          console.log("Register: ", err.response.data.menssage);
+          return "Ocurrio un Error";
+        },
+      }
+    );
   };
 
   const signInWithGoogle = async () => {
@@ -141,7 +84,7 @@ export const UserProvider = (props) => {
     });
     if (error) {
       console.log(error);
-      //toast.error("A ocurrido un error");
+      toast.error("A ocurrido un error");
       throw new Error("A ocurrido un error durante la autenticacion");
     }
   };
