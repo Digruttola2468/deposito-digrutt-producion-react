@@ -21,6 +21,7 @@ export const UserProvider = (props) => {
   useEffect(() => {
     //Validar el usuario guardado en el local storage
     if (userSupabase) {
+      console.log("user", userSupabase);
     } else navegate("/login");
   }, []);
 
@@ -68,7 +69,7 @@ export const UserProvider = (props) => {
         loading: "Cargando...",
         success: (data) => {
           console.log("Register: ", data);
-          return "Registrado con exito";
+          return "Registrado con exito, Verifica el Gmail";
         },
         error: (err) => {
           console.log("Register: ", err.response.data.menssage);
@@ -79,14 +80,7 @@ export const UserProvider = (props) => {
   };
 
   const signInWithGoogle = async () => {
-    const { data, error } = await db_supabase.auth.signInWithOAuth({
-      provider: "google",
-    });
-    if (error) {
-      console.log(error);
-      toast.error("A ocurrido un error");
-      throw new Error("A ocurrido un error durante la autenticacion");
-    }
+    //Enviar a la pagina del backend para iniciar sesion con google
   };
 
   return (

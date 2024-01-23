@@ -99,6 +99,10 @@ function App() {
     );
   };
 
+  const renderMercaderia = () => {
+    return <h1>Mercaderia</h1>;
+  };
+
   const renderNotPermissos = () => {
     return (
       <>
@@ -106,16 +110,7 @@ function App() {
       </>
     );
   };
-  /**{"admin": "admin",
-   * "oficina": "oficina",
-   * "mercaderia": "mercaderia",
-   * "matriceria": "matriceria",
-   * "produccion": "produccion",
-   * "inyectora": "inyected",
-   * "empleado": "employed",
-   * "goOut": "user"
-   * }
- */
+
   function validarProduccion() {
     if (userSupabase != null) {
       if (role === "admin" || role == "produccion") return renderProduccion();
@@ -124,21 +119,24 @@ function App() {
   }
   function validarMaquinaParada() {
     if (userSupabase != null) {
-      if (role === "admin" || role == "produccion") return renderMaquinaParada();
+      if (role === "admin" || role == "produccion")
+        return renderMaquinaParada();
       else return renderNotPermissos();
     } else return renderNotPermissos();
   }
 
   function validarMatrices() {
     if (userSupabase != null) {
-      if (role === "admin" || role == "matriceria" || role == "produccion") return renderMatriz();
+      if (role === "admin" || role == "matriceria" || role == "produccion")
+        return renderMatriz();
       else return renderNotPermissos();
     } else return renderNotPermissos();
   }
 
   function validarPedidos() {
     if (userSupabase != null) {
-      if (role === "admin" || role == "mercaderia" || role == "oficina") return renderPedidos();
+      if (role === "admin" || role == "mercaderia" || role == "oficina")
+        return renderPedidos();
       else return renderNotPermissos();
     } else return renderNotPermissos();
   }
@@ -157,10 +155,16 @@ function App() {
     } else return renderNotPermissos();
   }
 
-  function validarMenus() {
+  function validarMercaderia() {
     if (userSupabase != null) {
-      return <Menu />;
-    } else return <MenuLogInAndRegister />;
+      if (role === "admin" || role == "mercaderia") return renderMercaderia();
+      else return renderNotPermissos();
+    } else return renderNotPermissos();
+  }
+
+  function validarMenus() {
+    if (userSupabase != null) return <Menu />;
+    else return <MenuLogInAndRegister />;
   }
 
   return (
@@ -174,6 +178,7 @@ function App() {
           <Route path="/pedidos" element={validarPedidos()} />
           <Route path="/remitos" element={validarRemito()} />
           <Route path="/notaEnvios" element={validarNotaEnvio()} />
+          <Route path="/mercaderia" element={validarMercaderia()} />
           <Route path="/login" element={<IniciarSesion />} />
           <Route path="/signUp" element={<SignUp />} />
           <Route path="/sendGmail" element={<SendEmail />} />

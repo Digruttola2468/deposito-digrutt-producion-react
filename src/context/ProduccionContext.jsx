@@ -25,9 +25,7 @@ export default function ProduccionContextProvider(props) {
   );
 
   if (isLoading) return <></>;
-  if (error) return <></>;
-
-    console.log("DATA PRODUCCION: ", data);
+  if (error) return <></>;  
 
   return (
     <ProducionContext.Provider

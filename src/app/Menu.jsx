@@ -1,10 +1,12 @@
-import { useState } from "react";
+import { useContext, useState } from "react";
 import logo from "../assets/digrutt_logo.png";
 import { useNavigate } from "react-router-dom";
+import { UserContext } from "../context/UserContext";
 
 export default function Menu() {
   const navegate = useNavigate();
   const [showMenuResponsive, setShowMenuResponsive] = useState(false);
+  const { userSupabase } = useContext(UserContext);
 
   const [menuActive, setMenuActive] = useState({
     produccion: true,
@@ -12,8 +14,168 @@ export default function Menu() {
     matrices: false,
     pedidos: false,
     remitos: false,
-    notaEnvios: false
+    notaEnvios: false,
   });
+
+  const renderMenuProduccion = (role) => {
+    return (
+      <>
+        <li>
+          <a
+            onClick={() => {
+              setMenuActive({
+                produccion: true,
+                paradaMaquina: false,
+                matrices: false,
+                pedidos: false,
+                remitos: false,
+                notaEnvios: false,
+              });
+              navegate("/");
+            }}
+            className={`block py-2 px-3 rounded md:bg-transparent ${
+              menuActive.produccion
+                ? "text-white bg-blue-700 md:text-blue-700 cursor-default"
+                : "text-gray-900 md:text-gray-900 cursor-pointer"
+            } md:p-0 `}
+          >
+            Produccion
+          </a>
+        </li>
+        <li>
+          <a
+            onClick={() => {
+              setMenuActive({
+                produccion: false,
+                paradaMaquina: true,
+                matrices: false,
+                pedidos: false,
+                remitos: false,
+                notaEnvios: false,
+              });
+              navegate("/maquinaParada");
+            }}
+            className={`block py-2 px-3 rounded md:bg-transparent ${
+              menuActive.paradaMaquina
+                ? "text-white bg-blue-700 md:text-blue-700 cursor-default"
+                : "text-gray-900 md:text-gray-900 cursor-pointer"
+            } md:p-0 `}
+          >
+            Maquinas Paradas
+          </a>
+        </li>
+        <li>
+          <a
+            onClick={() => {
+              setMenuActive({
+                produccion: false,
+                paradaMaquina: false,
+                matrices: true,
+                pedidos: false,
+                remitos: false,
+                notaEnvios: false,
+              });
+              navegate("/matrices");
+            }}
+            className={`block py-2 px-3 rounded md:bg-transparent ${
+              menuActive.matrices
+                ? "text-white bg-blue-700 md:text-blue-700 cursor-default"
+                : "text-gray-900 md:text-gray-900 cursor-pointer"
+            } md:p-0 `}
+          >
+            Matrices
+          </a>
+        </li>
+      </>
+    );
+  };
+
+  const renderMenuOficina = (role) => {
+    return (
+      <>
+        <li>
+          <a
+            onClick={() => {
+              setMenuActive({
+                produccion: false,
+                paradaMaquina: false,
+                matrices: false,
+                pedidos: true,
+                remitos: false,
+                notaEnvios: false,
+              });
+              navegate("/pedidos");
+            }}
+            className={`block py-2 px-3 rounded md:bg-transparent ${
+              menuActive.pedidos
+                ? "text-white bg-blue-700 md:text-blue-700 cursor-default"
+                : "text-gray-900 md:text-gray-900 cursor-pointer"
+            } md:p-0 `}
+          >
+            Pedidos
+          </a>
+        </li>
+        <li>
+          <a
+            onClick={() => {
+              setMenuActive({
+                produccion: false,
+                paradaMaquina: false,
+                matrices: false,
+                pedidos: false,
+                remitos: true,
+                notaEnvios: false,
+              });
+              navegate("/remitos");
+            }}
+            className={`block py-2 px-3 rounded md:bg-transparent ${
+              menuActive.remitos
+                ? "text-white bg-blue-700 md:text-blue-700 cursor-default"
+                : "text-gray-900 md:text-gray-900 cursor-pointer"
+            } md:p-0 `}
+          >
+            Remitos
+          </a>
+        </li>
+        <li>
+          <a
+            onClick={() => {
+              setMenuActive({
+                produccion: false,
+                paradaMaquina: false,
+                matrices: false,
+                pedidos: false,
+                remitos: false,
+                notaEnvios: true,
+              });
+              navegate("/notaEnvios");
+            }}
+            className={`block py-2 px-3 rounded md:bg-transparent ${
+              menuActive.notaEnvios
+                ? "text-white bg-blue-700 md:text-blue-700 cursor-default"
+                : "text-gray-900 md:text-gray-900 cursor-pointer"
+            } md:p-0 `}
+          >
+            Nota Envios
+          </a>
+        </li>
+      </>
+    );
+  };
+
+  const returnMenu = () => {
+    if (userSupabase.role == "admin") {
+      return (
+        <>
+          {renderMenuProduccion()} {renderMenuOficina()}
+        </>
+      );
+    } else if (userSupabase.role == "oficina") {
+      return <>{renderMenuOficina()}</>;
+    } else if (userSupabase.role == "produccion") {
+      return <>{renderMenuProduccion()} </>;
+    }
+  };
 
   return (
     <nav className="bg-white border-gray-200 dark:bg-gray-900 shadow-md">
@@ -49,96 +211,7 @@ export default function Menu() {
           } w-full md:block md:w-auto `}
         >
           <ul className="font-medium flex flex-col p-4 md:p-0 mt-4 border border-gray-100 rounded-lg bg-gray-50 md:flex-row md:space-x-8 rtl:space-x-reverse md:mt-0 md:border-0 md:bg-white dark:bg-gray-800 md:dark:bg-gray-900 dark:border-gray-700">
-            <li>
-              <a
-                onClick={() => {
-                  setMenuActive({ produccion: true, paradaMaquina: false, matrices: false,pedidos: false,remitos: false,notaEnvios: false });
-                  navegate("/");
-                }}
-                className={`block py-2 px-3 rounded md:bg-transparent ${
-                  menuActive.produccion
-                    ? "text-white bg-blue-700 md:text-blue-700 cursor-default"
-                    : "text-gray-900 md:text-gray-900 cursor-pointer"
-                } md:p-0 `}
-              >
-                Produccion
-              </a>
-            </li>
-            <li>
-              <a
-                onClick={() => {
-                  setMenuActive({ produccion: false, paradaMaquina: true, matrices: false,pedidos: false,remitos: false,notaEnvios: false });
-                  navegate("/maquinaParada");
-                }}
-                className={`block py-2 px-3 rounded md:bg-transparent ${
-                  menuActive.paradaMaquina
-                    ? "text-white bg-blue-700 md:text-blue-700 cursor-default"
-                    : "text-gray-900 md:text-gray-900 cursor-pointer"
-                } md:p-0 `}
-              >
-                Maquinas Paradas
-              </a>
-            </li>
-            <li>
-              <a
-                onClick={() => {
-                  setMenuActive({ produccion: false, paradaMaquina: false, matrices: true,pedidos: false,remitos: false,notaEnvios: false });
-                  navegate("/matrices");
-                }}
-                className={`block py-2 px-3 rounded md:bg-transparent ${
-                  menuActive.matrices
-                    ? "text-white bg-blue-700 md:text-blue-700 cursor-default"
-                    : "text-gray-900 md:text-gray-900 cursor-pointer"
-                } md:p-0 `}
-              >
-                Matrices
-              </a>
-            </li>
-            <li>
-              <a
-                onClick={() => {
-                  setMenuActive({ produccion: false, paradaMaquina: false, matrices: false,pedidos: true,remitos: false,notaEnvios: false });
-                  navegate("/pedidos");
-                }}
-                className={`block py-2 px-3 rounded md:bg-transparent ${
-                  menuActive.pedidos
-                    ? "text-white bg-blue-700 md:text-blue-700 cursor-default"
-                    : "text-gray-900 md:text-gray-900 cursor-pointer"
-                } md:p-0 `}
-              >
-                Pedidos
-              </a>
-            </li>
-            <li>
-              <a
-                onClick={() => {
-                  setMenuActive({ produccion: false, paradaMaquina: false, matrices: false,pedidos: false,remitos: true,notaEnvios: false });
-                  navegate("/remitos");
-                }}
-                className={`block py-2 px-3 rounded md:bg-transparent ${
-                  menuActive.remitos
-                    ? "text-white bg-blue-700 md:text-blue-700 cursor-default"
-                    : "text-gray-900 md:text-gray-900 cursor-pointer"
-                } md:p-0 `}
-              >
-                Remitos
-              </a>
-            </li>
-            <li>
-              <a
-                onClick={() => {
-                  setMenuActive({ produccion: false, paradaMaquina: false, matrices: false,pedidos: false,remitos: false,notaEnvios: true });
-                  navegate("/notaEnvios");
-                }}
-                className={`block py-2 px-3 rounded md:bg-transparent ${
-                  menuActive.notaEnvios
-                    ? "text-white bg-blue-700 md:text-blue-700 cursor-default"
-                    : "text-gray-900 md:text-gray-900 cursor-pointer"
-                } md:p-0 `}
-              >
-                Nota Envios
-              </a>
-            </li>
+            {returnMenu()}
           </ul>
         </div>
       </div>
@@ -152,7 +225,7 @@ export function MenuLogInAndRegister() {
 
   const [menuActive, setMenuActive] = useState({
     logIn: true,
-    register: false
+    register: false,
   });
 
   return (
@@ -207,7 +280,7 @@ export function MenuLogInAndRegister() {
             <li>
               <a
                 onClick={() => {
-                  setMenuActive({ logIn: false, register: true});
+                  setMenuActive({ logIn: false, register: true });
                   navegate("/signUp");
                 }}
                 className={`block py-2 px-3 rounded md:bg-transparent ${
