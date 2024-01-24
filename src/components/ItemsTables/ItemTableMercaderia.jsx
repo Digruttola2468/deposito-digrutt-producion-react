@@ -11,6 +11,7 @@ import useSWR from "swr";
 import axios from "axios";
 import { useContext } from "react";
 import { UserContext } from "../../context/UserContext";
+import PostMercaderia from "../form/PostMercaderia";
 
 const fetcher = ([url, token]) => {
   return axios
@@ -32,75 +33,52 @@ export default function ItemTableMercaderia({ index, refreshTableOficina }) {
 
   if (isLoading)
     return (
-      <Card className="w-[300px]">
-        <CardContent>
-          <Typography variant="h1">
-            <Skeleton animation="pulse" />
-          </Typography>
-          <Typography variant="p">
-            <Skeleton animation="pulse" />
-          </Typography>
-          <Typography variant="p">
-            <Skeleton animation="pulse" />
-          </Typography>
-          <Typography variant="p">
-            <Skeleton animation="pulse" />
-          </Typography>
-        </CardContent>
-        <CardActions>
-          <Skeleton
-            variant="circular"
-            animation="pulse"
-            width={20}
-            height={20}
-          />
-          <Skeleton
-            variant="circular"
-            animation="pulse"
-            width={20}
-            height={20}
-          />
-        </CardActions>
-      </Card>
+      <>
+        <Typography variant="h1" width={360}>
+          <Skeleton animation="pulse" />
+        </Typography>
+        <Typography variant="p">
+          <Skeleton animation="pulse" />
+        </Typography>
+        <Typography variant="p">
+          <Skeleton animation="pulse" />
+        </Typography>
+        <Typography variant="p">
+          <Skeleton animation="pulse" />
+        </Typography>
+      </>
     );
-
-  if (isLoading) return <></>;
-  if (error) return <></>;
 
   return (
     <>
-      {data != null ? (
-        <div className="block rounded-lg bg-white p-6 shadow-[0_2px_15px_-3px_rgba(0,0,0,0.07),0_10px_20px_-2px_rgba(0,0,0,0.04)] dark:bg-neutral-700 border lg:mx-5 mx-1 mt-2">
-          <div >
-            <h2 className="text-lg font-semibold uppercase">{data.nombre}</h2>
+      {data != null && (
+        <div>
+          <h2 className="text-lg font-semibold uppercase">{data.nombre}</h2>
 
+          <p>
+            <b>Descripcion</b>: {data.descripcion}
+          </p>
+          <p>
+            <b>Fecha</b>: {data.fecha}
+          </p>
+          <p>
+            <b>Cantidad</b>: {data.stock}
+          </p>
+          {data.remito ? (
             <p>
-              <b>Descripcion</b>: {data.descripcion}
+              <b>Remito</b>: {data.remito}
             </p>
+          ) : (
+            <></>
+          )}
+          {data.nroEnvio ? (
             <p>
-              <b>Fecha</b>: {data.fecha}
+              <b>Nota Envio</b>: {data.nroEnvio}
             </p>
-            <p>
-              <b>Cantidad</b>: {data.stock}
-            </p>
-            {data.remito ? (
-              <p>
-                <b>Remito</b>: {data.remito}
-              </p>
-            ) : (
-              <></>
-            )}
-            {data.nroEnvio ? (
-              <p>
-                <b>Nota Envio</b>: {data.nroEnvio}
-              </p>
-            ) : (
-              <></>
-            )}
-          </div>
+          ) : (
+            <></>
+          )}
         </div>
-      ) : (
-        <></>
       )}
     </>
   );

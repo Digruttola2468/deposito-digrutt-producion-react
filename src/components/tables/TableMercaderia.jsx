@@ -6,6 +6,7 @@ import { InputAdornment, Pagination, TextField } from "@mui/material";
 import SearchClientesBox from "../comboBox/SearchClientesBox";
 import ItemTableOficina from "../ItemsTables/ItemTableOficina";
 import ItemTableMercaderia from "../ItemsTables/ItemTableMercaderia";
+import PostMercaderia from "../form/PostMercaderia";
 
 const fetcher = ([url, token]) => {
   return axios
@@ -142,9 +143,14 @@ export default function TableMercaderia() {
             />
           </div>
         </div>
-        {index != null && (
-          <ItemTableMercaderia index={index} refreshTableOficina={mutate} />
-        )}
+        <div className="flex flex-col lg:flex-col items-center justify-start">
+          <div className="block rounded-lg bg-white p-6 shadow-[0_2px_15px_-3px_rgba(0,0,0,0.07),0_10px_20px_-2px_rgba(0,0,0,0.04)] dark:bg-neutral-700 border lg:mx-5 mx-1 mt-2">
+            {index != null && (
+              <ItemTableMercaderia index={index} refreshTableOficina={mutate} />
+            )}
+          </div>
+          <PostMercaderia refreshTable={mutate}/>
+        </div>
       </section>
     </>
   );

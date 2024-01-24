@@ -1,11 +1,16 @@
-import { useContext, useEffect, useState } from "react";
+import { useContext,  useState } from "react";
 import { UserContext } from "../../context/UserContext";
 import axios from "axios";
 import useSWR from "swr";
-import { InputAdornment, Pagination, TextField } from "@mui/material";
+import {
+  IconButton,
+  Pagination,
+  TextField,
+  Tooltip,
+} from "@mui/material";
 import SearchClientesBox from "../comboBox/SearchClientesBox";
-import ItemTableOficina from "../ItemsTables/ItemTableOficina";
-import ItemTableMercaderia from "../ItemsTables/ItemTableMercaderia";
+import { FaPen } from "react-icons/fa";
+import DialogUpdateInventario from "../dialog/DialogUpdateInventario";
 
 const fetcher = ([url, token]) => {
   return axios
@@ -30,6 +35,8 @@ export default function TableInventario() {
   const [start, setStart] = useState(0);
   const [end, setEnd] = useState(10);
   const [index, setIndex] = useState(null);
+
+  const [dialogUpdate, setDialogUpdate] = useState(false);
 
   const getPrevius = () => {
     setTable(data);
@@ -94,6 +101,9 @@ export default function TableInventario() {
                       <th scope="col" className="px-6 py-4">
                         Cliente
                       </th>
+                      <th scope="col" className="px-6 py-4">
+                        Acciones
+                      </th>
                     </tr>
                   </thead>
                   <tbody>
@@ -104,7 +114,7 @@ export default function TableInventario() {
                           className={`border-b dark:border-neutral-500 hover:border-info-200 hover:bg-cyan-200 hover:text-neutral-800`}
                           key={elem.id}
                           onClick={() => {
-                            setIndex(elem.id);
+                            setIndex(elem);
                           }}
                         >
                           <td className="whitespace-nowrap px-6 py-4 font-medium">
@@ -131,6 +141,18 @@ export default function TableInventario() {
                           <td className="whitespace-nowrap px-6 py-4">
                             {elem.cliente}
                           </td>
+                          <td className="whitespace-nowrap px-6 py-4">
+                            <Tooltip
+                              onClick={() => {
+                                setIndex(elem);
+                                setDialogUpdate(true);
+                              }}
+                            >
+                              <IconButton size="small" className="hover:text-blue-400">
+                                <FaPen />
+                              </IconButton>
+                            </Tooltip>
+                          </td>
                         </tr>
                       );
                     })}
@@ -150,6 +172,14 @@ export default function TableInventario() {
             />
           </div>
         </div>
+        <DialogUpdateInventario
+          show={dialogUpdate}
+          close={() => {
+            setDialogUpdate(false);
+          }}
+          refreshTable={mutate}
+          index={index}
+        />
       </section>
     </>
   );
