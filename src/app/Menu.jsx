@@ -15,6 +15,8 @@ export default function Menu() {
     pedidos: false,
     remitos: false,
     notaEnvios: false,
+    mercaderia: false,
+    inventario: false,
   });
 
   const renderMenuProduccion = (role) => {
@@ -30,6 +32,8 @@ export default function Menu() {
                 pedidos: false,
                 remitos: false,
                 notaEnvios: false,
+                mercaderia: false,
+                inventario: false,
               });
               navegate("/");
             }}
@@ -52,6 +56,8 @@ export default function Menu() {
                 pedidos: false,
                 remitos: false,
                 notaEnvios: false,
+                mercaderia: false,
+                inventario: false,
               });
               navegate("/maquinaParada");
             }}
@@ -74,6 +80,8 @@ export default function Menu() {
                 pedidos: false,
                 remitos: false,
                 notaEnvios: false,
+                mercaderia: false,
+                inventario: false,
               });
               navegate("/matrices");
             }}
@@ -103,6 +111,8 @@ export default function Menu() {
                 pedidos: true,
                 remitos: false,
                 notaEnvios: false,
+                mercaderia: false,
+                inventario: false
               });
               navegate("/pedidos");
             }}
@@ -125,6 +135,8 @@ export default function Menu() {
                 pedidos: false,
                 remitos: true,
                 notaEnvios: false,
+                mercaderia: false,
+                inventario: false
               });
               navegate("/remitos");
             }}
@@ -147,6 +159,8 @@ export default function Menu() {
                 pedidos: false,
                 remitos: false,
                 notaEnvios: true,
+                mercaderia: false,
+                inventario: false
               });
               navegate("/notaEnvios");
             }}
@@ -163,17 +177,51 @@ export default function Menu() {
     );
   };
 
+  const renderMenuMercaderia = (role) => {
+    return (
+      <>
+        <li>
+          <a
+            onClick={() => {
+              setMenuActive({
+                produccion: false,
+                paradaMaquina: false,
+                matrices: false,
+                pedidos: false,
+                remitos: false,
+                notaEnvios: false,
+                mercaderia: true,
+                inventario: false
+              });
+              navegate("/mercaderia");
+            }}
+            className={`block py-2 px-3 rounded md:bg-transparent ${
+              menuActive.mercaderia
+                ? "text-white bg-blue-700 md:text-blue-700 cursor-default"
+                : "text-gray-900 md:text-gray-900 cursor-pointer"
+            } md:p-0 `}
+          >
+            Mercaderia
+          </a>
+        </li>
+      </>
+    );
+  };
+
   const returnMenu = () => {
     if (userSupabase.role == "admin") {
       return (
         <>
-          {renderMenuProduccion()} {renderMenuOficina()}
+          {renderMenuProduccion()} {renderMenuOficina()}{" "}
+          {renderMenuMercaderia()}
         </>
       );
     } else if (userSupabase.role == "oficina") {
       return <>{renderMenuOficina()}</>;
     } else if (userSupabase.role == "produccion") {
       return <>{renderMenuProduccion()} </>;
+    } else if (userSupabase.role == "mercaderia") {
+      return <>{renderMenuMercaderia()}</>;
     }
   };
 
@@ -211,6 +259,30 @@ export default function Menu() {
           } w-full md:block md:w-auto `}
         >
           <ul className="font-medium flex flex-col p-4 md:p-0 mt-4 border border-gray-100 rounded-lg bg-gray-50 md:flex-row md:space-x-8 rtl:space-x-reverse md:mt-0 md:border-0 md:bg-white dark:bg-gray-800 md:dark:bg-gray-900 dark:border-gray-700">
+            <li>
+              <a
+                onClick={() => {
+                  setMenuActive({
+                    produccion: false,
+                    paradaMaquina: false,
+                    matrices: false,
+                    pedidos: false,
+                    remitos: false,
+                    notaEnvios: false,
+                    mercaderia: false,
+                    inventario: true
+                  });
+                  navegate("/inventario");
+                }}
+                className={`block py-2 px-3 rounded md:bg-transparent ${
+                  menuActive.inventario
+                    ? "text-white bg-blue-700 md:text-blue-700 cursor-default"
+                    : "text-gray-900 md:text-gray-900 cursor-pointer"
+                } md:p-0 `}
+              >
+                Inventario
+              </a>
+            </li>
             {returnMenu()}
           </ul>
         </div>

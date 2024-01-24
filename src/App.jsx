@@ -24,6 +24,8 @@ import TableHistorialErrorMatrices from "./components/tables/TableHistorialError
 import TableOficina from "./components/tables/TableOficina";
 import TableInventarioNombres from "./components/tables/TableInventarioNombres";
 import TableNotaEnvios from "./components/tables/TableNotaEnvios";
+import TableMercaderia from "./components/tables/TableMercaderia";
+import TableInventario from "./components/tables/TableInventario";
 
 function App() {
   const { userSupabase } = useContext(UserContext);
@@ -100,7 +102,15 @@ function App() {
   };
 
   const renderMercaderia = () => {
-    return <h1>Mercaderia</h1>;
+    return <>
+      <TableMercaderia />
+    </>;
+  };
+
+  const renderInventario = () => {
+    return <>
+      <TableInventario />
+    </>;
   };
 
   const renderNotPermissos = () => {
@@ -162,6 +172,13 @@ function App() {
     } else return renderNotPermissos();
   }
 
+  function validarInventario() {
+    if (userSupabase != null) {
+      if (role !== "user") return renderInventario();
+      else return renderNotPermissos();
+    } else return renderNotPermissos();
+  }
+
   function validarMenus() {
     if (userSupabase != null) return <Menu />;
     else return <MenuLogInAndRegister />;
@@ -179,6 +196,7 @@ function App() {
           <Route path="/remitos" element={validarRemito()} />
           <Route path="/notaEnvios" element={validarNotaEnvio()} />
           <Route path="/mercaderia" element={validarMercaderia()} />
+          <Route path="/inventario" element={validarInventario()} />
           <Route path="/login" element={<IniciarSesion />} />
           <Route path="/signUp" element={<SignUp />} />
           <Route path="/sendGmail" element={<SendEmail />} />
