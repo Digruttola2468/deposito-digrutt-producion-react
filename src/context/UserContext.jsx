@@ -1,6 +1,5 @@
 import { useState, createContext, useEffect } from "react";
 import { useLocalStorage } from "usehooks-ts";
-import { db_supabase } from "../supabase/config";
 
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
@@ -9,7 +8,8 @@ import toast from "react-hot-toast";
 export const UserContext = createContext();
 
 export const UserProvider = (props) => {
-  const BASE_URL = import.meta.env.VITE_BASE_URL;
+  const BASE_URL =
+    "https://deposito-digrutt-express-production.up.railway.app/api";
 
   const navegate = useNavigate();
   const [userSupabase, setUserSupabase] = useLocalStorage("user", null);
@@ -20,27 +20,22 @@ export const UserProvider = (props) => {
 
   useEffect(() => {
     //Validar el usuario guardado en el local storage
-    if (userSupabase) {
+    /*if (userSupabase) {
       console.log("user", userSupabase);
-    } else navegate("/login");
+    } else navegate("/login");*/
   }, []);
 
-  const signOut = async () => {
-    try {
-      const { error } = await db_supabase.auth.signOut();
-      if (error) throw new Error("Error al momento de cerrar sesion");
-      setUserSupabase(null);
-    } catch (error) {
-      console.error(error);
-    }
-  };
+  const signOut = async () => {};
 
   const logIn = (email, password) => {
     toast.promise(
       axios
-        .get(`${BASE_URL}/login?email=${email}&password=${password}`)
+        .get(
+          `https://deposito-digrutt-express-production.up.railway.app/api/login?email=${email}&password=${password}`
+        )
         .then((result) => {
           setUserSupabase(result.data);
+          console.log(result);
           toast.success(
             `Bienvendio ${result.data.nombre} ${result.data.apellido}`
           );

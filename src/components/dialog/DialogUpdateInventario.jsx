@@ -31,6 +31,7 @@ export default function DialogUpdateInventario({
   const [nombre, setNombre] = useState("");
   const [descripcion, setDescripcion] = useState("");
   const [pesoUnidad, setPesoUnidad] = useState("");
+  const [ubicacion, setUbicacion] = useState("");
   const [cliente, setCodCliente] = useState(null);
 
   useEffect(() => {
@@ -38,29 +39,9 @@ export default function DialogUpdateInventario({
       setArticulo(index.articulo);
       setNombre(index.nombre);
       setDescripcion(index.descripcion);
-      setPesoUnidad(index.pesoUnidad);
+      setPesoUnidad(index.pesoUnidad);  
     }
-    
-  }, [index])
-
-  /**{
-    "id": 12,
-    "nombre": "oreja028",
-    "precio": 0,
-    "descripcion": "oreja (A) grande marron x 400 unid ",
-    "idcolor": 21,
-    "idtipoproducto": 17,
-    "entrada": 1200,
-    "salida": 0,
-    "pesoUnidad": 0,
-    "stockCaja": 400,
-    "idCliente": 1,
-    "idCodMatriz": null,
-    "articulo": "AXE009OGM",
-    "url_image": null,
-    "cliente": "axel",
-    "idcliente": 1
-} */
+  }, [index]);
 
   const handleUpdate = () => {
     toast.promise(
@@ -73,6 +54,7 @@ export default function DialogUpdateInventario({
             descripcion,
             pesoUnidad: parseFloat(pesoUnidad),
             idCliente: cliente != null ? cliente.id : null,
+            ubicacion,
           },
           {
             headers: {
@@ -125,6 +107,13 @@ export default function DialogUpdateInventario({
           onChange={(event) => setPesoUnidad(event.target.value)}
           label="Peso x Unidad"
           type="number"
+          autoFocus
+          sx={{ marginTop: 3, marginLeft: 1 }}
+        />
+        <TextField
+          value={ubicacion}
+          onChange={(event) => setUbicacion(event.target.value)}
+          label="Ubicacion"
           autoFocus
           sx={{ marginTop: 3, marginLeft: 1 }}
         />

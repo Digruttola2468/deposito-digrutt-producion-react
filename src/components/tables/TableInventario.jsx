@@ -28,7 +28,7 @@ export default function TableInventario() {
   const { data, isLoading, error, mutate } = useSWR(
     [`${BASE_URL}/inventario`, userSupabase.token],
     fetcher,
-    { onSuccess: (data, key, config) => setTable(data) }
+    { onSuccess: (data, key, config) =>  setTable(data) }
   );
 
   const [table, setTable] = useState([]);
@@ -102,6 +102,9 @@ export default function TableInventario() {
                         Cliente
                       </th>
                       <th scope="col" className="px-6 py-4">
+                        Ubicacion
+                      </th>
+                      <th scope="col" className="px-6 py-4">
                         Acciones
                       </th>
                     </tr>
@@ -140,6 +143,9 @@ export default function TableInventario() {
                           </td>
                           <td className="whitespace-nowrap px-6 py-4">
                             {elem.cliente}
+                          </td>
+                          <td className="whitespace-nowrap px-6 py-4">
+                            {elem.ubicacion}
                           </td>
                           <td className="whitespace-nowrap px-6 py-4">
                             <Tooltip
