@@ -43,7 +43,7 @@ export default function DialogNewMatriz({
           {
             cod_matriz: codMatriz,
             descripcion,
-            idmaterial: material,
+            idmaterial: material != "" ? material : null,
             idcliente: cliente,
             cantPiezaGolpe,
           },

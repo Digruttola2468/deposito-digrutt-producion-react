@@ -70,6 +70,7 @@ export default function TableClientes() {
         })
         .then((result) => {
           mutate();
+          getPrevius();
           setDialogDelete(false);
         }),
       {
@@ -115,7 +116,7 @@ export default function TableClientes() {
                   const filterByDescripcion = data.filter((elem) => {
                     return elem.cliente
                       .toLowerCase()
-                      .includes(text.toLowerCase());
+                      .includes(text.toLowerCase().trim());
                   });
                   resetTable();
                   setTable(filterByDescripcion);

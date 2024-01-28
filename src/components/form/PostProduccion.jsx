@@ -1,11 +1,8 @@
 import {
-  Alert,
   Autocomplete,
   Button,
   Divider,
   IconButton,
-  Slide,
-  Snackbar,
   TextField,
   Tooltip,
 } from "@mui/material";
@@ -15,6 +12,7 @@ import useSWR from "swr";
 import { ProducionContext } from "../../context/ProduccionContext";
 import { CiSquarePlus } from "react-icons/ci";
 import { AiOutlineDelete } from "react-icons/ai";
+import toast from "react-hot-toast";
 
 export default function PostProduccion() {
   const { token, base_url, fetcherToken, refreshTable } =
@@ -24,12 +22,6 @@ export default function PostProduccion() {
     [`${base_url}/inventario/nombres`, token],
     fetcherToken
   );
-
-  const [openDialog, setOpenDialog] = useState({
-    done: false,
-    message: "Operacion Exitosa!",
-    error: null,
-  });
 
   const [requesterror, setRequeterror] = useState({ campo: null, index: null });
   const [length, setLength] = useState(0);
@@ -54,28 +46,37 @@ export default function PostProduccion() {
       enviar.push(enviarElem);
     }
 
-    axios
-      .post(`${base_url}/producion/list`, enviar, {
-        headers: {
-          Authorization: `Bearer ${token}`,
+    toast.promise(
+      axios
+        .post(`${base_url}/producion/list`, enviar, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        })
+        .then((result) => {
+          refreshTable();
+          empty();
+        }),
+      {
+        loading: "Agregando los Datos...",
+        success: "Operacion Exitosa",
+        error: (err) => {
+          setRequeterror({
+            campo: err.response.data.campo,
+            index: err.response.data.index,
+          });
+          return err.response.data.message;
         },
-      })
-      .then((result) => {
-        setOpenDialog({ done: true, message: "Operacion Exitosa!" });
-        refreshTable();
-      })
-      .catch((error) => {
-        setRequeterror({
-          campo: error.response.data.campo,
-          index: error.response.data.index,
-        });
-        setOpenDialog({
-          done: true,
-          message: error.response.data.message,
-          error: true,
-        });
-      });
+      }
+    );
   };
+
+  const empty = () => {
+    setRequeterror({ campo: null, index: null })
+    setLength(0)
+    setList([{ id: length }])
+    setFecha("")
+  }
 
   const handleClickAddPost = () => {
     const increment = length + 1;
@@ -88,16 +89,6 @@ export default function PostProduccion() {
     setLength(decrement);
     const filterList = list.filter((elem) => elem.id != unique);
     setList(filterList);
-  };
-
-  const empty = (evt) => {
-    evt.preventDefault();
-    /*setCodProducto(null);
-    setFecha("");
-    setGolpesReales("");
-    setNumMaquina("");
-    setPiezasProducidas("");
-    setPromGolpesHora("");*/
   };
 
   const emptyRequestError = () => {
@@ -178,7 +169,7 @@ export default function PostProduccion() {
                 }}
               />
             </div>
-            <div >
+            <div>
               <TextField
                 type="number"
                 label="Promedio Golpes/hr"
@@ -194,7 +185,7 @@ export default function PostProduccion() {
           </div>
           <Tooltip
             title="Eliminar Item"
-            sx={{alignSelf: 'flex-end'}}
+            sx={{ alignSelf: "flex-end" }}
             onClick={() => {
               handleClickDeletePost(unique);
             }}
@@ -237,37 +228,21 @@ export default function PostProduccion() {
           })}
 
           <div className="flex flex-row justify-between mt-10">
-          <span>
-            <Tooltip
-              title="Agregar Nuevo Produccion"
-              onClick={handleClickAddPost}
-            >
-              <IconButton>
-                <CiSquarePlus className="cursor-pointer hover:text-blue-500 " />
-              </IconButton>
-            </Tooltip>
-          </span>
+            <span>
+              <Tooltip
+                title="Agregar Nuevo Produccion"
+                onClick={handleClickAddPost}
+              >
+                <IconButton>
+                  <CiSquarePlus className="cursor-pointer hover:text-blue-500 " />
+                </IconButton>
+              </Tooltip>
+            </span>
             <Button type="submit" variant="outlined">
               Enviar
             </Button>
           </div>
         </form>
-
-        <Snackbar
-          anchorOrigin={{ vertical: "top", horizontal: "right" }}
-          TransitionComponent={Slide}
-          open={openDialog.done}
-          autoHideDuration={6000}
-          onClose={() => setOpenDialog({ done: false })}
-        >
-          <Alert
-            onClose={() => setOpenDialog({ done: false })}
-            severity={openDialog.error != null ? "error" : "success"}
-            sx={{ width: "100%" }}
-          >
-            {openDialog.message}
-          </Alert>
-        </Snackbar>
       </div>
     </section>
   );

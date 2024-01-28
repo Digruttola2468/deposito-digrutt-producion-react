@@ -1,4 +1,14 @@
-import { Divider, IconButton, Pagination, Tooltip } from "@mui/material";
+import {
+  Button,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  Divider,
+  IconButton,
+  Pagination,
+  Tooltip,
+} from "@mui/material";
 import axios from "axios";
 import { useContext, useEffect, useState } from "react";
 import { UserContext } from "../../context/UserContext";
@@ -9,6 +19,7 @@ import { BiTrashAlt } from "react-icons/bi";
 import { FaPen } from "react-icons/fa";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
+import DialogUpdateHistorialErroresMatrices from "../dialog/DialogUpdateHistorialErroresMatrices";
 
 const fetcherToken = ([url, token]) => {
   return axios
@@ -34,10 +45,14 @@ export default function TableHistorialErrorMatrices() {
     }
   );
 
+  const [index, setIndex] = useState(null);
   const [table, setTable] = useState([]);
   const [start, setStart] = useState(0);
   const [end, setEnd] = useState(10);
   const [arrow, setArrow] = useState({ order: "ASC", campus: null });
+
+  const [dialogUpdate, setDialogUpdate] = useState(false);
+  const [dialogDelete, setDialogDelete] = useState(false);
 
   useEffect(() => {
     setStart(end - 10);
@@ -144,10 +159,10 @@ export default function TableHistorialErrorMatrices() {
     return <></>;
   };
 
-  const handleDeleteItem = (idHistorial) => {
+  const handleDeleteItem = () => {
     toast.promise(
       axios
-        .delete(`${BASE_URL}/historialMatriz/${idHistorial}`, {
+        .delete(`${BASE_URL}/historialMatriz/${index.id}`, {
           headers: {
             Authorization: `Bearer ${userSupabase.token}`,
           },
@@ -287,7 +302,13 @@ export default function TableHistorialErrorMatrices() {
                               </IconButton>
                             </Tooltip>
                           )}
-                          <Tooltip title="Actualizar" onClick={() => {navegate('/matrices/updateHistorial')}}>
+                          <Tooltip
+                            title="Actualizar"
+                            onClick={() => {
+                              setIndex(elem);
+                              setDialogUpdate(true);
+                            }}
+                          >
                             <IconButton size="small">
                               <FaPen className="cursor-pointer hover:text-blue-400 " />
                             </IconButton>
@@ -295,7 +316,8 @@ export default function TableHistorialErrorMatrices() {
                           <Tooltip
                             title="Eliminar"
                             onClick={() => {
-                              handleDeleteItem(elem.id);
+                              setIndex(elem);
+                              setDialogDelete(true);
                             }}
                           >
                             <IconButton size="small">
@@ -320,6 +342,25 @@ export default function TableHistorialErrorMatrices() {
           />
         </div>
       </div>
+      <DialogUpdateHistorialErroresMatrices
+        show={dialogUpdate}
+        close={() => {
+          setDialogUpdate(false);
+        }}
+        index={index}
+      />
+      <Dialog open={dialogDelete} onClose={() => setDialogDelete(false)}>
+        <DialogTitle>Eliminar Historial</DialogTitle>
+        <DialogContent>Estas seguro en eliminar ?</DialogContent>
+        <DialogActions>
+          <Button onClick={() => setDialogDelete(false)} variant="text">
+            Cancelar
+          </Button>
+          <Button onClick={handleDeleteItem} variant="outlined">
+            Delete
+          </Button>
+        </DialogActions>
+      </Dialog>
     </section>
   );
 }

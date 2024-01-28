@@ -80,7 +80,7 @@ export default function TableProducion() {
             const filterByDescripcion = tableOriginal.filter((elem) => {
               return elem.descripcion
                 .toLowerCase()
-                .includes(text.toLowerCase());
+                .includes(text.toLowerCase().trim());
             });
             setTable(filterByDescripcion);
           } else getPrevius();

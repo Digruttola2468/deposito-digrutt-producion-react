@@ -29,7 +29,7 @@ export default function DialogNewInventario({
       axios
         .post(
           `${BASE_URL}/inventario`,
-          { nombre, descripcion, pesoUnidad, idCliente: cliente.id },
+          { nombre, descripcion, pesoUnidad: pesoUnidad != '' ? pesoUnidad : null, idCliente: cliente?.id ?? null },
           {
             headers: {
               Authorization: `Bearer ${userSupabase.token}`,
@@ -46,7 +46,7 @@ export default function DialogNewInventario({
         success: "Operacion exitosa",
         error: (err) => {
           console.log(err);
-          return "Something wrong";
+          return err.response.data?.message ?? 'Ocurrio un error';
         },
       }
     );

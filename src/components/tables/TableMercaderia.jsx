@@ -34,16 +34,16 @@ const fetcher = ([url, token]) => {
 export default function TableMercaderia() {
   const { userSupabase, BASE_URL } = useContext(UserContext);
 
+  const [table, setTable] = useState([]);
+  const [start, setStart] = useState(0);
+  const [end, setEnd] = useState(10);
+  const [index, setIndex] = useState(null);
+
   const { data, isLoading, error, mutate } = useSWR(
     [`${BASE_URL}/mercaderia`, userSupabase.token],
     fetcher,
     { onSuccess: (data, key, config) => setTable(data) }
   );
-
-  const [table, setTable] = useState([]);
-  const [start, setStart] = useState(0);
-  const [end, setEnd] = useState(10);
-  const [index, setIndex] = useState(null);
 
   const [dialogUpdate, setDialogUpdate] = useState(false);
   const [dialogDelete, setDialogDelete] = useState(false);
@@ -225,6 +225,7 @@ export default function TableMercaderia() {
           index={index}
           close={() => setDialogUpdate(false)}
           show={dialogUpdate}
+          refreshTable={mutate}
         />
         <Dialog open={dialogDelete} onClose={() => setDialogDelete(false)}>
           <DialogTitle>Eliminar Mercaderia</DialogTitle>

@@ -29,6 +29,7 @@ import { BiTrashAlt } from "react-icons/bi";
 import DialogUpdateMatrices from "../components/dialog/DialogUpdateMatrices";
 import DialogNewMatriz from "../components/dialog/DialogNewMatriz";
 import { CiSquarePlus } from "react-icons/ci";
+import toast from "react-hot-toast";
 
 const fetcherToken = ([url, token]) => {
   return axios
@@ -82,7 +83,28 @@ export default function TableMatrices() {
     setEnd(10);
   };
 
-  const handleDelete = () => {};
+  const handleDelete = () => {
+    toast.promise(
+      axios
+        .delete(`${BASE_URL}/matriz/${index.id}`, {
+          headers: {
+            Authorization: `Bearer ${userSupabase.token}`,
+          },
+        })
+        .then((result) => {
+          mutate();
+          setDialogDelete(false)
+        }),
+      {
+        loading: "Eliminando...",
+        success: "Operacion Exitosa",
+        error: (err) => {
+          console.log(err);
+          return "Ocurrio un error";
+        },
+      }
+    );
+  };
 
   if (isLoading) return <></>;
   if (error) return <></>;
@@ -100,7 +122,7 @@ export default function TableMatrices() {
                 const filter = data.filter((elem) => {
                   return elem.descripcion
                     .toLowerCase()
-                    .includes(text.toLowerCase());
+                    .includes(text.toLowerCase().trim());
                 });
                 setTable(filter);
                 resetTable();
@@ -231,6 +253,7 @@ export default function TableMatrices() {
         show={dialogUpdate}
         index={index}
         close={() => setDialogUpdate(false)}
+        refreshTable={mutate}
       />
       <DialogNewMatriz
         show={dialogNewMatriz}

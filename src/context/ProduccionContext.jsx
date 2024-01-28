@@ -31,7 +31,7 @@ export default function ProduccionContextProvider(props) {
     <ProducionContext.Provider
       value={{
         tableOriginal: data,
-        refreshTable: mutate,
+        refreshTable: () => {mutate()},
         token: userSupabase.token,
         base_url: BASE_URL,
         fetcherToken,

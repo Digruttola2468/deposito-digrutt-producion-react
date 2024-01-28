@@ -94,7 +94,7 @@ export default function TableInventario() {
                 const text = evt.target.value;
                 if (text != "") {
                   const filterByDescripcion = data.filter((elem) => {
-                    return elem.descripcion.includes(text);
+                    return elem.descripcion.toLowerCase().includes(text.toLowerCase().trim());
                   });
                   resetTable();
                   setTable(filterByDescripcion);

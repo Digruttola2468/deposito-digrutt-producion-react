@@ -47,6 +47,7 @@ export default function PostMercaderia({refreshTable}) {
           }
         ).then(result => {
           refreshTable();
+          empty();
         }), {
           loading: 'Enviando...',
           success: 'Operacion Exitosa',
@@ -57,7 +58,7 @@ export default function PostMercaderia({refreshTable}) {
   };
 
   const empty = () => {
-    setFecha("");
+    //setFecha("");
     setStock("");
     setcodProducto(null);
   };
