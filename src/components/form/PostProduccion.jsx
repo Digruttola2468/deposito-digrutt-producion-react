@@ -178,7 +178,7 @@ export default function PostProduccion() {
                 }}
               />
             </div>
-            <div>
+            <div >
               <TextField
                 type="number"
                 label="Promedio Golpes/hr"
@@ -194,6 +194,7 @@ export default function PostProduccion() {
           </div>
           <Tooltip
             title="Eliminar Item"
+            sx={{alignSelf: 'flex-end'}}
             onClick={() => {
               handleClickDeletePost(unique);
             }}
@@ -218,21 +219,24 @@ export default function PostProduccion() {
       </Divider>
       <div className="max-w-[1200px]">
         <form className="flex flex-col" onSubmit={handleSubmitSend}>
-          <TextField
-            type="date"
-            sx={{ margin: 1, width: "150px" }}
-            size="small"
-            value={fecha}
-            onChange={(evt) => {
-              setFecha(evt.target.value);
-              emptyRequestError();
-            }}
-            error={requesterror.campo == "fecha" ? true : false}
-          />
+          <div className="w-full sm:max-w-[200px]">
+            <TextField
+              type="date"
+              sx={{ margin: 1, width: "100%" }}
+              size="small"
+              value={fecha}
+              onChange={(evt) => {
+                setFecha(evt.target.value);
+                emptyRequestError();
+              }}
+              error={requesterror.campo == "fecha" ? true : false}
+            />
+          </div>
           {list.map((elem) => {
             return <div key={elem.id}>{renderPost(elem.id)}</div>;
           })}
 
+          <div className="flex flex-row justify-between mt-10">
           <span>
             <Tooltip
               title="Agregar Nuevo Produccion"
@@ -243,10 +247,6 @@ export default function PostProduccion() {
               </IconButton>
             </Tooltip>
           </span>
-          <div className="flex flex-row justify-between">
-            <Button type="submit" variant="text" onClick={empty}>
-              Borrar
-            </Button>
             <Button type="submit" variant="outlined">
               Enviar
             </Button>

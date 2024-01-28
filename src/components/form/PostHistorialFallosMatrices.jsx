@@ -6,7 +6,6 @@ import useSWR from "swr";
 import { UserContext } from "../../context/UserContext";
 
 import toast from "react-hot-toast";
-import logoDigruttD from "../../assets/digrutt_logo_d.png";
 
 const fetcherToken = ([url, token]) => {
   return axios

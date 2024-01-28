@@ -1,4 +1,4 @@
-import { Divider, IconButton, TextField, Tooltip } from "@mui/material";
+import { Divider, IconButton, InputAdornment, TextField, Tooltip } from "@mui/material";
 import ProduccionLineGrafic from "../components/graficas/LineGraficProduccion";
 import { useContext, useState } from "react";
 import axios from "axios";
@@ -68,6 +68,7 @@ export default function GraficaProduccion() {
             <TextField
               type="date"
               value={fechaInit}
+              sx={{minWidth: '160px'}}
               onChange={(evt) => {
                 const fecha = evt.target.value;
                 setFechaInit(fecha);
@@ -82,6 +83,7 @@ export default function GraficaProduccion() {
             <TextField
               type="date"
               value={fechaEnd}
+              sx={{minWidth: '160px'}}
               onChange={(evt) => {
                 const fecha = evt.target.value;
                 setFechaEnd(fecha);
