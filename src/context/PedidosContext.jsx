@@ -36,6 +36,7 @@ export default function PedidosProvider(props) {
       if (idPedido == elem.id) return { ...elem, is_done: value };
       else return elem;
     });
+    return data;
   };
 
   const updateTable = (idPedido, object) => {
@@ -60,8 +61,6 @@ export default function PedidosProvider(props) {
   if (isLoading) return <></>;
   if (error) return <></>;
 
-  console.log("Principal", data);
-
   return (
     <PedidosContext.Provider
       value={{
@@ -71,7 +70,7 @@ export default function PedidosProvider(props) {
         base_url: BASE_URL,
         fetcherToken,
         updateIsDone,
-        updateObject: updateTable,
+        updateTable,
         postItemTable: postTable,
         deleteItemTable: deleteTable,
         getOne,

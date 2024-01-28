@@ -20,7 +20,7 @@ export default function BoxCliente({ cliente, setCliente, size = "small" }) {
   if (error) return <></>;
 
   return (
-    <Box className="min-w-[150px] ml-1">
+    <Box className="min-w-[150px]">
       <FormControl fullWidth>
         <InputLabel>Cliente</InputLabel>
         <Select
