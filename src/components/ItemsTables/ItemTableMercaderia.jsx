@@ -27,7 +27,7 @@ export default function ItemTableMercaderia({ index, refreshTableOficina }) {
   const { userSupabase, BASE_URL } = useContext(UserContext);
 
   const { data, isLoading, error } = useSWR(
-    [`${BASE_URL}/mercaderia/${index}`, userSupabase.token],
+    [`${BASE_URL}/mercaderia/${index.id}`, userSupabase.token],
     fetcher
   );
 

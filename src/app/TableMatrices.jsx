@@ -1,7 +1,13 @@
 import {
   Alert,
   Box,
+  Button,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
   FormControl,
+  IconButton,
   InputLabel,
   MenuItem,
   Pagination,
@@ -9,6 +15,7 @@ import {
   Slide,
   Snackbar,
   TextField,
+  Tooltip,
 } from "@mui/material";
 import { useContext, useEffect, useState } from "react";
 import { MatricesContext } from "../context/MatricesContext";
@@ -17,6 +24,11 @@ import useSWR from "swr";
 import { UserContext } from "../context/UserContext";
 import axios from "axios";
 import SearchClientesBox from "../components/comboBox/SearchClientesBox";
+import { FaPen } from "react-icons/fa";
+import { BiTrashAlt } from "react-icons/bi";
+import DialogUpdateMatrices from "../components/dialog/DialogUpdateMatrices";
+import DialogNewMatriz from "../components/dialog/DialogNewMatriz";
+import { CiSquarePlus } from "react-icons/ci";
 
 const fetcherToken = ([url, token]) => {
   return axios
@@ -49,6 +61,11 @@ export default function TableMatrices() {
   const [start, setStart] = useState(1);
   const [end, setEnd] = useState(10);
   const [page, setPage] = useState(1);
+  const [index, setIndex] = useState(null);
+
+  const [dialogUpdate, setDialogUpdate] = useState(false);
+  const [dialogDelete, setDialogDelete] = useState(false);
+  const [dialogNewMatriz, setDialogNewMatriz] = useState(false);
 
   useEffect(() => {
     setStart(end - 10);
@@ -64,6 +81,8 @@ export default function TableMatrices() {
     setStart(0);
     setEnd(10);
   };
+
+  const handleDelete = () => {};
 
   if (isLoading) return <></>;
   if (error) return <></>;
@@ -88,10 +107,23 @@ export default function TableMatrices() {
               } else getPreviuos();
             }}
           />
-          <SearchClientesBox filterTable={setTable} table={table} refresh={getPreviuos} apiOriginal={data}/>
+          <SearchClientesBox
+            filterTable={setTable}
+            table={table}
+            refresh={getPreviuos}
+            apiOriginal={data}
+          />
+          <Tooltip title="Nueva Matriz">
+            <IconButton
+              className="hover:text-blue-700"
+              onClick={() => setDialogNewMatriz(true)}
+            >
+              <CiSquarePlus />
+            </IconButton>
+          </Tooltip>
         </div>
         <div className="overflow-x-auto sm:-mx-6 lg:-mx-8">
-          <div className="inline-block min-w-full sm:max-w-[1000px] py-2 sm:px-6 lg:px-8">
+          <div className="inline-block min-w-full sm:max-w-[1200px] py-2 sm:px-6 lg:px-8">
             <div className="overflow-hidden ">
               <table className="min-w-full text-left text-sm font-light ">
                 <thead className="border-b font-medium dark:border-neutral-500">
@@ -114,6 +146,9 @@ export default function TableMatrices() {
                     <th scope="col" className="px-6 py-4">
                       Numero Matriz
                     </th>
+                    <th scope="col" className="px-6 py-4">
+                      Actions
+                    </th>
                   </tr>
                 </thead>
                 <tbody>
@@ -124,23 +159,51 @@ export default function TableMatrices() {
                         key={index}
                         onClick={() => setApiOne(elem)}
                       >
-                        <td className="whitespace-nowrap px-6 py-4  font-medium">
+                        <td className="text-center whitespace-nowrap px-6 py-4  font-medium">
                           {elem.cod_matriz}
                         </td>
-                        <td className="whitespace-nowrap px-6 py-4">
+                        <td className="text-center whitespace-nowrap px-6 py-4">
                           {elem.descripcion}
                         </td>
-                        <td className="whitespace-nowrap px-6 py-4">
+                        <td className="text-center whitespace-nowrap px-6 py-4">
                           {elem.cantPiezaGolpe}
                         </td>
-                        <td className="whitespace-nowrap px-6 py-4 ">
+                        <td className="text-center whitespace-nowrap px-6 py-4 ">
                           {elem.cliente}
                         </td>
-                        <td className="whitespace-nowrap px-6 py-4 ">
+                        <td className="text-center whitespace-nowrap px-6 py-4 ">
                           {elem.material}
                         </td>
-                        <td className="whitespace-nowrap px-6 py-4 ">
+                        <td className="text-center whitespace-nowrap px-6 py-4 ">
                           {elem.numero_matriz}
+                        </td>
+                        <td className="text-center whitespace-nowrap px-6 py-4 ">
+                          <Tooltip
+                            onClick={() => {
+                              setIndex(elem);
+                              setDialogUpdate(true);
+                            }}
+                          >
+                            <IconButton
+                              size="small"
+                              className="hover:text-blue-400"
+                            >
+                              <FaPen />
+                            </IconButton>
+                          </Tooltip>
+                          <Tooltip
+                            onClick={() => {
+                              setIndex(elem);
+                              setDialogDelete(true);
+                            }}
+                          >
+                            <IconButton
+                              size="small"
+                              className="hover:text-red-400"
+                            >
+                              <BiTrashAlt />
+                            </IconButton>
+                          </Tooltip>
                         </td>
                       </tr>
                     );
@@ -152,7 +215,7 @@ export default function TableMatrices() {
         </div>
         <div className="flex flex-row justify-center ">
           <Pagination
-          page={page}
+            page={page}
             count={Math.ceil(table.length / 10)}
             onChange={(evt, value) => {
               setEnd(10 * parseInt(value));
@@ -164,6 +227,29 @@ export default function TableMatrices() {
       <div>
         <PostHistorialFalloseMatrices />
       </div>
+      <DialogUpdateMatrices
+        show={dialogUpdate}
+        index={index}
+        close={() => setDialogUpdate(false)}
+      />
+      <DialogNewMatriz
+        show={dialogNewMatriz}
+        close={() => {
+          setDialogNewMatriz(false);
+        }}
+      />
+      <Dialog open={dialogDelete} onClose={() => setDialogDelete(false)}>
+        <DialogTitle>Eliminar Matriz</DialogTitle>
+        <DialogContent>Estas seguro en eliminar la Matriz ?</DialogContent>
+        <DialogActions>
+          <Button onClick={() => setDialogDelete(false)} variant="text">
+            Cancelar
+          </Button>
+          <Button onClick={handleDelete} variant="outlined">
+            Delete
+          </Button>
+        </DialogActions>
+      </Dialog>
     </section>
   );
 }

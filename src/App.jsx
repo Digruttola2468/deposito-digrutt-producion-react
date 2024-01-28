@@ -26,6 +26,7 @@ import TableInventarioNombres from "./components/tables/TableInventarioNombres";
 import TableNotaEnvios from "./components/tables/TableNotaEnvios";
 import TableMercaderia from "./components/tables/TableMercaderia";
 import TableInventario from "./components/tables/TableInventario";
+import TableClientes from "./components/tables/TableClientes";
 
 function App() {
   const { userSupabase } = useContext(UserContext);
@@ -110,6 +111,7 @@ function App() {
   const renderInventario = () => {
     return <>
       <TableInventario />
+      <TableClientes />
     </>;
   };
 

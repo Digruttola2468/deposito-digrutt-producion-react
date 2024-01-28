@@ -1,19 +1,32 @@
 import {
-  Alert,
   Button,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  IconButton,
   Pagination,
-  Slide,
-  Snackbar,
   TextField,
+  Tooltip,
 } from "@mui/material";
 import { useContext, useEffect, useState } from "react";
 import { MaquinaParadaContext } from "../context/MaquinaParadaContext";
 import PostMaquinaParada from "../components/form/PostMaquinaParada";
+import { FaPen } from "react-icons/fa";
+import { BiTrashAlt } from "react-icons/bi";
+import DialogUpdateMaquinaParada from "../components/dialog/DialogUpdateMaquinaParada";
+import toast from "react-hot-toast";
+import axios from "axios";
+import { UserContext } from "../context/UserContext";
 
 export default function TableMaquinaParada() {
+  const { BASE_URL, userSupabase } = useContext(UserContext);
   const { tableOriginal } = useContext(MaquinaParadaContext);
 
   const [index, setIndex] = useState(null);
+
+  const [dialogUpdate, setDialogUpdate] = useState(false);
+  const [dialogDelete, setDialogDelete] = useState(false);
 
   const [table, setTable] = useState(() => tableOriginal);
   const [start, setStart] = useState(0);
@@ -22,18 +35,32 @@ export default function TableMaquinaParada() {
   const [startFecha, setStartFecha] = useState("");
   const [endFecha, setEndFecha] = useState("");
 
-  const [openDialog, setOpenDialog] = useState({
-    done: false,
-    message: "Operacion Exitosa!",
-    error: null,
-  });
-
   useEffect(() => {
     setStart(end - 10);
   }, [end]);
 
   const getPreviuos = () => {
     setTable(tableOriginal);
+  };
+
+  const handleDelete = () => {
+    toast.promise(
+      axios.delete(`${BASE_URL}/maquinaParada/${index.id}`, {
+        headers: {
+          Authorization: `Bearer ${userSupabase.token}`,
+        },
+      }).then(result => {
+        setDialogDelete(false);
+      }),
+      {
+        loading: "Eliminando...",
+        success: "Operacion Exitosa",
+        error: (err) => {
+          console.log(err);
+          return "Ocurrio un error";
+        },
+      }
+    );
   };
 
   const resetTable = () => {
@@ -58,11 +85,7 @@ export default function TableMaquinaParada() {
                     (elem) => new Date(elem.fecha) >= new Date(fechaString)
                   );
                   if (filterDate.length == 0) {
-                    setOpenDialog({
-                      done: true,
-                      message: "No hay datos",
-                      error: true,
-                    });
+                    toast.error("No hay datos");
                   } else {
                     setTable(filterDate);
                     resetTable();
@@ -85,11 +108,7 @@ export default function TableMaquinaParada() {
                     (elem) => new Date(elem.fecha) <= new Date(fechaString)
                   );
                   if (filterDate.length == 0) {
-                    setOpenDialog({
-                      done: true,
-                      message: "No hay datos",
-                      error: true,
-                    });
+                    toast.error("No hay datos");
                   } else {
                     setTable(filterDate);
                     resetTable();
@@ -133,6 +152,9 @@ export default function TableMaquinaParada() {
                     <th scope="col" className="px-6 py-4">
                       Fecha
                     </th>
+                    <th scope="col" className="px-6 py-4">
+                      Actions
+                    </th>
                   </tr>
                 </thead>
                 <tbody>
@@ -141,7 +163,6 @@ export default function TableMaquinaParada() {
                       <tr
                         className={`border-b dark:border-neutral-500 hover:border-info-200 hover:bg-red-200 hover:text-neutral-800`}
                         key={index}
-                        onClick={() => setIndex(elem.id)}
                       >
                         <td className="whitespace-nowrap px-6 py-4 font-medium">
                           {elem.nombre}
@@ -157,6 +178,34 @@ export default function TableMaquinaParada() {
                         </td>
                         <td className="whitespace-nowrap px-6 py-4 ">
                           {elem.fecha}
+                        </td>
+                        <td className="whitespace-nowrap px-6 py-4 ">
+                          <Tooltip
+                            onClick={() => {
+                              setIndex(elem);
+                              setDialogUpdate(true);
+                            }}
+                          >
+                            <IconButton
+                              size="small"
+                              className="hover:text-blue-400"
+                            >
+                              <FaPen />
+                            </IconButton>
+                          </Tooltip>
+                          <Tooltip
+                            onClick={() => {
+                              setIndex(elem);
+                              setDialogDelete(true);
+                            }}
+                          >
+                            <IconButton
+                              size="small"
+                              className="hover:text-red-400"
+                            >
+                              <BiTrashAlt />
+                            </IconButton>
+                          </Tooltip>
                         </td>
                       </tr>
                     );
@@ -174,29 +223,28 @@ export default function TableMaquinaParada() {
             }}
           />
         </div>
-        <Snackbar
-          anchorOrigin={{ vertical: "top", horizontal: "right" }}
-          TransitionComponent={Slide}
-          open={openDialog.done}
-          autoHideDuration={5000}
-          onClose={() =>
-            setOpenDialog({ done: false, error: openDialog.error })
-          }
-        >
-          <Alert
-            onClose={() =>
-              setOpenDialog({ done: false, error: openDialog.error })
-            }
-            severity={openDialog.error != null ? "error" : "success"}
-            sx={{ width: "100%" }}
-          >
-            {openDialog.message}
-          </Alert>
-        </Snackbar>
       </div>
       <div>
         <PostMaquinaParada />
       </div>
+      <DialogUpdateMaquinaParada
+        show={dialogUpdate}
+        close={() => setDialogUpdate(false)}
+        index={index}
+        refreshTable={getPreviuos}
+      />
+      <Dialog open={dialogDelete} onClose={() => setDialogDelete(false)}>
+        <DialogTitle>Eliminar Maquina Parada</DialogTitle>
+        <DialogContent>Estas seguro en eliminar ?</DialogContent>
+        <DialogActions>
+          <Button onClick={() => setDialogDelete(false)} variant="text">
+            Cancelar
+          </Button>
+          <Button onClick={handleDelete} variant="outlined">
+            Delete
+          </Button>
+        </DialogActions>
+      </Dialog>
     </section>
   );
 }

@@ -1,44 +1,35 @@
-import { useContext, useEffect, useState } from "react";
-import { UserContext } from "../../context/UserContext";
-import axios from "axios";
-import useSWR from "swr";
 import {
   Button,
   Dialog,
   DialogActions,
   DialogContent,
   DialogTitle,
+  Divider,
   IconButton,
   Pagination,
   TextField,
   Tooltip,
 } from "@mui/material";
-import SearchClientesBox from "../comboBox/SearchClientesBox";
-import ItemTableMercaderia from "../ItemsTables/ItemTableMercaderia";
-import PostMercaderia from "../form/PostMercaderia";
+import axios from "axios";
+import { useContext, useState } from "react";
 import { FaPen } from "react-icons/fa";
+import { UserContext } from "../../context/UserContext";
+import useSWR from "swr";
+import SearchLocalidadBox from "../comboBox/SearchLocalidadBox";
+import DialogUpdateCliente from "../dialog/DialogUpdateCliente";
+
+import { IoRefresh } from "react-icons/io5";
 import { BiTrashAlt } from "react-icons/bi";
-import DialogUpdateMercaderia from "../dialog/DialogUpdateMercaderia";
+import { CiSquarePlus } from "react-icons/ci";
+import DialogNewCliente from "../dialog/DialogNewCliente";
 import toast from "react-hot-toast";
 
-const fetcher = ([url, token]) => {
-  return axios
-    .get(url, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    })
-    .then((result) => result.data);
+const fetcher = (url) => {
+  return axios.get(url).then((result) => result.data);
 };
 
-export default function TableMercaderia() {
-  const { userSupabase, BASE_URL } = useContext(UserContext);
-
-  const { data, isLoading, error, mutate } = useSWR(
-    [`${BASE_URL}/mercaderia`, userSupabase.token],
-    fetcher,
-    { onSuccess: (data, key, config) => setTable(data) }
-  );
+export default function TableClientes() {
+  const { BASE_URL, userSupabase } = useContext(UserContext);
 
   const [table, setTable] = useState([]);
   const [start, setStart] = useState(0);
@@ -47,6 +38,17 @@ export default function TableMercaderia() {
 
   const [dialogUpdate, setDialogUpdate] = useState(false);
   const [dialogDelete, setDialogDelete] = useState(false);
+  const [dialogNewProduct, setDialogNewProduct] = useState(false);
+
+  const { data, isLoading, error, mutate } = useSWR(
+    `${BASE_URL}/clientes`,
+    fetcher,
+    {
+      onSuccess: (data, dsevf, config) => {
+        setTable(data);
+      },
+    }
+  );
 
   const getPrevius = () => {
     setTable(data);
@@ -61,17 +63,17 @@ export default function TableMercaderia() {
   const handleDelete = () => {
     toast.promise(
       axios
-        .delete(`${BASE_URL}/mercaderia/${index.id}`, {
+        .delete(`${BASE_URL}/cliente/${index.id}`, {
           headers: {
             Authorization: `Bearer ${userSupabase.token}`,
           },
         })
         .then((result) => {
           mutate();
-          setDialogDelete(false)
+          setDialogDelete(false);
         }),
       {
-        loading: "Eliminando...",
+        loading: "Eliminando Cliente...",
         success: "Operacion Exitosa",
         error: (err) => {
           console.log(err);
@@ -86,28 +88,53 @@ export default function TableMercaderia() {
 
   return (
     <>
-      <section className="grid grid-cols-1 lg:grid-cols-[2fr,1fr] place-content-center mt-4">
+      <section className="grid grid-cols-1  place-content-center mt-4">
+        <Divider>
+          <div className="flex flex-row items-center">
+            <h1 className="uppercase text-center my-2 font-bold text-lg">
+              TABLA CLIENTES
+            </h1>
+            <span
+              className="mx-2 cursor-pointer"
+              onClick={() => {
+                mutate();
+              }}
+            >
+              <IoRefresh />
+            </span>
+          </div>
+        </Divider>
         <div className="flex flex-col lg:justify-center lg:items-center ">
           <div className="flex flex-row items-center">
             <TextField
-              label="Buscar Descripcion"
+              label="Buscar Cliente"
               size="small"
               onChange={(evt) => {
                 const text = evt.target.value;
                 if (text != "") {
                   const filterByDescripcion = data.filter((elem) => {
-                    return elem.descripcion.includes(text);
+                    return elem.cliente
+                      .toLowerCase()
+                      .includes(text.toLowerCase());
                   });
+                  resetTable();
                   setTable(filterByDescripcion);
                 } else getPrevius();
               }}
             />
-            <SearchClientesBox
+            <SearchLocalidadBox
               filterTable={setTable}
-              table={table}
               refresh={getPrevius}
               apiOriginal={data}
             />
+            <Tooltip title="Nuevo Cliente">
+              <IconButton
+                className="hover:text-blue-700"
+                onClick={() => setDialogNewProduct(true)}
+              >
+                <CiSquarePlus />
+              </IconButton>
+            </Tooltip>
           </div>
           <div className="overflow-x-auto sm:-mx-6 lg:-mx-8">
             <div className="inline-block min-w-full py-2 sm:px-6 lg:px-8">
@@ -116,25 +143,22 @@ export default function TableMercaderia() {
                   <thead className="border-b font-medium dark:border-neutral-500">
                     <tr>
                       <th scope="col" className="px-6 py-4">
-                        Articulo
+                        Codigo
                       </th>
                       <th scope="col" className="px-6 py-4">
-                        Cod Producto
+                        Cliente
                       </th>
                       <th scope="col" className="px-6 py-4">
-                        Descripcion
+                        Domicilio
                       </th>
                       <th scope="col" className="px-6 py-4">
-                        Cantidad
+                        Gmail
                       </th>
                       <th scope="col" className="px-6 py-4">
-                        Fecha
+                        Cuit
                       </th>
                       <th scope="col" className="px-6 py-4">
-                        Categoria
-                      </th>
-                      <th scope="col" className="px-6 py-4">
-                        Actions
+                        Ciudad
                       </th>
                     </tr>
                   </thead>
@@ -149,24 +173,24 @@ export default function TableMercaderia() {
                           }}
                         >
                           <td className="whitespace-nowrap px-6 py-4 font-medium">
-                            {elem.articulo}
+                            {elem.codigo}
                           </td>
                           <td className="whitespace-nowrap px-6 py-4">
-                            {elem.nombre}
+                            {elem.cliente}
                           </td>
                           <td className="whitespace-nowrap px-6 py-4">
-                            {elem.descripcion}
+                            {elem.domicilio}
+                          </td>
+                          <td className="whitespace-nowrap px-6 py-4 ">
+                            {elem.mail}
                           </td>
                           <td className="whitespace-nowrap px-6 py-4">
-                            {elem.stock}
+                            {elem.cuit}
                           </td>
-                          <td className="whitespace-nowrap px-6 py-4 ">
-                            {elem.fecha}
+                          <td className="whitespace-nowrap px-6 py-4">
+                            {elem.ciudad}
                           </td>
-                          <td className="whitespace-nowrap px-6 py-4 ">
-                            {elem.categoria}
-                          </td>
-                          <td className="whitespace-nowrap px-6 py-4 ">
+                          <td className="whitespace-nowrap px-6 py-4">
                             <Tooltip
                               onClick={() => {
                                 setIndex(elem);
@@ -213,32 +237,34 @@ export default function TableMercaderia() {
             />
           </div>
         </div>
-        <div className="flex flex-col lg:flex-col items-center justify-start">
-          <div className="block rounded-lg bg-white p-6 shadow-[0_2px_15px_-3px_rgba(0,0,0,0.07),0_10px_20px_-2px_rgba(0,0,0,0.04)] dark:bg-neutral-700 border lg:mx-5 mx-1 mt-2">
-            {index != null && (
-              <ItemTableMercaderia index={index} refreshTableOficina={mutate} />
-            )}
-          </div>
-          <PostMercaderia refreshTable={mutate} />
-        </div>
-        <DialogUpdateMercaderia
-          index={index}
-          close={() => setDialogUpdate(false)}
-          show={dialogUpdate}
-        />
-        <Dialog open={dialogDelete} onClose={() => setDialogDelete(false)}>
-          <DialogTitle>Eliminar Mercaderia</DialogTitle>
-          <DialogContent>Estas seguro en eliminar ?</DialogContent>
-          <DialogActions>
-            <Button onClick={() => setDialogDelete(false)} variant="text">
-              Cancelar
-            </Button>
-            <Button onClick={handleDelete} variant="outlined">
-              Delete
-            </Button>
-          </DialogActions>
-        </Dialog>
       </section>
+      <DialogUpdateCliente
+        index={index}
+        show={dialogUpdate}
+        close={() => {
+          setDialogUpdate(false);
+        }}
+        refreshTable={mutate}
+      />
+      <DialogNewCliente
+        show={dialogNewProduct}
+        close={() => {
+          setDialogNewProduct(false);
+        }}
+        refreshTable={mutate}
+      />
+      <Dialog open={dialogDelete} onClose={() => setDialogDelete(false)}>
+        <DialogTitle>Eliminar Cliente</DialogTitle>
+        <DialogContent>Estas seguro en eliminar el cliente ?</DialogContent>
+        <DialogActions>
+          <Button onClick={() => setDialogDelete(false)} variant="text">
+            Cancelar
+          </Button>
+          <Button onClick={handleDelete} variant="outlined">
+            Delete
+          </Button>
+        </DialogActions>
+      </Dialog>
     </>
   );
 }

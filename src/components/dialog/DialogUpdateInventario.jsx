@@ -40,6 +40,7 @@ export default function DialogUpdateInventario({
       setNombre(index.nombre);
       setDescripcion(index.descripcion);
       setPesoUnidad(index.pesoUnidad);  
+      setUbicacion(index?.ubicacion ?? "")
     }
   }, [index]);
 
@@ -97,8 +98,7 @@ export default function DialogUpdateInventario({
         <TextField
           sx={{ marginTop: 3, marginLeft: 1 }}
           label="Descripcion"
-          multiline
-          rows={2}
+          multiline={true}
           value={descripcion}
           onChange={(evt) => setDescripcion(evt.target.value)}
         />

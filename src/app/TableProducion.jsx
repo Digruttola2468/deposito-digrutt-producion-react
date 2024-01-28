@@ -1,24 +1,68 @@
-import { Pagination, TextField } from "@mui/material";
+import {
+  Button,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  IconButton,
+  Pagination,
+  TextField,
+  Tooltip,
+} from "@mui/material";
 import { useContext, useEffect, useState } from "react";
 import { ProducionContext } from "../context/ProduccionContext";
+import { FaPen } from "react-icons/fa";
+import { BiTrashAlt } from "react-icons/bi";
+import DialogUpdateProduccion from "../components/dialog/DialogUpdateProduccion";
+import axios from "axios";
+import { UserContext } from "../context/UserContext";
+import toast from "react-hot-toast";
 
 export default function TableProducion() {
-  const { tableOriginal } = useContext(ProducionContext);
+  const { BASE_URL } = useContext(UserContext);
+  const { tableOriginal, refreshTable, token } = useContext(ProducionContext);
 
   const [index, setIndex] = useState(null);
 
-  const [table,setTable] = useState(() => tableOriginal)
+  const [table, setTable] = useState(() => tableOriginal);
+
+  const [dialogUpdate, setDialogUpdate] = useState(false);
+  const [dialogDelete, setDialogDelete] = useState(false);
 
   const [start, setStart] = useState(0);
   const [end, setEnd] = useState(10);
 
   useEffect(() => {
-    setStart(end - 10)
-  }, [end])
+    setStart(end - 10);
+  }, [end]);
 
   const getPrevius = () => {
     setTable(tableOriginal);
-  }
+  };
+
+  const handleDelete = () => {
+    toast.promise(
+      axios
+        .delete(`${BASE_URL}/producion/${index.id}`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        })
+        .then((result) => {
+          setDialogDelete(false);
+          refreshTable();
+          getPrevius();
+        }),
+      {
+        loading: "Eliminando...",
+        success: "Operacion Exitosa",
+        error: (err) => {
+          console.log(err);
+          return "Ocurrio un error";
+        },
+      }
+    );
+  };
 
   const resetTable = () => {
     setStart(0);
@@ -34,11 +78,12 @@ export default function TableProducion() {
           const text = evt.target.value;
           if (text != "") {
             const filterByDescripcion = tableOriginal.filter((elem) => {
-              return elem.descripcion.toLowerCase().includes(text.toLowerCase());
+              return elem.descripcion
+                .toLowerCase()
+                .includes(text.toLowerCase());
             });
-            setTable(filterByDescripcion)
+            setTable(filterByDescripcion);
           } else getPrevius();
-
         }}
       />
       <div className="overflow-x-auto sm:-mx-6 lg:-mx-8">
@@ -65,8 +110,11 @@ export default function TableProducion() {
                   <th scope="col" className="px-6 py-4">
                     Promedio Golpes/hr
                   </th>
-                  <th scope="col" className="px-6 py-4">
+                  <th scope="col" className="px-6 py-4 text-center">
                     Fecha
+                  </th>
+                  <th scope="col" className="px-6 py-4">
+                    Actions
                   </th>
                 </tr>
               </thead>
@@ -76,7 +124,6 @@ export default function TableProducion() {
                     <tr
                       className={`border-b dark:border-neutral-500 hover:border-info-200 hover:bg-red-200 hover:text-neutral-800`}
                       key={elem.id}
-                      onClick={() => setIndex(elem.id)}
                     >
                       <td className="whitespace-nowrap px-6 py-4 font-medium">
                         {elem.nombre}
@@ -84,20 +131,48 @@ export default function TableProducion() {
                       <td className="whitespace-nowrap px-6 py-4">
                         {elem.descripcion}
                       </td>
-                      <td className="whitespace-nowrap px-6 py-4">
+                      <td className="whitespace-nowrap px-6 py-4 text-center">
                         {elem.num_maquina}
                       </td>
-                      <td className="whitespace-nowrap px-6 py-4">
+                      <td className="whitespace-nowrap px-6 py-4 text-center">
                         {elem.golpesReales}
                       </td>
-                      <td className="whitespace-nowrap px-6 py-4 ">
+                      <td className="whitespace-nowrap px-6 py-4 text-center">
                         {elem.piezasProducidas}
                       </td>
-                      <td className="whitespace-nowrap px-6 py-4 ">
+                      <td className="whitespace-nowrap px-6 py-4 text-center">
                         {elem.prom_golpeshora}
                       </td>
-                      <td className="whitespace-nowrap px-6 py-4 ">
+                      <td className="whitespace-nowrap px-6 py-4 text-center">
                         {elem.fecha}
+                      </td>
+                      <td className="whitespace-nowrap px-6 py-4 ">
+                        <Tooltip
+                          onClick={() => {
+                            setIndex(elem);
+                            setDialogUpdate(true);
+                          }}
+                        >
+                          <IconButton
+                            size="small"
+                            className="hover:text-blue-400"
+                          >
+                            <FaPen />
+                          </IconButton>
+                        </Tooltip>
+                        <Tooltip
+                          onClick={() => {
+                            setIndex(elem);
+                            setDialogDelete(true);
+                          }}
+                        >
+                          <IconButton
+                            size="small"
+                            className="hover:text-red-400"
+                          >
+                            <BiTrashAlt />
+                          </IconButton>
+                        </Tooltip>
                       </td>
                     </tr>
                   );
@@ -115,6 +190,26 @@ export default function TableProducion() {
           }}
         />
       </div>
+      <DialogUpdateProduccion
+        show={dialogUpdate}
+        close={() => {
+          setDialogUpdate(false);
+        }}
+        index={index}
+        refreshTable={refreshTable}
+      />
+      <Dialog open={dialogDelete} onClose={() => setDialogDelete(false)}>
+        <DialogTitle>Eliminar Produccion</DialogTitle>
+        <DialogContent>Estas seguro en eliminar ?</DialogContent>
+        <DialogActions>
+          <Button onClick={() => setDialogDelete(false)} variant="text">
+            Cancelar
+          </Button>
+          <Button onClick={handleDelete} variant="outlined">
+            Delete
+          </Button>
+        </DialogActions>
+      </Dialog>
     </div>
   );
 }

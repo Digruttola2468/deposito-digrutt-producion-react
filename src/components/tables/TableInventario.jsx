@@ -1,8 +1,13 @@
-import { useContext,  useState } from "react";
+import { useContext, useState } from "react";
 import { UserContext } from "../../context/UserContext";
 import axios from "axios";
 import useSWR from "swr";
 import {
+  Button,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
   IconButton,
   Pagination,
   TextField,
@@ -11,7 +16,10 @@ import {
 import SearchClientesBox from "../comboBox/SearchClientesBox";
 import { FaPen } from "react-icons/fa";
 import DialogUpdateInventario from "../dialog/DialogUpdateInventario";
-
+import { BiTrashAlt } from "react-icons/bi";
+import toast from "react-hot-toast";
+import { CiSquarePlus } from "react-icons/ci";
+import DialogNewInventario from "../dialog/DialogNewInventario";
 const fetcher = ([url, token]) => {
   return axios
     .get(url, {
@@ -28,7 +36,7 @@ export default function TableInventario() {
   const { data, isLoading, error, mutate } = useSWR(
     [`${BASE_URL}/inventario`, userSupabase.token],
     fetcher,
-    { onSuccess: (data, key, config) =>  setTable(data) }
+    { onSuccess: (data, key, config) => setTable(data) }
   );
 
   const [table, setTable] = useState([]);
@@ -37,6 +45,8 @@ export default function TableInventario() {
   const [index, setIndex] = useState(null);
 
   const [dialogUpdate, setDialogUpdate] = useState(false);
+  const [dialogDelete, setDialogDelete] = useState(false);
+  const [dialogNewProduct, setDialogNewProduct] = useState(false);
 
   const getPrevius = () => {
     setTable(data);
@@ -46,6 +56,27 @@ export default function TableInventario() {
   const resetTable = () => {
     setStart(0);
     setEnd(10);
+  };
+
+  const handleDelete = () => {
+    setDialogDelete(false);
+    toast.promise(
+      axios
+        .delete(`${BASE_URL}/inventario/${index.id}`, {
+          headers: {
+            Authorization: `Bearer ${userSupabase.token}`,
+          },
+        })
+        .then((result) => {
+          console.log(result);
+          mutate();
+        }),
+      {
+        loading: "Eliminando...",
+        success: "Operacion exitosa",
+        error: "No se logro eliminar",
+      }
+    );
   };
 
   if (isLoading) return <></>;
@@ -76,6 +107,14 @@ export default function TableInventario() {
               refresh={getPrevius}
               apiOriginal={data}
             />
+            <Tooltip title="Nuevo Producto">
+              <IconButton
+                className="hover:text-blue-700"
+                onClick={() => setDialogNewProduct(true)}
+              >
+                <CiSquarePlus />
+              </IconButton>
+            </Tooltip>
           </div>
           <div className="overflow-x-auto sm:-mx-6 lg:-mx-8">
             <div className="inline-block min-w-full py-2 sm:px-6 lg:px-8">
@@ -154,8 +193,24 @@ export default function TableInventario() {
                                 setDialogUpdate(true);
                               }}
                             >
-                              <IconButton size="small" className="hover:text-blue-400">
+                              <IconButton
+                                size="small"
+                                className="hover:text-blue-400"
+                              >
                                 <FaPen />
+                              </IconButton>
+                            </Tooltip>
+                            <Tooltip
+                              onClick={() => {
+                                setIndex(elem);
+                                setDialogDelete(true);
+                              }}
+                            >
+                              <IconButton
+                                size="small"
+                                className="hover:text-red-400"
+                              >
+                                <BiTrashAlt />
                               </IconButton>
                             </Tooltip>
                           </td>
@@ -186,6 +241,23 @@ export default function TableInventario() {
           refreshTable={mutate}
           index={index}
         />
+        <DialogNewInventario
+          show={dialogNewProduct}
+          close={() => setDialogNewProduct(false)}
+          refreshTable={mutate}
+        />
+        <Dialog open={dialogDelete} onClose={() => setDialogDelete(false)}>
+          <DialogTitle>Eliminar Inventario</DialogTitle>
+          <DialogContent>Estas seguro en eliminar el producto ?</DialogContent>
+          <DialogActions>
+            <Button onClick={() => setDialogDelete(false)} variant="text">
+              Cancelar
+            </Button>
+            <Button onClick={handleDelete} variant="outlined">
+              Delete
+            </Button>
+          </DialogActions>
+        </Dialog>
       </section>
     </>
   );
