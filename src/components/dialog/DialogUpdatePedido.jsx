@@ -27,12 +27,15 @@ export default function DialogUpdatePedido({
   const [cliente, setCliente] = useState("");
   const [stock, setStock] = useState("");
   const [fechaEntrega, setFechaEntrega] = useState("");
+  const [ordenCompra, setOrdenCompra] = useState("");
+  const [cantidadEnviada, setCantidadEnviada] = useState("");
 
   useEffect(() => {
     if (index != null) {
       setCliente(index.idcliente);
       setStock(index.stock);
       setFechaEntrega(index.fecha_entrega);
+      setOrdenCompra(index.ordenCompra);
     }
   }, [index]);
 
@@ -41,6 +44,7 @@ export default function DialogUpdatePedido({
     setCliente("");
     setStock("");
     setFechaEntrega("");
+    setOrdenCompra("");
   };
 
   const handleUpdate = () => {
@@ -91,7 +95,7 @@ export default function DialogUpdatePedido({
         <BoxCliente cliente={cliente} setCliente={setCliente} size="medium" />
         <TextField
           sx={{ marginTop: 2 }}
-          label="Cantidad Enviar"
+          label="Cantidad a Enviar"
           value={stock}
           type="number"
           onChange={(evt) => setStock(evt.target.value)}
@@ -101,6 +105,18 @@ export default function DialogUpdatePedido({
           value={fechaEntrega}
           type="date"
           onChange={(evt) => setFechaEntrega(evt.target.value)}
+        />
+        <TextField
+          sx={{ marginTop: 2 }}
+          value={ordenCompra}
+          label="Orden Compra"
+          onChange={(evt) => setOrdenCompra(evt.target.value)}
+        />
+        <TextField
+          sx={{ marginTop: 2 }}
+          value={cantidadEnviada}
+          label="Cantidad Enviada"
+          onChange={(evt) => setCantidadEnviada(evt.target.value)}
         />
       </DialogContent>
       <DialogActions>

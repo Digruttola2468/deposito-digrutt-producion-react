@@ -27,6 +27,7 @@ import TableNotaEnvios from "./components/tables/TableNotaEnvios";
 import TableMercaderia from "./components/tables/TableMercaderia";
 import TableInventario from "./components/tables/TableInventario";
 import TableClientes from "./components/tables/TableClientes";
+import PostListPedidos from "./components/form/PostListPedidos";
 
 function App() {
   const { userSupabase } = useContext(UserContext);
@@ -71,6 +72,7 @@ function App() {
       <PedidosProvider>
         <section className="mt-2">
           <TablePedidos />
+          <TableInventarioNombres type={"pedidos"} />
         </section>
       </PedidosProvider>
     );

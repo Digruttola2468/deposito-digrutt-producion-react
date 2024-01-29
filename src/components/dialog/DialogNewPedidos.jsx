@@ -4,7 +4,14 @@ import toast from "react-hot-toast";
 import axios from "axios";
 import AutoCompleteInventario from "../autoComplete/AutoCompleteInventario";
 import BoxCliente from "../comboBox/BoxCliente";
-import { Button, Dialog, DialogActions, DialogContent, DialogTitle, TextField } from "@mui/material";
+import {
+  Button,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  TextField,
+} from "@mui/material";
 
 export default function DialogNewPedidos({
   show = false,
@@ -17,6 +24,7 @@ export default function DialogNewPedidos({
   const [cliente, setCliente] = useState("");
   const [stock, setStock] = useState("");
   const [fechaEntrega, setFechaEntrega] = useState("");
+  const [ordenCompra, setOrdenCompra] = useState("");
 
   const empty = () => {
     setProducto(null);
@@ -67,8 +75,17 @@ export default function DialogNewPedidos({
     >
       <DialogTitle>Nuevo Pedido</DialogTitle>
       <DialogContent className="flex flex-col">
-        <AutoCompleteInventario producto={producto} setProducto={setProducto} required={true}/>
         <BoxCliente size="medium" cliente={cliente} setCliente={setCliente} />
+        <AutoCompleteInventario
+          producto={producto}
+          setProducto={setProducto}
+          required={true}
+        />
+        <TextField
+          value={ordenCompra}
+          onChange={(event) => setOrdenCompra(event.target.value)}
+          label="Orden Compra"
+        />
         <TextField
           value={stock}
           onChange={(event) => setStock(event.target.value)}

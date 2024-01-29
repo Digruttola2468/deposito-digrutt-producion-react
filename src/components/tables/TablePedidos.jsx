@@ -183,6 +183,8 @@ export default function TablePedidos() {
     return <></>;
   };
 
+  console.log(tableOriginal);
+
   return (
     <>
       <div className="flex flex-col lg:justify-center lg:items-center ">
@@ -227,9 +229,12 @@ export default function TablePedidos() {
                     <th scope="col" className="px-6 py-4 text-center">
                       Cliente
                     </th>
+                    <th scope="col" className="px-6 py-4 text-center">
+                      Orden Compra
+                    </th>
                     <th
                       scope="col"
-                      className={`px-6 py-4 text-center relative`}
+                      className={`px-6 py-4 text-center relative text-green-500`}
                       onClick={() => {
                         handleOrderIsDone("cantEnviar");
                       }}
@@ -240,6 +245,18 @@ export default function TablePedidos() {
                       ) : (
                         <></>
                       )}
+                    </th>
+                    <th
+                      scope="col"
+                      className={`px-6 py-4 text-center relative text-blue-500`}
+                    >
+                      Cantidad Enviada
+                    </th>
+                    <th
+                      scope="col"
+                      className={`px-6 py-4 text-center relative text-red-500`}
+                    >
+                      Pendiente Entrega
                     </th>
                     <th
                       scope="col"
@@ -279,6 +296,7 @@ export default function TablePedidos() {
                   {table.slice(start, end).map((elem) => {
                     const stringIsDone =
                       elem.is_done >= 1 ? "Completo" : "Incompleto";
+                    const pendienteEntrega = elem.stock - elem.cantidad_enviada;
                     return (
                       <tr
                         className={`border-b dark:border-neutral-500 hover:border-info-200 hover:bg-red-200 hover:text-neutral-800`}
@@ -295,7 +313,16 @@ export default function TablePedidos() {
                           {elem.cliente}
                         </td>
                         <td className="whitespace-nowrap px-6 py-4">
+                          {elem.ordenCompra}
+                        </td>
+                        <td className="whitespace-nowrap px-6 py-4">
                           {elem.stock}
+                        </td>
+                        <td className="whitespace-nowrap px-6 py-4">
+                          {elem.cantidad_enviada}
+                        </td>
+                        <td className="whitespace-nowrap px-6 py-4">
+                          {pendienteEntrega}
                         </td>
                         <td className="whitespace-nowrap px-6 py-4 ">
                           {elem.fecha_entrega}

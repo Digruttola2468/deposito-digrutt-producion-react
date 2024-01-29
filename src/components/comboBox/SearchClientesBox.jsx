@@ -11,6 +11,7 @@ export default function SearchClientesBox({
   filterTable,
   refresh,
   apiOriginal,
+  setCliente = (v) => {}
 }) {
   const { data, isLoading, error, mutate } = useSWR(
     `https://deposito-digrutt-express-production.up.railway.app/api/clientes`,
@@ -33,6 +34,7 @@ export default function SearchClientesBox({
           label="Cliente"
           onChange={(evt) => {
             const comboBoxCliente = evt.target.value;
+            setCliente(comboBoxCliente);
 
             if (comboBoxCliente != "")
               filterTable(

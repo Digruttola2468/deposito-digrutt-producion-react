@@ -8,6 +8,7 @@ import { CiSquarePlus } from "react-icons/ci";
 import PostRemito from "../form/PostRemito";
 import { FiTrash } from "react-icons/fi";
 import PostNotaEnvio from "../form/PostNotaEnvio";
+import PostListPedidos from "../form/PostListPedidos";
 
 const fetcherToken = ([url, token]) => {
   return axios
@@ -19,7 +20,7 @@ const fetcherToken = ([url, token]) => {
     .then((result) => result.data);
 };
 
-export default function TableInventarioNombres({type}) {
+export default function TableInventarioNombres({ type }) {
   const { BASE_URL, userSupabase } = useContext(UserContext);
 
   const { data, error, isLoading } = useSWR(
@@ -33,6 +34,7 @@ export default function TableInventarioNombres({type}) {
   );
 
   const [listInventarioSelects, setListInventarioSelects] = useState([]);
+  const [clientesList, setClientesList] = useState("");
 
   const [table, setTable] = useState([]);
   const [start, setStart] = useState(0);
@@ -76,6 +78,7 @@ export default function TableInventarioNombres({type}) {
               table={table}
               refresh={getPrevius}
               apiOriginal={data}
+              setCliente={setClientesList}
             />
           </div>
           <div className="overflow-x-auto sm:-mx-6 lg:-mx-8">
@@ -84,6 +87,9 @@ export default function TableInventarioNombres({type}) {
                 <table className="min-w-full text-left text-sm font-light ">
                   <thead className="border-b font-medium dark:border-neutral-500">
                     <tr>
+                      <th scope="col" className="px-2 py-4">
+                        
+                      </th>
                       <th scope="col" className="px-6 py-4">
                         Descripcion
                       </th>
@@ -111,15 +117,6 @@ export default function TableInventarioNombres({type}) {
                           } hover:text-neutral-800`}
                           key={elem.id}
                         >
-                          <td className="whitespace-nowrap px-6 py-4 font-medium">
-                            {elem.descripcion}
-                          </td>
-                          <td className="whitespace-nowrap px-6 py-4">
-                            {elem.cliente}
-                          </td>
-                          <td className={`whitespace-nowrap px-6 py-4 font-mono`}>
-                            {stockActual}
-                          </td>
                           <td>
                             {!isSelected ? (
                               <Tooltip
@@ -153,6 +150,17 @@ export default function TableInventarioNombres({type}) {
                               </Tooltip>
                             )}
                           </td>
+                          <td className="whitespace-nowrap px-6 py-4 font-medium">
+                            {elem.descripcion}
+                          </td>
+                          <td className="whitespace-nowrap px-6 py-4">
+                            {elem.cliente}
+                          </td>
+                          <td
+                            className={`whitespace-nowrap px-6 py-4 font-mono`}
+                          >
+                            {stockActual}
+                          </td>
                         </tr>
                       );
                     })}
@@ -172,15 +180,26 @@ export default function TableInventarioNombres({type}) {
             />
           </div>
         </div>
-        {type == "remito" && <PostRemito
-          listInventario={listInventarioSelects}
-          setListInventario={setListInventarioSelects}
-        />}
-        {type == "notaEnvio" && <PostNotaEnvio
-          listInventario={listInventarioSelects}
-          setListInventario={setListInventarioSelects}
-        />}
-
+        {type == "remito" && (
+          <PostRemito
+            listInventario={listInventarioSelects}
+            setListInventario={setListInventarioSelects}
+          />
+        )}
+        {type == "notaEnvio" && (
+          <PostNotaEnvio
+            listInventario={listInventarioSelects}
+            setListInventario={setListInventarioSelects}
+          />
+        )}
+        {type == "pedidos" && (
+          <PostListPedidos
+            listInventario={listInventarioSelects}
+            setListInventario={setListInventarioSelects}
+            cliente={clientesList}
+            setCliente={setClientesList}
+          />
+        )}
       </section>
     </>
   );
