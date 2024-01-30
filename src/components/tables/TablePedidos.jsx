@@ -183,8 +183,6 @@ export default function TablePedidos() {
     return <></>;
   };
 
-  console.log(tableOriginal);
-
   return (
     <>
       <div className="flex flex-col lg:justify-center lg:items-center ">
@@ -296,35 +294,35 @@ export default function TablePedidos() {
                   {table.slice(start, end).map((elem) => {
                     const stringIsDone =
                       elem.is_done >= 1 ? "Completo" : "Incompleto";
-                    const pendienteEntrega = elem.stock - elem.cantidad_enviada;
+                    const pendienteEntrega = elem.cantidadEnviar - elem.cantidad_enviada;
                     return (
                       <tr
                         className={`border-b dark:border-neutral-500 hover:border-info-200 hover:bg-red-200 hover:text-neutral-800`}
                         key={elem.id}
                         onClick={() => setIndex(elem)}
                       >
-                        <td className="whitespace-nowrap px-6 py-4 font-medium">
+                        <td className="whitespace-nowrap px-6 py-4 font-medium text-center">
                           {elem.nombre}
                         </td>
-                        <td className="whitespace-nowrap px-6 py-4">
+                        <td className="whitespace-nowrap px-6 py-4 text-center">
                           {elem.descripcion}
                         </td>
-                        <td className="whitespace-nowrap px-6 py-4">
+                        <td className="whitespace-nowrap px-6 py-4 text-center">
                           {elem.cliente}
                         </td>
-                        <td className="whitespace-nowrap px-6 py-4">
+                        <td className="whitespace-nowrap px-6 py-4 text-center">
                           {elem.ordenCompra}
                         </td>
-                        <td className="whitespace-nowrap px-6 py-4">
-                          {elem.stock}
+                        <td className="whitespace-nowrap px-6 py-4 text-center">
+                          {elem.cantidadEnviar}
                         </td>
-                        <td className="whitespace-nowrap px-6 py-4">
+                        <td className="whitespace-nowrap px-6 py-4 text-center">
                           {elem.cantidad_enviada}
                         </td>
-                        <td className="whitespace-nowrap px-6 py-4">
+                        <td className="whitespace-nowrap px-6 py-4 text-center">
                           {pendienteEntrega}
                         </td>
-                        <td className="whitespace-nowrap px-6 py-4 ">
+                        <td className="whitespace-nowrap px-6 py-4 text-center">
                           {elem.fecha_entrega}
                         </td>
                         <td

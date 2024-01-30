@@ -33,7 +33,7 @@ export default function DialogUpdatePedido({
   useEffect(() => {
     if (index != null) {
       setCliente(index.idcliente);
-      setStock(index.stock);
+      setStock(index.cantidadEnviar);
       setFechaEntrega(index.fecha_entrega);
       setOrdenCompra(index.ordenCompra);
     }
@@ -53,10 +53,12 @@ export default function DialogUpdatePedido({
         .put(
           `${BASE_URL}/pedidos/${index.id}`,
           {
-            idinventario: producto?.id ?? null,
+            idInventario: producto?.id ?? null,
             idcliente: cliente,
-            stock,
+            cantidadEnviar: stock,
             fecha_entrega: fechaEntrega,
+            ordenCompra,
+            cantidadEnviada,
           },
           {
             headers: {

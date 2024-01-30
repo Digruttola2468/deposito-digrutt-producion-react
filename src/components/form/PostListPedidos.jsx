@@ -78,10 +78,10 @@ export default function PostListPedidos({
     enviar.products = getDataListPedido();
 
     console.log(enviar);
-    /*
+    
     toast.promise(
       axios
-        .post(`${BASE_URL}/remito`, enviar, {
+        .post(`${BASE_URL}/pedidos/list`, enviar, {
           headers: {
             Authorization: `Bearer ${userSupabase.token}`,
           },
@@ -92,11 +92,10 @@ export default function PostListPedidos({
         }),
       {
         loading: "Enviando...",
-        success: (data) => data.data.message,
+        success: 'Operacion Exitosa',
         error: (err) => err.response?.data.message ?? "",
       }
     );
-    setDialogConfirm(false);*/
   };
 
   if (isLoading) return <></>;
