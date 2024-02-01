@@ -27,12 +27,16 @@ import TableNotaEnvios from "./components/tables/TableNotaEnvios";
 import TableMercaderia from "./components/tables/TableMercaderia";
 import TableInventario from "./components/tables/TableInventario";
 import TableClientes from "./components/tables/TableClientes";
-import PostListPedidos from "./components/form/PostListPedidos";
+import Home from "./pages/Home";
 
 function App() {
   const { userSupabase } = useContext(UserContext);
 
   const role = userSupabase?.role ?? null;
+
+  const renderEnvios = () => {
+    return <h1>Envios</h1>
+  }
 
   const renderProduccion = () => {
     return (
@@ -105,16 +109,20 @@ function App() {
   };
 
   const renderMercaderia = () => {
-    return <>
-      <TableMercaderia />
-    </>;
+    return (
+      <>
+        <TableMercaderia />
+      </>
+    );
   };
 
   const renderInventario = () => {
-    return <>
-      <TableInventario />
-      <TableClientes />
-    </>;
+    return (
+      <>
+        <TableInventario />
+        <TableClientes />
+      </>
+    );
   };
 
   const renderNotPermissos = () => {
@@ -124,6 +132,13 @@ function App() {
       </>
     );
   };
+
+  function validarEnvios() {
+    if (userSupabase != null) {
+      if (role === "admin" || role == "envios") return renderEnvios();
+      else return renderNotPermissos();
+    } else return renderNotPermissos();
+  }
 
   function validarProduccion() {
     if (userSupabase != null) {
@@ -193,7 +208,9 @@ function App() {
       <header className="">{validarMenus()}</header>
       <main>
         <Routes>
-          <Route path="/" element={validarProduccion()} />
+          <Route path="/" element={<Home />} />
+          <Route path="/produccion" element={validarProduccion()} />
+          <Route path="/envios" element={validarEnvios()} />
           <Route path="/maquinaParada" element={validarMaquinaParada()} />
           <Route path="/matrices" element={validarMatrices()} />
           <Route path="/pedidos" element={validarPedidos()} />

@@ -9,7 +9,7 @@ export default function Menu() {
   const { userSupabase } = useContext(UserContext);
 
   const [menuActive, setMenuActive] = useState({
-    produccion: true,
+    produccion: false,
     paradaMaquina: false,
     matrices: false,
     pedidos: false,
@@ -17,7 +17,42 @@ export default function Menu() {
     notaEnvios: false,
     mercaderia: false,
     inventario: false,
+    home: true,
+    envios: false,
   });
+
+  const renderMenuEnvios = (role) => {
+    return (
+      <>
+        <li>
+          <a
+            onClick={() => {
+              setMenuActive({
+                produccion: false,
+                paradaMaquina: false,
+                matrices: false,
+                pedidos: false,
+                remitos: false,
+                notaEnvios: false,
+                mercaderia: false,
+                inventario: false,
+                home: false,
+                envios: true,
+              });
+              navegate("/envios");
+            }}
+            className={`block py-2 px-3 rounded md:bg-transparent ${
+              menuActive.envios
+                ? "text-white bg-blue-700 md:text-blue-700 cursor-default"
+                : "text-gray-900 md:text-gray-900 cursor-pointer"
+            } md:p-0 `}
+          >
+            Envios
+          </a>
+        </li>
+      </>
+    );
+  };
 
   const renderMenuProduccion = (role) => {
     return (
@@ -34,8 +69,10 @@ export default function Menu() {
                 notaEnvios: false,
                 mercaderia: false,
                 inventario: false,
+                home: false,
+                envios: false,
               });
-              navegate("/");
+              navegate("/produccion");
             }}
             className={`block py-2 px-3 rounded md:bg-transparent ${
               menuActive.produccion
@@ -58,6 +95,8 @@ export default function Menu() {
                 notaEnvios: false,
                 mercaderia: false,
                 inventario: false,
+                home: false,
+                envios: false,
               });
               navegate("/maquinaParada");
             }}
@@ -82,6 +121,8 @@ export default function Menu() {
                 notaEnvios: false,
                 mercaderia: false,
                 inventario: false,
+                home: false,
+                envios: false,
               });
               navegate("/matrices");
             }}
@@ -112,7 +153,9 @@ export default function Menu() {
                 remitos: false,
                 notaEnvios: false,
                 mercaderia: false,
-                inventario: false
+                inventario: false,
+                home: false,
+                envios: false,
               });
               navegate("/pedidos");
             }}
@@ -136,7 +179,9 @@ export default function Menu() {
                 remitos: true,
                 notaEnvios: false,
                 mercaderia: false,
-                inventario: false
+                inventario: false,
+                home: false,
+                envios: false,
               });
               navegate("/remitos");
             }}
@@ -160,7 +205,9 @@ export default function Menu() {
                 remitos: false,
                 notaEnvios: true,
                 mercaderia: false,
-                inventario: false
+                inventario: false,
+                home: false,
+                envios: false,
               });
               navegate("/notaEnvios");
             }}
@@ -191,7 +238,9 @@ export default function Menu() {
                 remitos: false,
                 notaEnvios: false,
                 mercaderia: true,
-                inventario: false
+                inventario: false,
+                home: false,
+                envios: false,
               });
               navegate("/mercaderia");
             }}
@@ -213,7 +262,7 @@ export default function Menu() {
       return (
         <>
           {renderMenuProduccion()} {renderMenuOficina()}{" "}
-          {renderMenuMercaderia()}
+          {renderMenuMercaderia()} {renderMenuEnvios()}
         </>
       );
     } else if (userSupabase.role == "oficina") {
@@ -222,6 +271,8 @@ export default function Menu() {
       return <>{renderMenuProduccion()} </>;
     } else if (userSupabase.role == "mercaderia") {
       return <>{renderMenuMercaderia()}</>;
+    } else if (userSupabase.role == "envios") {
+      return <>{renderMenuEnvios()}</>;
     }
   };
 
@@ -270,7 +321,35 @@ export default function Menu() {
                     remitos: false,
                     notaEnvios: false,
                     mercaderia: false,
-                    inventario: true
+                    inventario: false,
+                    home: true,
+                    envios: false,
+                  });
+                  navegate("/");
+                }}
+                className={`block py-2 px-3 rounded md:bg-transparent ${
+                  menuActive.home
+                    ? "text-white bg-blue-700 md:text-blue-700 cursor-default"
+                    : "text-gray-900 md:text-gray-900 cursor-pointer"
+                } md:p-0 `}
+              >
+                Home
+              </a>
+            </li>
+            <li>
+              <a
+                onClick={() => {
+                  setMenuActive({
+                    produccion: false,
+                    paradaMaquina: false,
+                    matrices: false,
+                    pedidos: false,
+                    remitos: false,
+                    notaEnvios: false,
+                    mercaderia: false,
+                    inventario: true,
+                    home: false,
+                    envios: false,
                   });
                   navegate("/inventario");
                 }}

@@ -19,10 +19,8 @@ export const UserProvider = (props) => {
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    //Validar el usuario guardado en el local storage
-    /*if (userSupabase) {
-      console.log("user", userSupabase);
-    } else navegate("/login");*/
+    if (userSupabase != null) navegate("/");
+    else navegate("/login");
   }, []);
 
   const signOut = async () => {};
@@ -30,12 +28,9 @@ export const UserProvider = (props) => {
   const logIn = (email, password) => {
     toast.promise(
       axios
-        .get(
-          `https://deposito-digrutt-express-production.up.railway.app/api/login?email=${email}&password=${password}`
-        )
+        .get(`${BASE_URL}/login?email=${email}&password=${password}`)
         .then((result) => {
           setUserSupabase(result.data);
-          console.log(result);
           toast.success(
             `Bienvendio ${result.data.nombre} ${result.data.apellido}`
           );
@@ -62,20 +57,15 @@ export const UserProvider = (props) => {
         }),
       {
         loading: "Cargando...",
-        success: (data) => {
-          console.log("Register: ", data);
-          return "Registrado con exito, Verifica el Gmail";
-        },
-        error: (err) => {
-          console.log("Register: ", err.response.data.menssage);
-          return "Ocurrio un Error";
-        },
+        success: "Registrado con exito, Verifica el Gmail",
+        error: "Ocurrio un Error",
       }
     );
   };
 
   const signInWithGoogle = async () => {
     //Enviar a la pagina del backend para iniciar sesion con google
+    toast.error("No esta Habilitado");
   };
 
   return (
