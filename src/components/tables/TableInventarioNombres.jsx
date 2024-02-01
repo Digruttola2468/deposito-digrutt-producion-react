@@ -42,7 +42,12 @@ export default function TableInventarioNombres({ type }) {
 
   const getPrevius = () => {
     resetTable();
-    setTable(data);
+    if (clientesList != null && clientesList != "") {
+      const filterByCliente = data.filter(
+        (elem) => elem.idcliente == clientesList
+      );
+      setTable(filterByCliente)
+    }else setTable(data);
   };
 
   const resetTable = () => {
@@ -64,12 +69,26 @@ export default function TableInventarioNombres({ type }) {
               onChange={(evt) => {
                 const text = evt.target.value;
                 if (text != "") {
-                  const filterByDescripcion = data.filter((elem) => {
-                    return elem.descripcion
-                      .toLowerCase()
-                      .includes(text.toLowerCase());
-                  });
-                  setTable(filterByDescripcion);
+                  if (clientesList != "" && clientesList != null) {
+                    const filterByCliente = data.filter(
+                      (elem) => elem.idcliente == clientesList
+                    );
+                    const filterByDescripcion = filterByCliente.filter(
+                      (elem) => {
+                        return elem.descripcion
+                          .toLowerCase()
+                          .includes(text.toLowerCase());
+                      }
+                    );
+                    setTable(filterByDescripcion);
+                  } else {
+                    const filterByDescripcion = data.filter((elem) => {
+                      return elem.descripcion
+                        .toLowerCase()
+                        .includes(text.toLowerCase());
+                    });
+                    setTable(filterByDescripcion);
+                  }
                 } else getPrevius();
               }}
             />
@@ -87,9 +106,7 @@ export default function TableInventarioNombres({ type }) {
                 <table className="min-w-full text-left text-sm font-light ">
                   <thead className="border-b font-medium dark:border-neutral-500">
                     <tr>
-                      <th scope="col" className="px-2 py-4">
-                        
-                      </th>
+                      <th scope="col" className="px-2 py-4"></th>
                       <th scope="col" className="px-6 py-4">
                         Descripcion
                       </th>
