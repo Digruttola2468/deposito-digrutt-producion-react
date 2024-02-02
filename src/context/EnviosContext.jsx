@@ -35,33 +35,25 @@ export default function EnviosContextProvider(props) {
     return data.find((elem) => elem.id == index);
   };
 
-  const updateIsDone = (idPedido, isDone) => {
-    const value = isDone ? "1" : "0";
-    data = data.map((elem) => {
-      if (idPedido == elem.id) return { ...elem, is_done: value };
-      else return elem;
-    });
-
-    return data;
-  };
-
   const updateTable = (idPedido, object) => {
     data = data.map((elem) => {
       if (idPedido == elem.id) return { ...elem, object };
       else return elem;
     });
-
-    return data;
+    setTable(data);
+    mutate();
   };
 
   const postTable = (object) => {
     data.push(object);
-    return data;
+    setTable(data);
+    mutate();
   };
 
   const deleteTable = (idPedido) => {
     data = data.filter((elem) => elem.id != idPedido);
-    return data;
+    setTable(data);
+    mutate();
   };
 
   if (isLoading) return <></>;
@@ -72,10 +64,10 @@ export default function EnviosContextProvider(props) {
       value={{
         api: data,
         table,
+        setTable,
         refreshTable: mutate,
         token: userSupabase.token,
         base_url: BASE_URL,
-        updateIsDone,
         updateTable,
         postTable,
         deleteTable,

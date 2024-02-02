@@ -1,6 +1,11 @@
 import { useContext, useState } from "react";
 import { EnviosContext } from "../../context/EnviosContext";
 import {
+  Button,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
   Divider,
   IconButton,
   Pagination,
@@ -11,9 +16,16 @@ import { IoRefresh } from "react-icons/io5";
 import { CiSquarePlus } from "react-icons/ci";
 import { FaPen } from "react-icons/fa";
 import { BiTrashAlt } from "react-icons/bi";
+import toast from "react-hot-toast";
+import axios from "axios";
+import { UserContext } from "../../context/UserContext";
+import DialogNewEnvio from "../dialog/DialogNewEnvio";
+import DialogUpdateEnvio from "../dialog/DialogUpdateEnvio";
 
 export default function TableEnvios() {
-  const { table,setIndex,index } = useContext(EnviosContext);
+  const { userSupabase, BASE_URL } = useContext(UserContext);
+  const { table, setIndex, refreshTable, setTable, index, deleteTable } =
+    useContext(EnviosContext);
 
   const [dialogNewEnvio, setDialogNewEnvio] = useState(false);
   const [dialogUpdate, setDialogUpdate] = useState(false);
@@ -21,6 +33,30 @@ export default function TableEnvios() {
 
   const [start, setStart] = useState(0);
   const [end, setEnd] = useState(10);
+
+  const handleDelete = () => {
+    const idEnvio = index.id;
+    toast.promise(
+      axios
+        .delete(`${BASE_URL}/envios/${idEnvio}`, {
+          headers: {
+            Authorization: `Bearer ${userSupabase.token}`,
+          },
+        })
+        .then((result) => {
+          deleteTable(idEnvio);
+          setDialogDelete(false);
+        }),
+      {
+        loading: "Eliminando Envio...",
+        success: "Operacion Exitosa",
+        error: (err) => {
+          console.log(err);
+          return "Ocurrio un Error";
+        },
+      }
+    );
+  };
 
   return (
     <section className="grid grid-cols-1  place-content-center mt-4">
@@ -32,7 +68,7 @@ export default function TableEnvios() {
           <span
             className="mx-2 cursor-pointer"
             onClick={() => {
-              mutate();
+              refreshTable();
             }}
           >
             <IoRefresh />
@@ -41,7 +77,17 @@ export default function TableEnvios() {
       </Divider>
       <div className="flex flex-col lg:justify-center lg:items-center ">
         <div className="flex flex-row items-center">
-          <TextField size="small" type="date" />
+          <TextField
+            size="small"
+            type="date"
+            onChange={(evt) => {
+              const fecha = evt.target.value.split("-").join("/");
+
+              const filterByDate = table.filter((elem) => elem.fecha == fecha);
+              if (filterByDate.length != 0) setTable(filterByDate);
+              else toast.error("No hay datos");
+            }}
+          />
           <Tooltip title="Nuevo Envio">
             <IconButton
               className="hover:text-blue-700"
@@ -62,6 +108,9 @@ export default function TableEnvios() {
                     </th>
                     <th scope="col" className="px-6 py-4">
                       Ubicacion
+                    </th>
+                    <th scope="col" className="px-6 py-4">
+                      Ciudad
                     </th>
                     <th scope="col" className="px-6 py-4">
                       Descripcion
@@ -92,6 +141,9 @@ export default function TableEnvios() {
                         </td>
                         <td className="whitespace-nowrap px-6 py-4">
                           {elem.ubicacion}
+                        </td>
+                        <td className="whitespace-nowrap px-6 py-4">
+                          {elem.ciudad}
                         </td>
                         <td className="whitespace-nowrap px-6 py-4">
                           {elem.descripcion}
@@ -149,6 +201,20 @@ export default function TableEnvios() {
           />
         </div>
       </div>
+      <DialogNewEnvio show={dialogNewEnvio} close={() => {setDialogNewEnvio(false)}} />
+      <DialogUpdateEnvio show={dialogUpdate} close={() => {setDialogUpdate(false)}} index={index}/>
+      <Dialog open={dialogDelete} onClose={() => setDialogDelete(false)}>
+        <DialogTitle>Eliminar Envio</DialogTitle>
+        <DialogContent>Estas seguro en eliminar el envio ?</DialogContent>
+        <DialogActions>
+          <Button onClick={() => setDialogDelete(false)} variant="text">
+            Cancelar
+          </Button>
+          <Button onClick={handleDelete} variant="outlined">
+            Delete
+          </Button>
+        </DialogActions>
+      </Dialog>
     </section>
   );
 }
