@@ -28,6 +28,8 @@ import TableMercaderia from "./components/tables/TableMercaderia";
 import TableInventario from "./components/tables/TableInventario";
 import TableClientes from "./components/tables/TableClientes";
 import Home from "./pages/Home";
+import EnviosContextProvider from "./context/EnviosContext";
+import TableEnvios from "./components/tables/TableEnvios";
 
 function App() {
   const { userSupabase } = useContext(UserContext);
@@ -35,8 +37,12 @@ function App() {
   const role = userSupabase?.role ?? null;
 
   const renderEnvios = () => {
-    return <h1>Envios</h1>
-  }
+    return (
+      <EnviosContextProvider>
+        <TableEnvios />
+      </EnviosContextProvider>
+    );
+  };
 
   const renderProduccion = () => {
     return (
