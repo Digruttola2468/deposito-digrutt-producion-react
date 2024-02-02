@@ -24,7 +24,7 @@ import DialogUpdateEnvio from "../dialog/DialogUpdateEnvio";
 
 export default function TableEnvios() {
   const { userSupabase, BASE_URL } = useContext(UserContext);
-  const { table, setIndex, refreshTable, setTable, index, deleteTable } =
+  const { api, table, setIndex, refreshTable, setTable, index, deleteTable } =
     useContext(EnviosContext);
 
   const [dialogNewEnvio, setDialogNewEnvio] = useState(false);
@@ -83,8 +83,9 @@ export default function TableEnvios() {
             onChange={(evt) => {
               const fecha = evt.target.value.split("-").join("/");
 
-              const filterByDate = table.filter((elem) => elem.fecha == fecha);
-              if (filterByDate.length != 0) setTable(filterByDate);
+              const filterByDate = api.filter((elem) => elem.fecha == fecha);
+              if (filterByDate.length != 0) 
+                setTable(filterByDate);
               else toast.error("No hay datos");
             }}
           />
@@ -190,7 +191,7 @@ export default function TableEnvios() {
             </div>
           </div>
         </div>
-        <div className="flex flex-row justify-center ">
+        <div className="flex flex-row justify-center items-center">
           <Pagination
             count={Math.ceil(table.length / 10)}
             onChange={(evt, value) => {
@@ -199,10 +200,22 @@ export default function TableEnvios() {
               setEnd(endValue);
             }}
           />
+          <p className="font-mono text-xs uppercase">Envios: <span className="text-sm">{table.length}</span></p>
         </div>
       </div>
-      <DialogNewEnvio show={dialogNewEnvio} close={() => {setDialogNewEnvio(false)}} />
-      <DialogUpdateEnvio show={dialogUpdate} close={() => {setDialogUpdate(false)}} index={index}/>
+      <DialogNewEnvio
+        show={dialogNewEnvio}
+        close={() => {
+          setDialogNewEnvio(false);
+        }}
+      />
+      <DialogUpdateEnvio
+        show={dialogUpdate}
+        close={() => {
+          setDialogUpdate(false);
+        }}
+        index={index}
+      />
       <Dialog open={dialogDelete} onClose={() => setDialogDelete(false)}>
         <DialogTitle>Eliminar Envio</DialogTitle>
         <DialogContent>Estas seguro en eliminar el envio ?</DialogContent>
