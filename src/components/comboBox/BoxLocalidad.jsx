@@ -25,7 +25,7 @@ export default function BoxLocalidad({
         <Select
           size={size}
           value={localidad}
-          label="Cliente"
+          label="Localidad"
           onChange={(evt) => setLocalidad(evt.target.value)}
         >
           <MenuItem value="">

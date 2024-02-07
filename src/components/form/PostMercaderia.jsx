@@ -1,4 +1,11 @@
-import { Autocomplete, Button, TextField } from "@mui/material";
+import {
+  Autocomplete,
+  Button,
+  Stack,
+  Switch,
+  TextField,
+  Typography,
+} from "@mui/material";
 import { useContext, useState } from "react";
 import useSWR from "swr";
 import { UserContext } from "../../context/UserContext";
@@ -15,7 +22,7 @@ const fetcherToken = ([url, token]) => {
     .then((result) => result.data);
 };
 
-export default function PostMercaderia({refreshTable}) {
+export default function PostMercaderia({ refreshTable }) {
   const { userSupabase, BASE_URL } = useContext(UserContext);
 
   const { data, isLoading, error } = useSWR(
@@ -26,36 +33,73 @@ export default function PostMercaderia({refreshTable}) {
   const [codProducto, setcodProducto] = useState(null);
   const [stock, setStock] = useState("");
   const [fecha, setFecha] = useState("");
+  const [observacion, setObservacion] = useState("");
+
+  const [isEntrada, setIsEntrada] = useState(true);
 
   const handleSubmitPost = (evt) => {
     evt.preventDefault();
 
     if (codProducto != null) {
-      toast.promise(
-        axios.post(
-          `${BASE_URL}/mercaderia`,
+      if (isEntrada) {
+        toast.promise(
+          axios
+            .post(
+              `${BASE_URL}/mercaderia`,
+              {
+                fecha: fecha,
+                stock: stock,
+                idinventario: codProducto.id,
+                idcategoria: 2,
+              },
+              {
+                headers: {
+                  Authorization: `Bearer ${userSupabase.token}`,
+                },
+              }
+            )
+            .then((result) => {
+              refreshTable();
+              empty();
+            }),
           {
-            fecha: fecha,
-            stock: stock,
-            idinventario: codProducto.id,
-            idcategoria: 2,
-          },
-          {
-            headers: {
-              Authorization: `Bearer ${userSupabase.token}`,
-            },
+            loading: "Enviando...",
+            success: "Operacion Exitosa",
+            error: (err) => err.response.data.message,
           }
-        ).then(result => {
-          refreshTable();
-          empty();
-        }), {
-          loading: 'Enviando...',
-          success: 'Operacion Exitosa',
-          error: (err) => err.response.data.message
-        }
-      )
+        );
+      } else {
+        toast.promise(
+          axios
+            .post(
+              `${BASE_URL}/mercaderia/salida`,
+              {
+                fecha: fecha,
+                stock: stock,
+                idinventario: codProducto.id,
+                observacion: observacion
+              },
+              {
+                headers: {
+                  Authorization: `Bearer ${userSupabase.token}`,
+                },
+              }
+            )
+            .then((result) => {
+              refreshTable();
+              empty();
+            }),
+          {
+            loading: "Enviando...",
+            success: "Operacion Exitosa",
+            error: (err) => err.response.data.message,
+          }
+        );
+      }
     }
   };
+  /**
+    } */
 
   const empty = () => {
     //setFecha("");
@@ -72,10 +116,18 @@ export default function PostMercaderia({refreshTable}) {
       onSubmit={handleSubmitPost}
     >
       <h2 className="uppercase w-full text-center font-bold text-lg">
-          Agregar Nueva Mercaderia
-        </h2>
-      <div className="w-full flex flex-row items-center justify-between my-2">
-        
+        Agregar Nueva Mercaderia
+      </h2>
+      <div className="w-full flex flex-col items-center justify-between my-2">
+        <Stack direction="row" alignItems="center">
+          <Typography>Entrada</Typography>
+          <Switch
+            defaultValue={false}
+            value={isEntrada}
+            onChange={(evt, value) => setIsEntrada(!value)}
+          />
+          <Typography>Salida</Typography>
+        </Stack>
         <p className="text-gray-400">
           {codProducto != null ? codProducto.descripcion : ""}
         </p>
@@ -110,6 +162,17 @@ export default function PostMercaderia({refreshTable}) {
           sx={{ width: "100%", marginTop: 1 }}
         />
       </div>
+      {isEntrada == false && (
+        <div>
+          <TextField
+            label="Descripcion Salida"
+            value={observacion}
+            onChange={(evt) => setObservacion(evt.target.value)}
+            variant="outlined"
+            sx={{ width: "100%", marginTop: 1 }}
+          />
+        </div>
+      )}
       <div className="flex flex-row justify-end mt-4">
         <Button onClick={empty}>Limpiar</Button>
         <Button type="submit" variant="contained">

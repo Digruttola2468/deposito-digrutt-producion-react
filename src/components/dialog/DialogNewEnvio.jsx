@@ -13,6 +13,7 @@ import {
 import BoxLocalidad from "../comboBox/BoxLocalidad";
 import { EnviosContext } from "../../context/EnviosContext";
 import BoxVehiculos from "../comboBox/BoxVehiculos";
+import BoxLugaresVisitados from "../comboBox/BoxLugaresVisitados";
 
 export default function DialogNewEnvio({
   show = false,
@@ -28,11 +29,14 @@ export default function DialogNewEnvio({
   const [descripcion, setDescripcion] = useState("");
   const [fechaDate, setFechaDate] = useState("");
 
+  const [objLugarVisitado, setLugarVisitado] = useState("");
+
   const empty = () => {
     setVehiculo("");
     setUbicacion("");
     setDescripcion("");
     setFechaDate("");
+    setLugarVisitado("")
   };
 
   const handleNewEnvio = () => {
@@ -84,6 +88,16 @@ export default function DialogNewEnvio({
           setVehiculo={setVehiculo}
           vehiculo={vehiculo}
           sx={{ marginTop: 2 }}
+        />
+        <BoxLugaresVisitados
+          setLugarVisitado={(evt) => {
+            const lugar = evt.target.value;
+            setLugarVisitado(lugar);
+
+            setUbicacion(lugar.ubicacion);
+            setLocalidad(lugar.idLocalidad);
+          }}
+          lugarVisitado={objLugarVisitado}
         />
         <TextField
           value={ubicacion}
