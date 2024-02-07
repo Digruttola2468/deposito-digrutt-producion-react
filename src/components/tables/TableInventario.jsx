@@ -20,6 +20,7 @@ import { BiTrashAlt } from "react-icons/bi";
 import toast from "react-hot-toast";
 import { CiSquarePlus } from "react-icons/ci";
 import DialogNewInventario from "../dialog/DialogNewInventario";
+import { InventarioContext } from "../../context/InventarioContext";
 const fetcher = ([url, token]) => {
   return axios
     .get(url, {
@@ -31,25 +32,19 @@ const fetcher = ([url, token]) => {
 };
 
 export default function TableInventario() {
+  const { table, refreshTable, setTable, setIndex, index, deleteTable, api: data } =
+    useContext(InventarioContext);
   const { userSupabase, BASE_URL } = useContext(UserContext);
 
-  const { data, isLoading, error, mutate } = useSWR(
-    [`${BASE_URL}/inventario`, userSupabase.token],
-    fetcher,
-    { onSuccess: (data, key, config) => setTable(data) }
-  );
-
-  const [table, setTable] = useState([]);
   const [start, setStart] = useState(0);
   const [end, setEnd] = useState(10);
-  const [index, setIndex] = useState(null);
 
   const [dialogUpdate, setDialogUpdate] = useState(false);
   const [dialogDelete, setDialogDelete] = useState(false);
   const [dialogNewProduct, setDialogNewProduct] = useState(false);
 
   const getPrevius = () => {
-    setTable(data);
+    refreshTable();
     resetTable();
   };
 
@@ -68,8 +63,7 @@ export default function TableInventario() {
           },
         })
         .then((result) => {
-          console.log(result);
-          mutate();
+          deleteTable(index.id);
         }),
       {
         loading: "Eliminando...",
@@ -78,9 +72,6 @@ export default function TableInventario() {
       }
     );
   };
-
-  if (isLoading) return <></>;
-  if (error) return <></>;
 
   return (
     <>
@@ -94,7 +85,9 @@ export default function TableInventario() {
                 const text = evt.target.value;
                 if (text != "") {
                   const filterByDescripcion = data.filter((elem) => {
-                    return elem.descripcion.toLowerCase().includes(text.toLowerCase().trim());
+                    return elem.descripcion
+                      .toLowerCase()
+                      .includes(text.toLowerCase().trim());
                   });
                   resetTable();
                   setTable(filterByDescripcion);
@@ -238,13 +231,13 @@ export default function TableInventario() {
           close={() => {
             setDialogUpdate(false);
           }}
-          refreshTable={mutate}
+          refreshTable={refreshTable}
           index={index}
         />
         <DialogNewInventario
           show={dialogNewProduct}
           close={() => setDialogNewProduct(false)}
-          refreshTable={mutate}
+          refreshTable={refreshTable}
         />
         <Dialog open={dialogDelete} onClose={() => setDialogDelete(false)}>
           <DialogTitle>Eliminar Inventario</DialogTitle>

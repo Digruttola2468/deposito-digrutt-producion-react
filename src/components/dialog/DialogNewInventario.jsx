@@ -11,12 +11,14 @@ import {
 } from "@mui/material";
 import AutoCompleteClient from "../autoComplete/AutoCompleteClient";
 import toast from "react-hot-toast";
+import { InventarioContext } from "../../context/InventarioContext";
 
 export default function DialogNewInventario({
   show = false,
   close = () => {},
   refreshTable = () => {},
 }) {
+  const {postTable} = useContext(InventarioContext)
   const { BASE_URL, userSupabase } = useContext(UserContext);
 
   const [nombre, setNombre] = useState("");
@@ -37,7 +39,8 @@ export default function DialogNewInventario({
           }
         )
         .then((result) => {
-          refreshTable();
+          postTable(result.data.data);
+          //refreshTable();
           empty();
           close();
         }),

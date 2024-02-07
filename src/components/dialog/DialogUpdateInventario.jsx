@@ -12,6 +12,7 @@ import { useContext, useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import useSWR from "swr";
 import { UserContext } from "../../context/UserContext";
+import { InventarioContext } from "../../context/InventarioContext";
 
 const fetcher = (url) => {
   return axios.get(url).then((result) => result.data);
@@ -23,6 +24,7 @@ export default function DialogUpdateInventario({
   index,
   refreshTable = () => {},
 }) {
+  const {updateTable} = useContext(InventarioContext)
   const { userSupabase, BASE_URL } = useContext(UserContext);
 
   const { data, error, isLoading } = useSWR(`${BASE_URL}/clientes`, fetcher);
@@ -64,8 +66,7 @@ export default function DialogUpdateInventario({
           }
         )
         .then((result) => {
-          console.log("result Update: ", result);
-          refreshTable();
+          updateTable(index.id, result.data.data)
         }),
       {
         loading: "Actualizando...",
