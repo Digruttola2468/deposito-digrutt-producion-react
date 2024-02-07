@@ -55,7 +55,7 @@ export default function DialogUpdateMatrices({
   const handleUpdate = () => {
     toast.promise(
       axios.put(
-        `${BASE_URL}/matriz/${index.id}`,
+        `${BASE_URL}/matrices/${index.id}`,
         {
           descripcion,
           idmaterial: material != "" ? material : null,

@@ -86,7 +86,7 @@ export default function TableMatrices() {
   const handleDelete = () => {
     toast.promise(
       axios
-        .delete(`${BASE_URL}/matriz/${index.id}`, {
+        .delete(`${BASE_URL}/matrices/${index.id}`, {
           headers: {
             Authorization: `Bearer ${userSupabase.token}`,
           },
