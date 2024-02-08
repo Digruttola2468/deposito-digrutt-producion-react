@@ -18,7 +18,7 @@ const fetcherToken = ([url, token]) => {
 export default function InventarioContextProvider(props) {
   const { userSupabase, BASE_URL } = useContext(UserContext);
 
-  const [index, setIndex] = useState(null);     
+  const [index, setIndex] = useState(null);
   const [table, setTable] = useState([]);
 
   let { data, isLoading, error, mutate } = useSWR(
@@ -40,7 +40,6 @@ export default function InventarioContextProvider(props) {
       if (idInventario == elem.id) return { ...elem, ...object };
       else return elem;
     });
-    console.log(data);
     setTable(data);
   };
 

@@ -99,7 +99,8 @@ export default function DialogUpdateInventario({
         <TextField
           sx={{ marginTop: 3, marginLeft: 1 }}
           label="Descripcion"
-          multiline={true}
+          multiline
+          rows={3}
           value={descripcion}
           onChange={(evt) => setDescripcion(evt.target.value)}
         />
