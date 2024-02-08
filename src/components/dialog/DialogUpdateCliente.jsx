@@ -17,6 +17,7 @@ import { useContext, useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import useSWR from "swr";
 import { UserContext } from "../../context/UserContext";
+import { ClientesContext } from "../../context/ClientesContext";
 
 const fetcher = (url) => {
   return axios.get(url).then((result) => result.data);
@@ -28,6 +29,9 @@ export default function DialogUpdateCliente({
   index,
   refreshTable = () => {},
 }) {
+  const {
+    updateTable,
+  } = useContext(ClientesContext);
   const { userSupabase, BASE_URL } = useContext(UserContext);
 
   const { data, isLoading, error, mutate } = useSWR(
@@ -55,7 +59,7 @@ export default function DialogUpdateCliente({
     toast.promise(
       axios
         .put(
-          `${BASE_URL}/cliente/${index.id}`,
+          `${BASE_URL}/clientes/${index.id}`,
           { cliente, domicilio, localidad, mail, cuit },
           {
             headers: {
@@ -64,7 +68,8 @@ export default function DialogUpdateCliente({
           }
         )
         .then((result) => {
-          refreshTable();
+          updateTable(index.id, result.data.data)
+          //refreshTable();
         }),
       {
         loading: "Actualizando...",

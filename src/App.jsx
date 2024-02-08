@@ -31,6 +31,7 @@ import Home from "./pages/Home";
 import EnviosContextProvider from "./context/EnviosContext";
 import TableEnvios from "./components/tables/TableEnvios";
 import InventarioContextProvider from "./context/InventarioContext";
+import ClientesProvider from "./context/ClientesContext";
 
 function App() {
   const { userSupabase } = useContext(UserContext);
@@ -129,7 +130,9 @@ function App() {
         <InventarioContextProvider>
           <TableInventario />
         </InventarioContextProvider>
-        <TableClientes />
+        <ClientesProvider>
+          <TableClientes />
+        </ClientesProvider>
       </>
     );
   };
