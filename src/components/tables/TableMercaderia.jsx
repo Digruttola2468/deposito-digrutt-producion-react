@@ -20,6 +20,7 @@ import { FaPen } from "react-icons/fa";
 import { BiTrashAlt } from "react-icons/bi";
 import DialogUpdateMercaderia from "../dialog/DialogUpdateMercaderia";
 import toast from "react-hot-toast";
+import { MercaderiaContext } from "../../context/MercaderiaContext";
 
 const fetcher = ([url, token]) => {
   return axios
@@ -32,18 +33,19 @@ const fetcher = ([url, token]) => {
 };
 
 export default function TableMercaderia() {
+  const {
+    api: data,
+    table,
+    setTable,
+    setIndex,
+    index,
+    deleteTable,
+  } = useContext(MercaderiaContext);
   const { userSupabase, BASE_URL } = useContext(UserContext);
 
-  const [table, setTable] = useState([]);
   const [start, setStart] = useState(0);
   const [end, setEnd] = useState(10);
-  const [index, setIndex] = useState(null);
-
-  const { data, isLoading, error, mutate } = useSWR(
-    [`${BASE_URL}/mercaderia`, userSupabase.token],
-    fetcher,
-    { onSuccess: (data, key, config) => setTable(data) }
-  );
+  const [page, setPage] = useState(0);
 
   const [dialogUpdate, setDialogUpdate] = useState(false);
   const [dialogDelete, setDialogDelete] = useState(false);
@@ -56,6 +58,7 @@ export default function TableMercaderia() {
   const resetTable = () => {
     setStart(0);
     setEnd(10);
+    setPage(0);
   };
 
   const handleDelete = () => {
@@ -67,22 +70,16 @@ export default function TableMercaderia() {
           },
         })
         .then((result) => {
-          mutate();
-          setDialogDelete(false)
+          deleteTable(index.id);
+          setDialogDelete(false);
         }),
       {
         loading: "Eliminando...",
         success: "Operacion Exitosa",
-        error: (err) => {
-          console.log(err);
-          return "Ocurrio un Error";
-        },
+        error: "Ocurrio un Error",
       }
     );
   };
-
-  if (isLoading) return <></>;
-  if (error) return <></>;
 
   return (
     <>
@@ -98,6 +95,7 @@ export default function TableMercaderia() {
                   const filterByDescripcion = data.filter((elem) => {
                     return elem.descripcion.includes(text);
                   });
+                  resetTable();
                   setTable(filterByDescripcion);
                 } else getPrevius();
               }}
@@ -139,7 +137,9 @@ export default function TableMercaderia() {
                     </tr>
                   </thead>
                   <tbody>
-                    {table.slice(start, end).map((elem) => {
+                    {table
+                    
+                    .slice(start, end).map((elem) => {
                       return (
                         <tr
                           className={`border-b dark:border-neutral-500 hover:border-info-200 hover:bg-cyan-200 hover:text-neutral-800`}
@@ -204,8 +204,10 @@ export default function TableMercaderia() {
           </div>
           <div className="flex flex-row justify-center ">
             <Pagination
+              page={page}
               count={Math.ceil(table.length / 10)}
               onChange={(evt, value) => {
+                setPage(value);
                 const endValue = 10 * parseInt(value);
                 setStart(endValue - 10);
                 setEnd(endValue);
@@ -215,17 +217,14 @@ export default function TableMercaderia() {
         </div>
         <div className="flex flex-col lg:flex-col items-center justify-start">
           <div className="block rounded-lg bg-white p-6 shadow-[0_2px_15px_-3px_rgba(0,0,0,0.07),0_10px_20px_-2px_rgba(0,0,0,0.04)] dark:bg-neutral-700 border lg:mx-5 mx-1 mt-2">
-            {index != null && (
-              <ItemTableMercaderia index={index} refreshTableOficina={mutate} />
-            )}
+            <ItemTableMercaderia index={index} />
           </div>
-          <PostMercaderia refreshTable={mutate} />
+          <PostMercaderia />
         </div>
         <DialogUpdateMercaderia
           index={index}
           close={() => setDialogUpdate(false)}
           show={dialogUpdate}
-          refreshTable={mutate}
         />
         <Dialog open={dialogDelete} onClose={() => setDialogDelete(false)}>
           <DialogTitle>Eliminar Mercaderia</DialogTitle>

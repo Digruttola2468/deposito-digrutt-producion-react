@@ -11,6 +11,7 @@ import useSWR from "swr";
 import { UserContext } from "../../context/UserContext";
 import axios from "axios";
 import toast from "react-hot-toast";
+import { MercaderiaContext } from "../../context/MercaderiaContext";
 
 const fetcherToken = ([url, token]) => {
   return axios
@@ -22,7 +23,8 @@ const fetcherToken = ([url, token]) => {
     .then((result) => result.data);
 };
 
-export default function PostMercaderia({ refreshTable }) {
+export default function PostMercaderia() {
+  const { postTable } = useContext(MercaderiaContext);
   const { userSupabase, BASE_URL } = useContext(UserContext);
 
   const { data, isLoading, error } = useSWR(
@@ -59,7 +61,7 @@ export default function PostMercaderia({ refreshTable }) {
               }
             )
             .then((result) => {
-              refreshTable();
+              postTable(result.data);
               empty();
             }),
           {
@@ -86,7 +88,6 @@ export default function PostMercaderia({ refreshTable }) {
               }
             )
             .then((result) => {
-              refreshTable();
               empty();
             }),
           {
@@ -98,11 +99,8 @@ export default function PostMercaderia({ refreshTable }) {
       }
     }
   };
-  /**
-    } */
 
   const empty = () => {
-    //setFecha("");
     setStock("");
     setcodProducto(null);
   };

@@ -23,13 +23,15 @@ const fetcher = ([url, token]) => {
     .then((result) => result.data);
 };
 
-export default function ItemTableMercaderia({ index, refreshTableOficina }) {
+export default function ItemTableMercaderia({ index }) {
   const { userSupabase, BASE_URL } = useContext(UserContext);
 
   const { data, isLoading, error } = useSWR(
-    [`${BASE_URL}/mercaderia/${index.id}`, userSupabase.token],
+    [`${BASE_URL}/mercaderia/${index?.id ?? null}`, userSupabase.token],
     fetcher
   );
+
+  if (index == null) return <></>;
 
   if (isLoading)
     return (

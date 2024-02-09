@@ -31,6 +31,7 @@ import Home from "./pages/Home";
 import EnviosContextProvider from "./context/EnviosContext";
 import TableEnvios from "./components/tables/TableEnvios";
 import InventarioContextProvider from "./context/InventarioContext";
+import MercaderiaProvider from "./context/MercaderiaContext";
 
 function App() {
   const { userSupabase } = useContext(UserContext);
@@ -118,7 +119,9 @@ function App() {
   const renderMercaderia = () => {
     return (
       <>
-        <TableMercaderia />
+        <MercaderiaProvider>
+          <TableMercaderia />
+        </MercaderiaProvider>
       </>
     );
   };

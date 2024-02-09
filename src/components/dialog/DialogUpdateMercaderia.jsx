@@ -10,13 +10,14 @@ import axios from "axios";
 import { useContext, useEffect, useState } from "react";
 import { UserContext } from "../../context/UserContext";
 import toast from "react-hot-toast";
+import { MercaderiaContext } from "../../context/MercaderiaContext";
 
 export default function DialogUpdateMercaderia({
   show = false,
   close = () => {},
   index,
-  refreshTable = () => {},
 }) {
+  const { updateTable } = useContext(MercaderiaContext);
   const { userSupabase, BASE_URL } = useContext(UserContext);
 
   const [fecha, setFecha] = useState("");
@@ -29,7 +30,6 @@ export default function DialogUpdateMercaderia({
   }, [index]);
 
   const handleUpdate = () => {
-    //fecha, stock
     toast.promise(
       axios
         .put(
@@ -42,7 +42,7 @@ export default function DialogUpdateMercaderia({
           }
         )
         .then((result) => {
-          refreshTable();
+          updateTable(index.id, result.data)
           empty();
           close();
         }),
