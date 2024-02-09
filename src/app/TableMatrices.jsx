@@ -56,19 +56,19 @@ export default function TableMatrices() {
 
       const i = apiOriginal.indexOf(find);
 
-      const value = Math.round(i / 10);
+      const value = i / 10;
 
-      if (value == 0) {
-        let x = 1 * 10;
+      console.log(value);
+
+      if (value < 1) {
+        const x = 1 * 10;
         setEnd(x);
         setStart(x - 10);
       } else {
-        let y = value * 10;
+        const y = (value * 10) + 10;
         setEnd(y);
         setStart(y - 10);
       }
-
-      // 8 / 10 -> 0.8 -> 1 * 10 -> 10
     }
   }, [indexHistorial]);
 

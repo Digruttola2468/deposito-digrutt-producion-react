@@ -257,6 +257,39 @@ export default function Menu() {
     );
   };
 
+  const renderMenuMatriceria = (role) => {
+    return (
+      <>
+        <li>
+          <a
+            onClick={() => {
+              setMenuActive({
+                produccion: false,
+                paradaMaquina: false,
+                matrices: true,
+                pedidos: false,
+                remitos: false,
+                notaEnvios: false,
+                mercaderia: false,
+                inventario: false,
+                home: false,
+                envios: false,
+              });
+              navegate("/matrices");
+            }}
+            className={`block py-2 px-3 rounded md:bg-transparent ${
+              menuActive.matrices
+                ? "text-white bg-blue-700 md:text-blue-700 cursor-default"
+                : "text-gray-900 md:text-gray-900 cursor-pointer"
+            } md:p-0 `}
+          >
+            Matrices
+          </a>
+        </li>
+      </>
+    );
+  };
+
   const returnMenu = () => {
     if (userSupabase.role == "admin") {
       return (
@@ -273,6 +306,8 @@ export default function Menu() {
       return <>{renderMenuMercaderia()}</>;
     } else if (userSupabase.role == "envios") {
       return <>{renderMenuEnvios()}</>;
+    } else if (userSupabase.role == "matriceria") {
+      return <>{renderMenuMatriceria()}</>;
     }
   };
 
