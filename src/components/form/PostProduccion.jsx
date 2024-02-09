@@ -10,7 +10,6 @@ import axios from "axios";
 import { useContext, useState } from "react";
 import useSWR from "swr";
 import { ProducionContext } from "../../context/ProduccionContext";
-import { CiSquarePlus } from "react-icons/ci";
 import { AiOutlineDelete } from "react-icons/ai";
 import toast from "react-hot-toast";
 
@@ -42,13 +41,19 @@ export default function PostProduccion({ listInventario, setListInventario }) {
     for (let i = 0; i < listInventario.length; i++) {
       const codProductoent = listInventario[i];
 
+      const numMaquina = evt.target[`numMaquina-${codProductoent.id}`].value
+      const golpes = evt.target[`golpes-${codProductoent.id}`].value;
+      const piezasXGolpe = evt.target[`piezas-${codProductoent.id}`].value;
+      const piezasProducidas = piezasXGolpe * golpes;
+      const golpesHora = golpes / 24;
+
       const enviarcodProducto = {
-        numMaquina: evt.target[`numMaquina-${codProductoent.id}`].value,
+        numMaquina: numMaquina,
         fecha,
         idInventario: parseInt(codProductoent.id),
-        golpesReales: evt.target[`golpes-${codProductoent.id}`].value,
-        piezasProducidas: evt.target[`piezas-${codProductoent.id}`].value,
-        promGolpesHora: evt.target[`promedio-${codProductoent.id}`].value,
+        golpesReales: golpes,
+        piezasProducidas: piezasProducidas,
+        promGolpesHora: golpesHora,
       };
       enviar.push(enviarcodProducto);
     }
@@ -169,25 +174,13 @@ export default function PostProduccion({ listInventario, setListInventario }) {
         <div className="grid grid-cols-2 gap-2 px-2">
           <TextField
             type="number"
-            label="Piezas Producidas"
+            label="Piezas x Golpe"
             sx={{ margin: 1, width: "100%", maxWidth: "150px" }}
             size="small"
             id={`piezas-${unique}`}
-            error={campo == "piezasProducidas" ? true : false}
             onChange={(evt) => {
               if (evt.target.value != "") emptyRequestError();
             }}
-          />
-          <TextField
-            type="number"
-            label="Prom Golpes/hr"
-            sx={{ margin: 1, width: "100%", maxWidth: "150px" }}
-            size="small"
-            error={campo == "promGolpHr" ? true : false}
-            onChange={(evt) => {
-              if (evt.target.value != "") emptyRequestError();
-            }}
-            id={`promedio-${unique}`}
           />
         </div>
       </div>
