@@ -3,7 +3,7 @@ import { createContext, useContext, useEffect, useState } from "react";
 import useSWR from "swr";
 import { UserContext } from "./UserContext";
 
-export const MatricesContext = createContext();
+export const HistorialMatrizContext = createContext();
 
 const fetcherToken = ([url, token]) => {
   return axios
@@ -15,7 +15,7 @@ const fetcherToken = ([url, token]) => {
     .then((result) => result.data);
 };
 
-export default function MatricesContextProvider(props) {
+export default function HistorialMatrizProvider(props) {
   const { userSupabase, BASE_URL } = useContext(UserContext);
 
   const [index, setIndex] = useState(null);
@@ -42,7 +42,7 @@ export default function MatricesContextProvider(props) {
   };
 
   const { data, isLoading, error, mutate } = useSWR(
-    [`${BASE_URL}/matrices`, userSupabase.token],
+    [`${BASE_URL}/historialMatriz`, userSupabase.token],
     fetcherToken,
     {
       onSuccess: (data, evt, config) => {
@@ -63,16 +63,16 @@ export default function MatricesContextProvider(props) {
     return apiOriginal.find((elem) => elem.id == index);
   };
 
-  const updateTable = (idMatriz, object) => {
+  const updateTable = (idHistorial, object) => {
     setTable(
-      apiOriginal.map((elem) => {
-        if (idMatriz == elem.id) return { ...elem, ...object };
+      table.map((elem) => {
+        if (idHistorial == elem.id) return object;
         else return elem;
       })
     );
     setApiOriginal(
       apiOriginal.map((elem) => {
-        if (idMatriz == elem.id) return { ...elem, ...object };
+        if (idHistorial == elem.id) return object;
         else return elem;
       })
     );
@@ -83,16 +83,16 @@ export default function MatricesContextProvider(props) {
     setTable([object, ...apiOriginal]);
   };
 
-  const deleteTable = (idMatriz) => {
-    setTable(apiOriginal.filter((elem) => elem.id != idMatriz));
-    setApiOriginal(apiOriginal.filter((elem) => elem.id != idMatriz));
+  const deleteTable = (idHistorial) => {
+    setTable(apiOriginal.filter((elem) => elem.id != idHistorial));
+    setApiOriginal(apiOriginal.filter((elem) => elem.id != idHistorial));
   };
 
   if (isLoading) return <></>;
   if (error) return <></>;
 
   return (
-    <MatricesContext.Provider
+    <HistorialMatrizContext.Provider
       value={{
         apiOriginal,
         table,
@@ -113,6 +113,6 @@ export default function MatricesContextProvider(props) {
       }}
     >
       {props.children}
-    </MatricesContext.Provider>
+    </HistorialMatrizContext.Provider>
   );
 }

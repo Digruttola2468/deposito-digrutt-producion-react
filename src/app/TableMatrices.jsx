@@ -1,26 +1,17 @@
 import {
-  Alert,
-  Box,
   Button,
   Dialog,
   DialogActions,
   DialogContent,
   DialogTitle,
-  FormControl,
   IconButton,
-  InputLabel,
-  MenuItem,
   Pagination,
-  Select,
-  Slide,
-  Snackbar,
   TextField,
   Tooltip,
 } from "@mui/material";
 import { useContext, useEffect, useState } from "react";
 import { MatricesContext } from "../context/MatricesContext";
 import PostHistorialFalloseMatrices from "../components/form/PostHistorialFallosMatrices";
-import useSWR from "swr";
 import { UserContext } from "../context/UserContext";
 import axios from "axios";
 import SearchClientesBox from "../components/comboBox/SearchClientesBox";
@@ -30,51 +21,60 @@ import DialogUpdateMatrices from "../components/dialog/DialogUpdateMatrices";
 import DialogNewMatriz from "../components/dialog/DialogNewMatriz";
 import { CiSquarePlus } from "react-icons/ci";
 import toast from "react-hot-toast";
-
-const fetcherToken = ([url, token]) => {
-  return axios
-    .get(url, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    })
-    .then((result) => result.data);
-};
+import { HistorialMatrizContext } from "../context/HistorialMatrizContext";
 
 export default function TableMatrices() {
   const { userSupabase, BASE_URL } = useContext(UserContext);
-  const { setApiOne } = useContext(MatricesContext);
+  const {
+    table,
+    setTable,
+    setIndex,
+    index,
+    apiOriginal,
+    refreshTable: mutate,
+  } = useContext(MatricesContext);
+  const { index: indexHistorial } = useContext(HistorialMatrizContext);
 
-  const { data, isLoading, error, mutate } = useSWR(
-    [
-      `https://deposito-digrutt-express-production.up.railway.app/api/matrices`,
-      userSupabase.token,
-    ],
-    fetcherToken,
-    {
-      onSuccess: (data, key, config) => {
-        setTable(data);
-      },
-    }
-  );
-
-  const [table, setTable] = useState(data);
   const [start, setStart] = useState(1);
   const [end, setEnd] = useState(10);
   const [page, setPage] = useState(1);
-  const [index, setIndex] = useState(null);
+
+  const [selectTable, setSelectTable] = useState("");
 
   const [dialogUpdate, setDialogUpdate] = useState(false);
   const [dialogDelete, setDialogDelete] = useState(false);
   const [dialogNewMatriz, setDialogNewMatriz] = useState(false);
 
   useEffect(() => {
-    setStart(end - 10);
-  }, [end]);
+    setSelectTable(indexHistorial?.cod_matriz ?? "");
+
+    //Buscar en la tabla
+    if (indexHistorial != null) {
+      const find = apiOriginal.find(
+        (elem) => elem.cod_matriz == indexHistorial.cod_matriz
+      );
+
+      const i = apiOriginal.indexOf(find);
+
+      const value = Math.round(i / 10);
+
+      if (value == 0) {
+        let x = 1 * 10;
+        setEnd(x);
+        setStart(x - 10);
+      } else {
+        let y = value * 10;
+        setEnd(y);
+        setStart(y - 10);
+      }
+
+      // 8 / 10 -> 0.8 -> 1 * 10 -> 10
+    }
+  }, [indexHistorial]);
 
   const getPreviuos = () => {
     resetTable();
-    setTable(data);
+    setTable(apiOriginal);
   };
 
   const resetTable = () => {
@@ -93,7 +93,7 @@ export default function TableMatrices() {
         })
         .then((result) => {
           mutate();
-          setDialogDelete(false)
+          setDialogDelete(false);
         }),
       {
         loading: "Eliminando...",
@@ -106,11 +106,8 @@ export default function TableMatrices() {
     );
   };
 
-  if (isLoading) return <></>;
-  if (error) return <></>;
-
   return (
-    <section className="grid grid-cols-1 lg:grid-cols-[2fr,1fr]">
+    <section className="grid grid-cols-1 lg:grid-cols-[2fr,1fr] ">
       <div className="flex flex-col lg:justify-center lg:items-center ">
         <div className="flex flex-row items-center">
           <TextField
@@ -119,13 +116,13 @@ export default function TableMatrices() {
             onChange={(evt) => {
               const text = evt.target.value;
               if (text != "") {
-                const filter = data.filter((elem) => {
+                const filter = apiOriginal.filter((elem) => {
                   return elem.descripcion
                     .toLowerCase()
                     .includes(text.toLowerCase().trim());
                 });
-                setTable(filter);
                 resetTable();
+                setTable(filter);
               } else getPreviuos();
             }}
           />
@@ -133,7 +130,7 @@ export default function TableMatrices() {
             filterTable={setTable}
             table={table}
             refresh={getPreviuos}
-            apiOriginal={data}
+            apiOriginal={apiOriginal}
           />
           <Tooltip title="Nueva Matriz">
             <IconButton
@@ -177,9 +174,11 @@ export default function TableMatrices() {
                   {table.slice(start, end).map((elem, index) => {
                     return (
                       <tr
-                        className={`border-b dark:border-neutral-500 hover:border-info-200 hover:bg-red-200 hover:text-neutral-800`}
+                        className={`border-b dark:border-neutral-500 hover:border-info-200 hover:bg-red-200 hover:text-neutral-800 ${
+                          selectTable == elem.cod_matriz && "bg-red-200"
+                        }`}
                         key={index}
-                        onClick={() => setApiOne(elem)}
+                        onClick={() => setIndex(elem)}
                       >
                         <td className="text-center whitespace-nowrap px-6 py-4  font-medium">
                           {elem.cod_matriz}
@@ -240,8 +239,10 @@ export default function TableMatrices() {
             page={page}
             count={Math.ceil(table.length / 10)}
             onChange={(evt, value) => {
-              setEnd(10 * parseInt(value));
               setPage(value);
+              const endValue = 10 * parseInt(value);
+              setStart(endValue - 10);
+              setEnd(endValue);
             }}
           />
         </div>

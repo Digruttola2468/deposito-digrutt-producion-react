@@ -6,6 +6,8 @@ import useSWR from "swr";
 import { UserContext } from "../../context/UserContext";
 
 import toast from "react-hot-toast";
+import BoxCategoria from "../comboBox/BoxCategoria";
+import { HistorialMatrizContext } from "../../context/HistorialMatrizContext";
 
 const fetcherToken = ([url, token]) => {
   return axios
@@ -19,7 +21,8 @@ const fetcherToken = ([url, token]) => {
 
 export default function PostHistorialFalloseMatrices() {
   const { userSupabase, BASE_URL } = useContext(UserContext);
-  const { apiOne } = useContext(MatricesContext);
+  const { index: apiOne } = useContext(MatricesContext);
+  const { postTable } = useContext(HistorialMatrizContext);
 
   const { data, isLoading, error, mutate } = useSWR(
     [
@@ -31,6 +34,7 @@ export default function PostHistorialFalloseMatrices() {
 
   const [codMatriz, setCodMatriz] = useState(null);
   const [descripcionDeterioro, setDescripcionDeterioro] = useState("");
+  const [categoria, setCategoria] = useState("3");
 
   useEffect(() => {
     if (apiOne != null) setCodMatriz(apiOne);
@@ -46,6 +50,7 @@ export default function PostHistorialFalloseMatrices() {
           {
             idMatriz: codMatriz.id,
             descripcion_deterioro: descripcionDeterioro,
+            idCategoria: categoria,
           },
           {
             headers: {
@@ -54,8 +59,10 @@ export default function PostHistorialFalloseMatrices() {
           }
         )
         .then((result) => {
+          postTable(result.data.data);
           setCodMatriz(null);
           setDescripcionDeterioro("");
+          setCategoria("3");
         }),
       {
         loading: "Cargando...",
@@ -70,11 +77,19 @@ export default function PostHistorialFalloseMatrices() {
 
   return (
     <>
-      <section className="mt-10 lg:mt-0">
-        <h1 className="text-center uppercase font-bold text-lg">
+      <section className="mt-10 lg:mt-0 max-w-[400px]">
+        <h1 className="text-center uppercase font-bold text-lg my-2">
           Nuevo Error Matriz
         </h1>
         <form className="flex flex-col items-center justify-center">
+          <BoxCategoria
+            categoria={categoria}
+            setCategoria={setCategoria}
+            range={[
+              { id: 3, categoria: "Mantenimiento" },
+              { id: 4, categoria: "Falla" },
+            ]}
+          />
           <Autocomplete
             sx={{ margin: 1, width: "100%", maxWidth: "400px" }}
             options={data}

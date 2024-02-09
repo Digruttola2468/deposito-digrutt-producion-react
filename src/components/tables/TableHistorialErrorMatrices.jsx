@@ -10,16 +10,16 @@ import {
   Tooltip,
 } from "@mui/material";
 import axios from "axios";
-import { useContext, useEffect, useState } from "react";
+import { useContext, useState } from "react";
 import { UserContext } from "../../context/UserContext";
 import { FaCheck, FaLongArrowAltDown, FaLongArrowAltUp } from "react-icons/fa";
 import { FaXmark } from "react-icons/fa6";
-import useSWR from "swr";
 import { BiTrashAlt } from "react-icons/bi";
 import { FaPen } from "react-icons/fa";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 import DialogUpdateHistorialErroresMatrices from "../dialog/DialogUpdateHistorialErroresMatrices";
+import { HistorialMatrizContext } from "../../context/HistorialMatrizContext";
 
 const fetcherToken = ([url, token]) => {
   return axios
@@ -32,31 +32,16 @@ const fetcherToken = ([url, token]) => {
 };
 
 export default function TableHistorialErrorMatrices() {
+  const { table, setTable, index, setIndex, apiOriginal, updateTable, deleteTable } = useContext(HistorialMatrizContext);
   const { userSupabase, BASE_URL } = useContext(UserContext);
-  const navegate = useNavigate();
 
-  const { data, isLoading, error, mutate } = useSWR(
-    [`${BASE_URL}/historialMatriz`, userSupabase.token],
-    fetcherToken,
-    {
-      onSuccess: (data, key, config) => {
-        setTable(data);
-      },
-    }
-  );
-
-  const [index, setIndex] = useState(null);
-  const [table, setTable] = useState([]);
   const [start, setStart] = useState(0);
   const [end, setEnd] = useState(10);
   const [arrow, setArrow] = useState({ order: "ASC", campus: null });
+  const [page, setPage] = useState(1);
 
   const [dialogUpdate, setDialogUpdate] = useState(false);
   const [dialogDelete, setDialogDelete] = useState(false);
-
-  useEffect(() => {
-    setStart(end - 10);
-  }, [end]);
 
   const handleUpdateIsDone = (idHistorial, isDone) => {
     const value = isDone ? "1" : "0";
@@ -69,12 +54,7 @@ export default function TableHistorialErrorMatrices() {
         })
         .then((result) => {
           const response = result.data;
-          setTable(
-            table.map((elem) => {
-              if (idHistorial == elem.id) return response;
-              else return elem;
-            })
-          );
+          updateTable(idHistorial, response);
         }),
       {
         loading: "Cargando...",
@@ -83,15 +63,36 @@ export default function TableHistorialErrorMatrices() {
       }
     );
   };
+  
+  const handleDeleteItem = () => {
+    toast.promise(
+      axios
+        .delete(`${BASE_URL}/historialMatriz/${index.id}`, {
+          headers: {
+            Authorization: `Bearer ${userSupabase.token}`,
+          },
+        })
+        .then((result) => {
+          deleteTable(index.id);
+          setDialogDelete(false)
+        }),
+      {
+        loading: "Cargando...",
+        success: "Se elimino correctamente",
+        error: "Something wrong",
+      }
+    );
+  };
 
   const resetTable = () => {
+    setPage(1);
     setStart(0);
     setEnd(10);
   };
 
   const getPrevius = () => {
     resetTable();
-    setTable(data);
+    setTable(apiOriginal);
   };
 
   const handleOrderIsDone = (campus) => {
@@ -159,28 +160,6 @@ export default function TableHistorialErrorMatrices() {
     return <></>;
   };
 
-  const handleDeleteItem = () => {
-    toast.promise(
-      axios
-        .delete(`${BASE_URL}/historialMatriz/${index.id}`, {
-          headers: {
-            Authorization: `Bearer ${userSupabase.token}`,
-          },
-        })
-        .then((result) => {
-          setTable(table.filter((elem) => elem.id != idHistorial));
-        }),
-      {
-        loading: "Cargando...",
-        success: "Se elimino correctamente",
-        error: "Something wrong",
-      }
-    );
-  };
-
-  if (isLoading) return <></>;
-  if (error) return <></>;
-
   return (
     <section>
       <Divider>
@@ -197,10 +176,10 @@ export default function TableHistorialErrorMatrices() {
                       Cod Matriz
                     </th>
                     <th scope="col" className="px-6 py-4 text-center">
-                      Descripcion Matriz
+                      Descripcion Falla
                     </th>
                     <th scope="col" className="px-6 py-4 text-center">
-                      Descripcion Falla
+                      Categoria
                     </th>
                     <th
                       scope="col"
@@ -257,15 +236,16 @@ export default function TableHistorialErrorMatrices() {
                       <tr
                         className={`border-b dark:border-neutral-500 hover:border-info-200 hover:bg-red-200 hover:text-neutral-800`}
                         key={elem.id}
+                        onClick={() => {setIndex(elem)}}
                       >
                         <td className="whitespace-nowrap px-6 py-4 font-medium">
                           {elem.cod_matriz}
                         </td>
                         <td className="whitespace-nowrap px-6 py-4">
-                          {elem.descripcion}
+                          {elem.descripcion_deterioro.length >= 150 ? `${elem.descripcion_deterioro.slice(0,150)} ...` : elem.descripcion_deterioro}
                         </td>
                         <td className="whitespace-nowrap px-6 py-4">
-                          {elem.descripcion_deterioro}
+                          {elem.categoria}
                         </td>
                         <td className="whitespace-nowrap px-6 py-4">
                           {elem.fecha}
@@ -336,8 +316,12 @@ export default function TableHistorialErrorMatrices() {
         <div className="flex flex-row justify-center ">
           <Pagination
             count={Math.ceil(table.length / 10)}
+            page={page}
             onChange={(evt, value) => {
-              setEnd(10 * parseInt(value));
+              setPage(value);
+              const endValue = 10 * parseInt(value);
+              setStart(endValue - 10);
+              setEnd(endValue);
             }}
           />
         </div>

@@ -9,8 +9,6 @@ import Menu, { MenuLogInAndRegister } from "./app/Menu";
 import TableMaquinaParada from "./app/TableMaquinaParada";
 import TableProducion from "./app/TableProducion";
 
-import PostProduccion from "./components/form/PostProduccion";
-
 import SignUp from "./pages/SignUp";
 import IniciarSesion from "./pages/Iniciar";
 import SendEmail from "./pages/SendEmail";
@@ -32,7 +30,8 @@ import EnviosContextProvider from "./context/EnviosContext";
 import TableEnvios from "./components/tables/TableEnvios";
 import InventarioContextProvider from "./context/InventarioContext";
 import MercaderiaProvider from "./context/MercaderiaContext";
-import ClientesProvider from './context/ClientesContext';
+import ClientesProvider from "./context/ClientesContext";
+import HistorialMatrizProvider from "./context/HistorialMatrizContext";
 
 function App() {
   const { userSupabase } = useContext(UserContext);
@@ -46,14 +45,14 @@ function App() {
       </EnviosContextProvider>
     );
   };
-  
+
   const renderProduccion = () => {
     return (
       <ProduccionContextProvider>
         <section className="relative mt-2">
           <TableProducion />
           <TableInventarioNombres type={"produccion"} />
-          
+
           <GraficaProduccion />
         </section>
       </ProduccionContextProvider>
@@ -72,12 +71,14 @@ function App() {
 
   const renderMatriz = () => {
     return (
-      <MatricesContextProvider>
-        <section className="mt-2">
-          <TableMatrices />
-          <TableHistorialErrorMatrices />
-        </section>
-      </MatricesContextProvider>
+      <HistorialMatrizProvider>
+        <MatricesContextProvider>
+          <section className="mt-2">
+            <TableMatrices />
+            <TableHistorialErrorMatrices />
+          </section>
+        </MatricesContextProvider>
+      </HistorialMatrizProvider>
     );
   };
 
