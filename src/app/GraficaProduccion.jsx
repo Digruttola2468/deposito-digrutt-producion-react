@@ -16,8 +16,6 @@ export default function GraficaProduccion() {
   const [listGraficas, setListGraficas] = useState([]);
 
   const handleShowGrafic = (fechaInit, fechaEnd) => {
-    console.log(fechaInit);
-    console.log(fechaEnd);
     const URL = `${BASE_URL}/grafica/produccion?init=${fechaInit}&end=${fechaEnd}`;
     axios
       .get(URL, {

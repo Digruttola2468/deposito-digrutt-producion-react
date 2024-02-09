@@ -19,25 +19,31 @@ import { UserContext } from "../context/UserContext";
 import toast from "react-hot-toast";
 
 export default function TableProducion() {
+  const {
+    table,
+    setTable,
+    token,
+    index,
+    setIndex,
+    apiOriginal,
+    deleteTable,
+    descripcion,
+    setDescripcion,
+    fecha,
+    setFecha,
+  } = useContext(ProducionContext);
   const { BASE_URL } = useContext(UserContext);
-  const { tableOriginal, refreshTable, token } = useContext(ProducionContext);
-
-  const [index, setIndex] = useState(null);
-
-  const [table, setTable] = useState(() => tableOriginal);
 
   const [dialogUpdate, setDialogUpdate] = useState(false);
   const [dialogDelete, setDialogDelete] = useState(false);
 
+  const [page, setPage] = useState(1);
   const [start, setStart] = useState(0);
   const [end, setEnd] = useState(10);
 
-  useEffect(() => {
-    setStart(end - 10);
-  }, [end]);
-
   const getPrevius = () => {
-    setTable(tableOriginal);
+    resetTable();
+    setTable(apiOriginal);
   };
 
   const handleDelete = () => {
@@ -50,8 +56,7 @@ export default function TableProducion() {
         })
         .then((result) => {
           setDialogDelete(false);
-          refreshTable();
-          getPrevius();
+          deleteTable(index.id);
         }),
       {
         loading: "Eliminando...",
@@ -65,27 +70,54 @@ export default function TableProducion() {
   };
 
   const resetTable = () => {
+    setPage(1);
     setStart(0);
     setEnd(10);
   };
 
   return (
     <div className="flex flex-col lg:justify-center lg:items-center ">
-      <TextField
-        label="Buscar Descripcion"
-        size="small"
-        onChange={(evt) => {
-          const text = evt.target.value;
-          if (text != "") {
-            const filterByDescripcion = tableOriginal.filter((elem) => {
-              return elem.descripcion
-                .toLowerCase()
-                .includes(text.toLowerCase().trim());
-            });
-            setTable(filterByDescripcion);
-          } else getPrevius();
-        }}
-      />
+      <div className="flex flex-row gap-1 m-1">
+        <TextField
+          label="Buscar Descripcion"
+          size="small"
+          value={descripcion}
+          onChange={(evt) => {
+            const text = evt.target.value;
+            setDescripcion(text);
+            setFecha("");
+            if (text != "") {
+              const filterByDescripcion = apiOriginal.filter((elem) => {
+                return elem.descripcion
+                  .toLowerCase()
+                  .includes(text.toLowerCase().trim());
+              });
+              resetTable();
+              setTable(filterByDescripcion);
+            } else getPrevius();
+          }}
+        />
+        <TextField
+          size="small"
+          type="date"
+          value={fecha}
+          sx={{ minWidth: "100px" }}
+          onChange={(evt) => {
+            const fecha = evt.target.value;
+            setDescripcion("");
+            setFecha(fecha);
+            if (fecha != "") {
+              const filterByDate = apiOriginal.filter(
+                (elem) => elem.fecha == fecha
+              );
+              if (filterByDate.length != 0) {
+                resetTable();
+                setTable(filterByDate);
+              } else toast.error("No hay datos");
+            } else getPrevius();
+          }}
+        />
+      </div>
       <div className="overflow-x-auto sm:-mx-6 lg:-mx-8">
         <div className="inline-block min-w-full py-2 sm:px-6 lg:px-8">
           <div className="overflow-hidden ">
@@ -129,7 +161,9 @@ export default function TableProducion() {
                         {elem.nombre}
                       </td>
                       <td className="whitespace-nowrap px-6 py-4">
-                        {elem.descripcion}
+                        {elem.descripcion.length >= 50
+                          ? `${elem.descripcion.slice(0, 50)} ...`
+                          : elem.descripcion}
                       </td>
                       <td className="whitespace-nowrap px-6 py-4 text-center">
                         {elem.num_maquina}
@@ -184,9 +218,13 @@ export default function TableProducion() {
       </div>
       <div className="flex flex-row justify-center ">
         <Pagination
-          count={Math.ceil(tableOriginal.length / 10)}
+          page={page}
+          count={Math.ceil(table.length / 10)}
           onChange={(evt, value) => {
-            setEnd(10 * parseInt(value));
+            setPage(value);
+            const endValue = 10 * parseInt(value);
+            setStart(endValue - 10);
+            setEnd(endValue);
           }}
         />
       </div>
@@ -196,7 +234,6 @@ export default function TableProducion() {
           setDialogUpdate(false);
         }}
         index={index}
-        refreshTable={refreshTable}
       />
       <Dialog open={dialogDelete} onClose={() => setDialogDelete(false)}>
         <DialogTitle>Eliminar Produccion</DialogTitle>

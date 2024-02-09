@@ -9,6 +9,7 @@ import PostRemito from "../form/PostRemito";
 import { FiTrash } from "react-icons/fi";
 import PostNotaEnvio from "../form/PostNotaEnvio";
 import PostListPedidos from "../form/PostListPedidos";
+import PostProduccion from "../form/PostProduccion";
 
 const fetcherToken = ([url, token]) => {
   return axios
@@ -20,7 +21,7 @@ const fetcherToken = ([url, token]) => {
     .then((result) => result.data);
 };
 
-export default function TableInventarioNombres({ type }) {
+export default function TableInventarioNombres({ type, element = <></> }) {
   const { BASE_URL, userSupabase } = useContext(UserContext);
 
   const { data, error, isLoading } = useSWR(
@@ -60,7 +61,7 @@ export default function TableInventarioNombres({ type }) {
 
   return (
     <>
-      <section className="grid grid-cols-1 lg:grid-cols-[1fr,1fr] place-content-center">
+      <section className="grid grid-cols-1 lg:grid-cols-[1fr,1fr] place-content-center mt-10">
         <div className="flex flex-col lg:justify-center lg:items-center ">
           <div className="flex flex-row items-center">
             <TextField
@@ -215,6 +216,12 @@ export default function TableInventarioNombres({ type }) {
             setListInventario={setListInventarioSelects}
             cliente={clientesList}
             setCliente={setClientesList}
+          />
+        )}
+        {type == "produccion" && (
+          <PostProduccion 
+            listInventario={listInventarioSelects}
+            setListInventario={setListInventarioSelects}
           />
         )}
       </section>

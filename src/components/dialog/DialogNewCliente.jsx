@@ -11,12 +11,16 @@ import {
   TextField,
 } from "@mui/material";
 import BoxLocalidad from "../comboBox/BoxLocalidad";
+import { ClientesContext } from "../../context/ClientesContext";
 
 export default function DialogNewCliente({
   show = false,
   close = () => {},
   refreshTable = () => {},
 }) {
+  const {
+    postTable,
+  } = useContext(ClientesContext);
   const { BASE_URL, userSupabase } = useContext(UserContext);
 
   const [cliente, setCliente] = useState("");
@@ -29,7 +33,7 @@ export default function DialogNewCliente({
     toast.promise(
       axios
         .post(
-          `${BASE_URL}/cliente`,
+          `${BASE_URL}/clientes`,
           { cliente, domicilio, idLocalidad: localidad.id, mail, cuit },
           {
             headers: {
@@ -38,7 +42,9 @@ export default function DialogNewCliente({
           }
         )
         .then((result) => {
-          refreshTable();
+          postTable(result.data.data);
+
+          //refreshTable();
           empty();
           close();
         }),

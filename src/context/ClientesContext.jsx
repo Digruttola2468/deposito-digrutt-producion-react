@@ -3,33 +3,31 @@ import { createContext, useContext, useState } from "react";
 import useSWR from "swr";
 import { UserContext } from "./UserContext";
 
-export const InventarioContext = createContext();
+export const ClientesContext = createContext();
 
-const fetcherToken = ([url, token]) => {
-  return axios
-    .get(url, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    })
-    .then((result) => result.data);
+const fetcher = (url) => {
+  return axios.get(url).then((result) => result.data);
 };
 
-export default function InventarioContextProvider(props) {
+export default function ClientesProvider(props) {
   const { userSupabase, BASE_URL } = useContext(UserContext);
 
   const [index, setIndex] = useState(null);
   const [table, setTable] = useState([]);
 
   let { data, isLoading, error, mutate } = useSWR(
-    [`${BASE_URL}/inventario`, userSupabase.token],
-    fetcherToken,
+    `${BASE_URL}/clientes`,
+    fetcher,
     {
-      onSuccess: (data, evt, config) => {
+      onSuccess: (data, dsevf, config) => {
         setTable(data);
       },
     }
   );
+
+  const refreshTable = () => {
+    setTable(data);
+  }
 
   const getOne = () => {
     return data.find((elem) => elem.id == index);
@@ -57,12 +55,12 @@ export default function InventarioContextProvider(props) {
   if (error) return <></>;
 
   return (
-    <InventarioContext.Provider
+    <ClientesContext.Provider
       value={{
         api: data,
         table,
         setTable,
-        refreshTable: mutate,
+        refreshTable,
         token: userSupabase.token,
         base_url: BASE_URL,
         updateTable,
@@ -74,6 +72,6 @@ export default function InventarioContextProvider(props) {
       }}
     >
       {props.children}
-    </InventarioContext.Provider>
+    </ClientesContext.Provider>
   );
 }

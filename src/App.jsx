@@ -51,7 +51,8 @@ function App() {
       <ProduccionContextProvider>
         <section className="relative mt-2">
           <TableProducion />
-          <PostProduccion />
+          <TableInventarioNombres type={"produccion"} />
+          
           <GraficaProduccion />
         </section>
       </ProduccionContextProvider>
@@ -132,7 +133,9 @@ function App() {
         <InventarioContextProvider>
           <TableInventario />
         </InventarioContextProvider>
-        <TableClientes />
+        <ClientesProvider>
+          <TableClientes />
+        </ClientesProvider>
       </>
     );
   };

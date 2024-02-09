@@ -23,32 +23,30 @@ import { BiTrashAlt } from "react-icons/bi";
 import { CiSquarePlus } from "react-icons/ci";
 import DialogNewCliente from "../dialog/DialogNewCliente";
 import toast from "react-hot-toast";
+import { ClientesContext } from "../../context/ClientesContext";
 
 const fetcher = (url) => {
   return axios.get(url).then((result) => result.data);
 };
 
 export default function TableClientes() {
+  const {
+    table,
+    setTable,
+    index,
+    setIndex,
+    api: data,
+    refreshTable,
+    deleteTable
+  } = useContext(ClientesContext);
   const { BASE_URL, userSupabase } = useContext(UserContext);
 
-  const [table, setTable] = useState([]);
   const [start, setStart] = useState(0);
   const [end, setEnd] = useState(10);
-  const [index, setIndex] = useState(null);
 
   const [dialogUpdate, setDialogUpdate] = useState(false);
   const [dialogDelete, setDialogDelete] = useState(false);
   const [dialogNewProduct, setDialogNewProduct] = useState(false);
-
-  const { data, isLoading, error, mutate } = useSWR(
-    `${BASE_URL}/clientes`,
-    fetcher,
-    {
-      onSuccess: (data, dsevf, config) => {
-        setTable(data);
-      },
-    }
-  );
 
   const getPrevius = () => {
     setTable(data);
@@ -63,29 +61,22 @@ export default function TableClientes() {
   const handleDelete = () => {
     toast.promise(
       axios
-        .delete(`${BASE_URL}/cliente/${index.id}`, {
+        .delete(`${BASE_URL}/clientes/${index.id}`, {
           headers: {
             Authorization: `Bearer ${userSupabase.token}`,
           },
         })
         .then((result) => {
-          mutate();
-          getPrevius();
+          deleteTable(index.id);
           setDialogDelete(false);
         }),
       {
         loading: "Eliminando Cliente...",
         success: "Operacion Exitosa",
-        error: (err) => {
-          console.log(err);
-          return "Ocurrio un Error";
-        },
+        error: "Ocurrio un Error",
       }
     );
   };
-
-  if (isLoading) return <></>;
-  if (error) return <></>;
 
   return (
     <>
@@ -98,7 +89,7 @@ export default function TableClientes() {
             <span
               className="mx-2 cursor-pointer"
               onClick={() => {
-                mutate();
+                refreshTable();
               }}
             >
               <IoRefresh />
@@ -245,14 +236,14 @@ export default function TableClientes() {
         close={() => {
           setDialogUpdate(false);
         }}
-        refreshTable={mutate}
+        refreshTable={refreshTable}
       />
       <DialogNewCliente
         show={dialogNewProduct}
         close={() => {
           setDialogNewProduct(false);
         }}
-        refreshTable={mutate}
+        refreshTable={refreshTable}
       />
       <Dialog open={dialogDelete} onClose={() => setDialogDelete(false)}>
         <DialogTitle>Eliminar Cliente</DialogTitle>
