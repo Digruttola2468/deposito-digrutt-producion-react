@@ -10,13 +10,14 @@ import axios from "axios";
 import { useContext, useEffect, useState } from "react";
 import { UserContext } from "../../context/UserContext";
 import toast from "react-hot-toast";
+import { ProducionContext } from "../../context/ProduccionContext";
 
 export default function DialogUpdateProduccion({
   show = false,
   close = () => {},
   index,
-  refreshTable = () => {},
 }) {
+  const { updateTable } = useContext(ProducionContext);
   const { BASE_URL, userSupabase } = useContext(UserContext);
 
   const [fecha, setFecha] = useState("");
@@ -37,24 +38,26 @@ export default function DialogUpdateProduccion({
 
   const handleUpdate = () => {
     toast.promise(
-      axios.put(
-        `${BASE_URL}/producion/${index.id}`,
-        {
-          fecha,
-          num_maquina: numMaquina,
-          golpesReales,
-          piezasProducidas,
-          prom_golpeshora: promGolpesHora,
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${userSupabase.token}`,
+      axios
+        .put(
+          `${BASE_URL}/producion/${index.id}`,
+          {
+            fecha,
+            num_maquina: numMaquina,
+            golpesReales,
+            piezasProducidas,
+            prom_golpeshora: promGolpesHora,
           },
-        }
-      ).then(result => {
-        refreshTable();
-        close();
-      }),
+          {
+            headers: {
+              Authorization: `Bearer ${userSupabase.token}`,
+            },
+          }
+        )
+        .then((result) => {
+          updateTable(index.id, result.data.data);
+          close();
+        }),
       {
         loading: "Actualizando...",
         success: "Operacion Exitosa",
