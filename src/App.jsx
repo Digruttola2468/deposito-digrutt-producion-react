@@ -32,6 +32,7 @@ import EnviosContextProvider from "./context/EnviosContext";
 import TableEnvios from "./components/tables/TableEnvios";
 import InventarioContextProvider from "./context/InventarioContext";
 import MercaderiaProvider from "./context/MercaderiaContext";
+import ClientesProvider from './context/ClientesContext';
 
 function App() {
   const { userSupabase } = useContext(UserContext);
@@ -45,7 +46,7 @@ function App() {
       </EnviosContextProvider>
     );
   };
-
+  
   const renderProduccion = () => {
     return (
       <ProduccionContextProvider>
