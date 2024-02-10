@@ -79,7 +79,7 @@ export default function PostMercaderia() {
                 fecha: fecha,
                 stock: stock,
                 idinventario: codProducto.id,
-                observacion: observacion
+                observacion: observacion,
               },
               {
                 headers: {

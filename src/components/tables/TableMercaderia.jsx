@@ -34,11 +34,13 @@ const fetcher = ([url, token]) => {
 
 export default function TableMercaderia() {
   const {
-    api: data,
+    apiOriginal: data,
     table,
     setTable,
     setIndex,
     index,
+    descripcion,
+    setDescripcion,
     deleteTable,
   } = useContext(MercaderiaContext);
   const { userSupabase, BASE_URL } = useContext(UserContext);
@@ -89,8 +91,10 @@ export default function TableMercaderia() {
             <TextField
               label="Buscar Descripcion"
               size="small"
+              value={descripcion}
               onChange={(evt) => {
                 const text = evt.target.value;
+                setDescripcion(text);
                 if (text != "") {
                   const filterByDescripcion = data.filter((elem) => {
                     return elem.descripcion.includes(text);
@@ -137,9 +141,7 @@ export default function TableMercaderia() {
                     </tr>
                   </thead>
                   <tbody>
-                    {table
-                    
-                    .slice(start, end).map((elem) => {
+                    {table.slice(start, end).map((elem) => {
                       return (
                         <tr
                           className={`border-b dark:border-neutral-500 hover:border-info-200 hover:bg-cyan-200 hover:text-neutral-800`}

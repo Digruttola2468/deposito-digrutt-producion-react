@@ -1,17 +1,10 @@
-import {
-  Card,
-  CardActions,
-  CardContent,
-  Skeleton,
-  Typography,
-} from "@mui/material";
+import { Skeleton, Typography } from "@mui/material";
 
 import useSWR from "swr";
 
 import axios from "axios";
 import { useContext } from "react";
 import { UserContext } from "../../context/UserContext";
-import PostMercaderia from "../form/PostMercaderia";
 
 const fetcher = ([url, token]) => {
   return axios
@@ -50,6 +43,7 @@ export default function ItemTableMercaderia({ index }) {
         </Typography>
       </>
     );
+      console.log(data);
 
   return (
     <>
@@ -79,6 +73,11 @@ export default function ItemTableMercaderia({ index }) {
             </p>
           ) : (
             <></>
+          )}
+          {data.observacion != null && (
+            <p>
+              <b>Descripcion Salida: </b>: {data.observacion}
+            </p>
           )}
         </div>
       )}
