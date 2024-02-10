@@ -11,6 +11,8 @@ import {
   DialogTitle,
   TextField,
 } from "@mui/material";
+import BoxCategoria from "../comboBox/BoxCategoria";
+import { HistorialMatrizContext } from "../../context/HistorialMatrizContext";
 
 export default function DialogUpdateHistorialErroresMatrices({
   show = false,
@@ -19,8 +21,11 @@ export default function DialogUpdateHistorialErroresMatrices({
   refreshTable = () => {},
 }) {
   const { userSupabase, BASE_URL } = useContext(UserContext);
+  const { updateTable } = useContext(HistorialMatrizContext);
 
   const [descripcionFalla, setDescripcionFalla] = useState("");
+  const [fecha, setFecha] = useState("");
+  const [categoria, setCategoria] = useState("");
 
   useEffect(() => {
     if (index != null) {
@@ -29,11 +34,15 @@ export default function DialogUpdateHistorialErroresMatrices({
   }, [index]);
 
   const handleUpdate = () => {
-    /*toast.promise(
+    toast.promise(
       axios
         .put(
-          `${BASE_URL}/cliente/${index.id}`,
-          { cliente },
+          `${BASE_URL}/historialMatriz/${index.id}`,
+          {
+            descripcion_deterioro: descripcionFalla,
+            fecha: fecha,
+            idCategoria: categoria,
+          },
           {
             headers: {
               Authorization: `Bearer ${userSupabase.token}`,
@@ -41,7 +50,8 @@ export default function DialogUpdateHistorialErroresMatrices({
           }
         )
         .then((result) => {
-          refreshTable();
+          updateTable(index.id, result.data.data);
+          close();
         }),
       {
         loading: "Actualizando...",
@@ -49,11 +59,12 @@ export default function DialogUpdateHistorialErroresMatrices({
         error: (err) => err.response.data.menssage,
       }
     );
-    close();*/
   };
 
   const empty = () => {
     setDescripcionFalla("");
+    setFecha("");
+    setCategoria("");
   };
 
   return (
@@ -65,12 +76,26 @@ export default function DialogUpdateHistorialErroresMatrices({
       }}
     >
       <DialogTitle>Actualizar Historial</DialogTitle>
-      <DialogContent className="flex flex-col">
+      <DialogContent className="flex flex-col gap-4">
         <TextField
-          sx={{ margin: 1 }}
+          type="date"
+          value={fecha}
+          onChange={(evt) => setFecha(evt.target.value)}
+        />
+        <TextField
           label="Descripcion Error/Mantenimiento"
           value={descripcionFalla}
+          multiline
+          rows={3}
           onChange={(evt) => setDescripcionFalla(evt.target.value)}
+        />
+        <BoxCategoria
+          categoria={categoria}
+          setCategoria={setCategoria}
+          range={[
+            { id: 3, categoria: "Mantenimiento" },
+            { id: 4, categoria: "Falla" },
+          ]}
         />
       </DialogContent>
       <DialogActions>
