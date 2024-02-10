@@ -186,7 +186,7 @@ export default function TablePedidos() {
   return (
     <>
       <div className="flex flex-col lg:justify-center lg:items-center ">
-        <div>
+        <div className="flex flex-row flex-wrap gap-1">
           <TextField
             label="Buscar Descripcion"
             size="small"
@@ -199,6 +199,23 @@ export default function TablePedidos() {
                     .includes(text.toLowerCase());
                 });
                 setTable(filterByDescripcion);
+              } else getPrevius();
+            }}
+          />
+          <TextField
+            size="small"
+            type="date"
+            sx={{minWidth: '100px'}}
+            onChange={(evt) => {
+              const fecha = evt.target.value;
+              if (fecha != "") {
+                const filterByDescripcion = tableOriginal.filter((elem) => {
+                  return elem.fecha_entrega == fecha;
+                });
+                if (filterByDescripcion.length != 0) {
+                  resetTable();
+                  setTable(filterByDescripcion);
+                } else toast.error("No hay datos");
               } else getPrevius();
             }}
           />
@@ -294,7 +311,8 @@ export default function TablePedidos() {
                   {table.slice(start, end).map((elem) => {
                     const stringIsDone =
                       elem.is_done >= 1 ? "Completo" : "Incompleto";
-                    const pendienteEntrega = elem.cantidadEnviar - elem.cantidad_enviada;
+                    const pendienteEntrega =
+                      elem.cantidadEnviar - elem.cantidad_enviada;
                     return (
                       <tr
                         className={`border-b dark:border-neutral-500 hover:border-info-200 hover:bg-red-200 hover:text-neutral-800`}
