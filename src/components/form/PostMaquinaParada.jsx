@@ -1,10 +1,6 @@
 import {
-  Alert,
   Autocomplete,
   Button,
-  Divider,
-  Slide,
-  Snackbar,
   TextField,
 } from "@mui/material";
 import axios from "axios";
@@ -12,13 +8,25 @@ import { useContext, useState } from "react";
 import useSWR from "swr";
 import { MaquinaParadaContext } from "../../context/MaquinaParadaContext";
 import toast from "react-hot-toast";
+import { UserContext } from "../../context/UserContext";
+
+const fetcherToken = ([url, token]) => {
+  return axios
+    .get(url, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    })
+    .then((result) => result.data);
+};
 
 export default function PostMaquinaParada() {
-  const { token, base_url, fetcherToken, refreshTable } =
+  const { BASE_URL, userSupabase } = useContext(UserContext);
+  const { postTable } =
     useContext(MaquinaParadaContext);
 
   const { data, isLoading, error } = useSWR(
-    [`${base_url}/motivoMaquinaParada`, token],
+    [`${BASE_URL}/motivoMaquinaParada`, userSupabase.token],
     fetcherToken
   );
 
@@ -38,27 +46,26 @@ export default function PostMaquinaParada() {
 
     toast.promise(
       axios
-        .post(`${base_url}/maquinaParada`, enviar, {
+        .post(`${BASE_URL}/maquinaParada`, enviar, {
           headers: {
-            Authorization: `Bearer ${token}`,
+            Authorization: `Bearer ${userSupabase.token}`,
           },
         })
         .then((result) => {
-          refreshTable();
+          postTable(result.data.data);
+          empty();
         }),
       {
         loading: "Cargando...",
         success: "Operacion Exitosa",
         error: (err) => {
-          console.log(err);
           return err.response.data.message;
         },
       }
     );
   };
   //
-  const empty = (evt) => {
-    evt.preventDefault();
+  const empty = () => {
     setMotivoMaquina(null);
     setFecha("");
     setHrs("");

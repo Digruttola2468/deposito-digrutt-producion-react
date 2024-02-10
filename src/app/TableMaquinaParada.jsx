@@ -21,37 +21,32 @@ import { UserContext } from "../context/UserContext";
 
 export default function TableMaquinaParada() {
   const { BASE_URL, userSupabase } = useContext(UserContext);
-  const { tableOriginal } = useContext(MaquinaParadaContext);
-
-  const [index, setIndex] = useState(null);
+  const { apiOriginal, table, setTable, index, setIndex, deleteTable, fecha, setFecha } =
+    useContext(MaquinaParadaContext);
 
   const [dialogUpdate, setDialogUpdate] = useState(false);
   const [dialogDelete, setDialogDelete] = useState(false);
 
-  const [table, setTable] = useState(() => tableOriginal);
+  const [page, setPage] = useState(1);
   const [start, setStart] = useState(0);
   const [end, setEnd] = useState(10);
 
-  const [startFecha, setStartFecha] = useState("");
-  const [endFecha, setEndFecha] = useState("");
-
-  useEffect(() => {
-    setStart(end - 10);
-  }, [end]);
-
   const getPreviuos = () => {
-    setTable(tableOriginal);
+    setTable(apiOriginal);
   };
 
   const handleDelete = () => {
     toast.promise(
-      axios.delete(`${BASE_URL}/maquinaParada/${index.id}`, {
-        headers: {
-          Authorization: `Bearer ${userSupabase.token}`,
-        },
-      }).then(result => {
-        setDialogDelete(false);
-      }),
+      axios
+        .delete(`${BASE_URL}/maquinaParada/${index.id}`, {
+          headers: {
+            Authorization: `Bearer ${userSupabase.token}`,
+          },
+        })
+        .then((result) => {
+          deleteTable(index.id);
+          setDialogDelete(false);
+        }),
       {
         loading: "Eliminando...",
         success: "Operacion Exitosa",
@@ -72,58 +67,22 @@ export default function TableMaquinaParada() {
     <section className="grid grid-cols-1 lg:grid-cols-[2fr,1fr] place-content-center">
       <div className="flex flex-col lg:justify-center lg:items-center ">
         <div className="flex flex-col md:flex-row justify-self-start items-center">
-          <div className="flex flex-row items-center">
-            <span className="pr-1">Empieza</span>
-            <TextField
-              type="date"
-              value={startFecha}
-              onChange={(evt) => {
-                const fechaString = evt.target.value;
-                setStartFecha(fechaString);
-                if (fechaString != "") {
-                  const filterDate = tableOriginal.filter(
-                    (elem) => new Date(elem.fecha) >= new Date(fechaString)
-                  );
-                  if (filterDate.length == 0) {
-                    toast.error("No hay datos");
-                  } else {
-                    setTable(filterDate);
-                    resetTable();
-                  }
-                } else getPreviuos();
-              }}
-              sx={{ width: "150px" }}
-            />
-          </div>
-          <div className="flex flex-row items-center mt-2">
-            <span className="pr-1">Termina</span>
-            <TextField
-              type="date"
-              value={endFecha}
-              onChange={(evt) => {
-                const fechaString = evt.target.value;
-                setEndFecha(fechaString);
-                if (fechaString != "") {
-                  const filterDate = tableOriginal.filter(
-                    (elem) => new Date(elem.fecha) <= new Date(fechaString)
-                  );
-                  if (filterDate.length == 0) {
-                    toast.error("No hay datos");
-                  } else {
-                    setTable(filterDate);
-                    resetTable();
-                  }
-                } else getPreviuos();
-              }}
-              sx={{ width: "150px" }}
-            />
-          </div>
+          <TextField
+            type="date"
+            value={fecha}
+            onChange={(evt) => {
+              const fechaString = evt.target.value;
+              setFecha(fechaString);
+              const filterByDate = apiOriginal.filter((elem) => elem.fecha == fechaString);
+              setTable(filterByDate);
+            }}
+            sx={{ width: "150px" }}
+          />
           <Button
             onClick={() => {
               resetTable();
               getPreviuos();
-              setEndFecha("");
-              setStartFecha("");
+              setFecha("");
             }}
           >
             Borrar
@@ -217,9 +176,13 @@ export default function TableMaquinaParada() {
         </div>
         <div className="flex flex-row justify-center ">
           <Pagination
-            count={Math.ceil(tableOriginal.length / 10)}
+            count={Math.ceil(apiOriginal.length / 10)}
+            page={page}
             onChange={(evt, value) => {
-              setEnd(10 * parseInt(value));
+              setPage(value);
+              const endValue = 10 * parseInt(value);
+              setStart(endValue - 10);
+              setEnd(endValue);
             }}
           />
         </div>
@@ -248,3 +211,55 @@ export default function TableMaquinaParada() {
     </section>
   );
 }
+
+/**
+ *  Range Date
+ * <div className="flex flex-row items-center">
+            <span className="pr-1">Empieza</span>
+            <TextField
+              type="date"
+              value={startFecha}
+              onChange={(evt) => {
+                const fechaString = evt.target.value;
+                setStartFecha(fechaString);
+                if (fechaString != "") {
+                  const filterDate = apiOriginal.filter(
+                    (elem) => new Date(elem.fecha) >= new Date(fechaString)
+                  );
+                  if (filterDate.length == 0) {
+                    toast.error("No hay datos");
+                  } else {
+                    setTable(filterDate);
+                    resetTable();
+                  }
+                } else getPreviuos();
+              }}
+              sx={{ width: "150px" }}
+            />
+          </div>
+          <div className="flex flex-row items-center mt-2">
+            <span className="pr-1">Termina</span>
+            <TextField
+              type="date"
+              value={endFecha}
+              onChange={(evt) => {
+                const fechaString = evt.target.value;
+                setEndFecha(fechaString);
+                if (fechaString != "") {
+                  const filterDate = apiOriginal.filter(
+                    (elem) => new Date(elem.fecha) <= new Date(fechaString)
+                  );
+                  if (filterDate.length == 0) {
+                    toast.error("No hay datos");
+                  } else {
+                    setTable(filterDate);
+                    resetTable();
+                  }
+                } else getPreviuos();
+              }}
+              sx={{ width: "150px" }}
+            />
+          </div>
+ * 
+ * 
+ */

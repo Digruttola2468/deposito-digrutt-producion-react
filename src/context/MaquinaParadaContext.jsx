@@ -1,5 +1,5 @@
 import axios from "axios";
-import { createContext, useContext } from "react";
+import { createContext, useContext, useEffect, useState } from "react";
 import useSWR from "swr";
 import { UserContext } from "./UserContext";
 
@@ -16,13 +16,68 @@ const fetcherToken = ([url, token]) => {
 };
 
 export default function MaquinaParadaProvider(props) {
-  const {userSupabase} = useContext(UserContext);
-  const BASE_URL = import.meta.env.VITE_BASE_URL;
-  
+  const { userSupabase, BASE_URL } = useContext(UserContext);
+
+  const [index, setIndex] = useState(null);
+  const [table, setTable] = useState([]);
+  const [apiOriginal, setApiOriginal] = useState([]);
+
+  const [fecha, setFecha] = useState("");
+
+  const verify = () => {
+    if (fecha != "") {
+      const filterByDate = apiOriginal.filter((elem) => elem.fecha == fecha);
+      if (filterByDate.length != 0) setTable(filterByDate);
+      return true;
+    } else return false;
+  };
+
   const { data, isLoading, error, mutate } = useSWR(
     [`${BASE_URL}/maquinaParada`, userSupabase.token],
-    fetcherToken
+    fetcherToken,
+    {
+      onSuccess: (data, evt, config) => {
+        if (!verify()) setTable(data);
+
+        setApiOriginal(data);
+      },
+    }
   );
+  
+  useEffect(() => {
+    if (!verify()) setTable(data);
+
+    setApiOriginal(data);
+  }, [data]);
+
+  const getOne = () => {
+    return apiOriginal.find((elem) => elem.id == index);
+  };
+
+  const updateTable = (idMaquinaParada, object) => {
+    setTable(
+      apiOriginal.map((elem) => {
+        if (idMaquinaParada == elem.id) return { ...elem, ...object };
+        else return elem;
+      })
+    );
+    setApiOriginal(
+      apiOriginal.map((elem) => {
+        if (idMaquinaParada == elem.id) return { ...elem, ...object };
+        else return elem;
+      })
+    );
+  };
+
+  const postTable = (object) => {
+    setApiOriginal([object, ...apiOriginal]);
+    setTable([object, ...apiOriginal]);
+  };
+
+  const deleteTable = (idMaquinaParada) => {
+    setTable(apiOriginal.filter((elem) => elem.id != idMaquinaParada));
+    setApiOriginal(apiOriginal.filter((elem) => elem.id != idMaquinaParada));
+  };
 
   if (isLoading) return <></>;
   if (error) return <></>;
@@ -30,11 +85,20 @@ export default function MaquinaParadaProvider(props) {
   return (
     <MaquinaParadaContext.Provider
       value={{
-        tableOriginal: data,
+        apiOriginal,
+        table,
+        setTable,
         refreshTable: mutate,
         token: userSupabase.token,
-        base_url: BASE_URL,
-        fetcherToken,
+        BASE_URL,
+        updateTable,
+        postTable,
+        deleteTable,
+        getOne,
+        setIndex,
+        index,
+        fecha,
+        setFecha,
       }}
     >
       {props.children}

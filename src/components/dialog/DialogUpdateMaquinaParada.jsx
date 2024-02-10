@@ -16,6 +16,7 @@ import { useContext, useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import useSWR from "swr";
 import { UserContext } from "../../context/UserContext";
+import { MaquinaParadaContext } from "../../context/MaquinaParadaContext";
 
 const fetcher = (url) => {
   return axios.get(url).then((result) => result.data);
@@ -28,8 +29,9 @@ export default function DialogUpdateMaquinaParada({
   refreshTable = () => {},
 }) {
   const { BASE_URL, userSupabase } = useContext(UserContext);
+  const { updateTable } = useContext(MaquinaParadaContext);
   const { data, isLoading, error, mutate } = useSWR(
-    `https://deposito-digrutt-express-production.up.railway.app/api/motivoMaquinaParada`,
+    `${BASE_URL}/motivoMaquinaParada`,
     fetcher
   );
 
@@ -64,7 +66,9 @@ export default function DialogUpdateMaquinaParada({
           }
         )
         .then((result) => {
-          refreshTable();
+          
+          updateTable(index.id, result.data.data)
+          //refreshTable();
           close();
         }),
       {
