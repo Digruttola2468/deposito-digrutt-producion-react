@@ -66,7 +66,6 @@ export default function DialogUpdateMaquinaParada({
           }
         )
         .then((result) => {
-          
           updateTable(index.id, result.data.data)
           //refreshTable();
           close();

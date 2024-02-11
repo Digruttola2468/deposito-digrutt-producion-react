@@ -74,9 +74,13 @@ export default function PostProduccion({ listInventario, setListInventario }) {
         success: "Operacion Exitosa",
         error: (err) => {
           setRequeterror({
-            campo: err.response.data.campo,
+            campo: err.response.data.campus,
             index: err.response.data.index,
           });
+          console.log(err.response.data);
+
+          if (err.response.data.message == "Campo piezas producidas esta vacio")
+            return "Campo Piezas x Golpe esta vacio"
           return err.response.data.message;
         },
       }
@@ -103,8 +107,8 @@ export default function PostProduccion({ listInventario, setListInventario }) {
   if (isLoading) return <></>;
   if (error) return <></>;
 
-  const renderPost = (unique, codProducto) => {
-    const campo = requesterror.index == unique ? requesterror.campo : null;
+  const renderPost = (unique, codProducto, index) => {
+    const campo = requesterror.index == index ? requesterror.campo : null;
     return (
       <div
         key={unique}
@@ -207,10 +211,10 @@ export default function PostProduccion({ listInventario, setListInventario }) {
           />
         </div>
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-2 w-full">
-          {listInventario.map((codProducto) => {
+          {listInventario.map((codProducto,index) => {
             return (
               <div key={codProducto.id}>
-                {renderPost(codProducto.id, codProducto)}
+                {renderPost(codProducto.id, codProducto, index)}
               </div>
             );
           })}

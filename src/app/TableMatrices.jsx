@@ -58,8 +58,6 @@ export default function TableMatrices() {
 
       const value = i / 10;
 
-      console.log(value);
-
       if (value < 1) {
         const x = 1 * 10;
         setEnd(x);

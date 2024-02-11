@@ -1,7 +1,7 @@
 import { Autocomplete, TextField } from "@mui/material";
 import useSWR from "swr";
 
-export default function AutoCompleteClient({cliente, setCliente, sx = { marginTop: 2 }}) {
+export default function AutoCompleteClient({cliente, setCliente, sx = { marginTop: 2 }, errorClient = false}) {
   const { data, isLoading, error } = useSWR(
     `https://deposito-digrutt-express-production.up.railway.app/api/clientes`,
     (url) => {
@@ -21,7 +21,7 @@ export default function AutoCompleteClient({cliente, setCliente, sx = { marginTo
       onChange={(evt, newValue) => setCliente(newValue)}
       sx={sx}
       renderInput={(params) => (
-        <TextField {...params} label="Cliente" variant="outlined" />
+        <TextField {...params} label="Cliente" variant="outlined" error={errorClient}/>
       )}
     />
   );

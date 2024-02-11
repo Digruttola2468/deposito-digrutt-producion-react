@@ -48,7 +48,7 @@ export default function TableInventarioNombres({ type, element = <></> }) {
         (elem) => elem.idcliente == clientesList
       );
       setTable(filterByCliente)
-    }else setTable(data);
+    } else setTable(data);
   };
 
   const resetTable = () => {
@@ -96,7 +96,7 @@ export default function TableInventarioNombres({ type, element = <></> }) {
             <SearchClientesBox
               filterTable={setTable}
               table={table}
-              refresh={getPrevius}
+              refresh={() => {setTable(data)}}
               apiOriginal={data}
               setCliente={setClientesList}
             />

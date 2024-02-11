@@ -24,6 +24,12 @@ export default function PostHistorialFalloseMatrices() {
   const { index: apiOne } = useContext(MatricesContext);
   const { postTable } = useContext(HistorialMatrizContext);
 
+  const [requestError, setRequestError] = useState({ campus: null });
+
+  const emptyRequestError = (campus) => {
+    if (requestError.campus == campus) setRequestError({ campus: null });
+  };
+
   const { data, isLoading, error, mutate } = useSWR(
     [
       `https://deposito-digrutt-express-production.up.railway.app/api/matrices`,
@@ -48,7 +54,7 @@ export default function PostHistorialFalloseMatrices() {
         .post(
           `${BASE_URL}/historialMatriz`,
           {
-            idMatriz: codMatriz.id,
+            idMatriz: codMatriz?.id ?? null,
             descripcion_deterioro: descripcionDeterioro,
             idCategoria: categoria,
           },
@@ -67,7 +73,10 @@ export default function PostHistorialFalloseMatrices() {
       {
         loading: "Cargando...",
         success: "Se agrego con exito",
-        error: (err) => err.response.data.message,
+        error: (err) => {
+          setRequestError({ campus: err.response.data.campus });
+          return err.response.data.message;
+        },
       }
     );
   };
@@ -97,20 +106,21 @@ export default function PostHistorialFalloseMatrices() {
             value={codMatriz}
             isOptionEqualToValue={(option, value) => option.id === value.id}
             onChange={(evt, value) => {
-              console.log("ON CHANGE", value);
+              emptyRequestError('matriz');
               setCodMatriz(value);
             }}
             renderInput={(params) => (
-              <TextField {...params} label="Cod Matriz" variant="outlined" />
+              <TextField {...params} label="Cod Matriz" variant="outlined" error={requestError.campus == "matriz" ? true : false} />
             )}
           />
           <TextField
             sx={{ width: "100%", maxWidth: "400px" }}
             multiline
             value={descripcionDeterioro}
-            onChange={(evt) => setDescripcionDeterioro(evt.target.value)}
+            onChange={(evt) => {emptyRequestError('descripcion');setDescripcionDeterioro(evt.target.value)}}
             label="Descripcion Falla"
             rows={2}
+            error={requestError.campus == "descripcion" ? true : false}
           />
           <Button onClick={handleEnviar}>Enviar</Button>
         </form>

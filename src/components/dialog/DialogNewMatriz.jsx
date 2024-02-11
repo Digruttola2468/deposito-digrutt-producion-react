@@ -29,6 +29,12 @@ export default function DialogNewMatriz({
   const [cliente, setCliente] = useState(null);
   const [cantPiezaGolpe, setCantPiezaGolpe] = useState("");
 
+  const [requestError, setRequestError] = useState({ campus: null });
+
+  const emptyRequestError = (campus) => {
+    if (requestError.campus == campus) setRequestError({ campus: null });
+  };
+
   const empty = () => {
     setNumMatriz("");
     setDescripcion("");
@@ -46,7 +52,7 @@ export default function DialogNewMatriz({
             numero_matriz: numMatriz,
             descripcion,
             idmaterial: material != "" ? material : null,
-            idcliente: cliente.id,
+            idcliente: cliente?.id ?? null,
             cantPiezaGolpe,
           },
           {
@@ -63,7 +69,10 @@ export default function DialogNewMatriz({
       {
         loading: "Creando Matriz...",
         success: "Operacion exitosa",
-        error: (err) => err.response.data?.message ?? "Something Wrong",
+        error: (err) => {
+          setRequestError({ campus: err.response.data.campus });
+          return err.response.data?.message ?? "Something Wrong";
+        },
       }
     );
   };
@@ -80,30 +89,46 @@ export default function DialogNewMatriz({
       <DialogContent className="flex flex-col">
         <TextField
           value={numMatriz}
-          onChange={(event) => setNumMatriz(event.target.value)}
+          onChange={(event) => {
+            emptyRequestError("numeroMatriz");
+            setNumMatriz(event.target.value);
+          }}
           label="Numero Matriz"
           autoFocus
           required
           type="number"
           sx={{ marginTop: 2 }}
+          error={requestError.campus == "numeroMatriz" ? true : false}
         />
         <TextField
           value={descripcion}
-          onChange={(event) => setDescripcion(event.target.value)}
+          onChange={(event) => {
+            emptyRequestError("descripcion");
+            setDescripcion(event.target.value);
+          }}
           label="Descripcion"
           required
           sx={{ marginTop: 2 }}
+          error={requestError.campus == "descripcion" ? true : false}
         />
         <TextField
           value={cantPiezaGolpe}
-          onChange={(event) => setCantPiezaGolpe(event.target.value)}
+          onChange={(event) => {
+            emptyRequestError("cantPiezaxGolpe");
+            setCantPiezaGolpe(event.target.value);
+          }}
           label="Cant Pieza x Golpe"
           required
           type="number"
           sx={{ marginTop: 2 }}
+          error={requestError.campus == "cantPiezaxGolpe" ? true : false}
         />
         <BoxMaterial materiaPrima={material} setMateriaPrima={setMaterial} />
-        <AutoCompleteClient cliente={cliente} setCliente={setCliente} />
+        <AutoCompleteClient
+          cliente={cliente}
+          setCliente={setCliente}
+          errorClient={requestError.campus == "idcliente" ? true : false}
+        />
       </DialogContent>
       <DialogActions>
         <Button
