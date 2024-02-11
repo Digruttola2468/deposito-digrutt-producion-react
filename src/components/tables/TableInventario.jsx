@@ -68,7 +68,7 @@ export default function TableInventario() {
       {
         loading: "Eliminando...",
         success: "Operacion exitosa",
-        error: "No se logro eliminar",
+        error: (err) => err.response.data.message,
       }
     );
   };

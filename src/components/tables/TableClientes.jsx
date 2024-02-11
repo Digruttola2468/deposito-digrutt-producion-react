@@ -73,7 +73,10 @@ export default function TableClientes() {
       {
         loading: "Eliminando Cliente...",
         success: "Operacion Exitosa",
-        error: "Ocurrio un Error",
+        error: (err) => {
+          setDialogDelete(false);
+          return err.response.data.message;
+        },
       }
     );
   };

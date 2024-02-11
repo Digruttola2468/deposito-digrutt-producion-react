@@ -51,8 +51,8 @@ export default function TableEnvios() {
         loading: "Eliminando Envio...",
         success: "Operacion Exitosa",
         error: (err) => {
-          console.log(err);
-          return "Ocurrio un Error";
+          setDialogDelete(false);
+          return err.response.data.message;
         },
       }
     );

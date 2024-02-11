@@ -71,7 +71,7 @@ export default function DialogUpdateInventario({
       {
         loading: "Actualizando...",
         success: "Operacion Exitosa",
-        error: (err) => err.response.data.menssage,
+        error: (err) => err.response.data.message,
       }
     );
     close();

@@ -74,7 +74,7 @@ export default function DialogUpdateCliente({
       {
         loading: "Actualizando...",
         success: "Operacion Exitosa",
-        error: (err) => err.response.data.menssage,
+        error: (err) => err.response.data.message
       }
     );
     close();

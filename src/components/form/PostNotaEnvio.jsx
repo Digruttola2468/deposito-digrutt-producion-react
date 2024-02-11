@@ -73,7 +73,7 @@ export default function PostNotaEnvio({ listInventario, setListInventario }) {
     enviar.fecha = fecha;
     enviar.nro_envio = numNotaEnvio;
     enviar.idCliente = cliente;
-    enviar.products = getDataListProductos();
+    enviar.products = getDataListPedido();
 
     toast.promise(
       axios
@@ -89,10 +89,9 @@ export default function PostNotaEnvio({ listInventario, setListInventario }) {
       {
         loading: "Enviando...",
         success: (data) => data.data.message,
-        error: (err) => err.response?.data.message ?? "",
+        error: (err) => err.response.data.message
       }
     );
-    console.log;
     setDialogConfirm(false);
   };
 

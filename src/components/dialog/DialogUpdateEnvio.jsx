@@ -30,7 +30,7 @@ export default function DialogUpdateEnvio({
   const { updateTable } = useContext(EnviosContext);
 
   const { data, isLoading, error, mutate } = useSWR(
-    `https://deposito-digrutt-express-production.up.railway.app/api/vehiculos`,
+    `${BASE_URL}/vehiculos`,
     (url) => {
       return axios.get(url).then((result) => result.data);
     }
@@ -82,7 +82,7 @@ export default function DialogUpdateEnvio({
       {
         loading: "Actualizando...",
         success: "Operacion Exitosa",
-        error: (err) => err.response.data.menssage,
+        error: (err) => err.response.data.message,
       }
     );
     close();

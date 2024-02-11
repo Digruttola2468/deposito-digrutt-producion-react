@@ -82,8 +82,6 @@ export default function PostRemito({ listInventario, setListInventario }) {
     enviar.products = getDataListPedido();
     enviar.valorDeclarado = valorDeclarado;
 
-    console.log(enviar);
-
     toast.promise(
       axios
         .post(`${BASE_URL}/remito`, enviar, {
@@ -101,7 +99,6 @@ export default function PostRemito({ listInventario, setListInventario }) {
         error: (err) => err.response?.data.message ?? "",
       }
     );
-      console.log
     setDialogConfirm(false);
   };
   /*
