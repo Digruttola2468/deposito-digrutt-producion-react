@@ -14,7 +14,6 @@ import axios from "axios";
 import { useContext, useState } from "react";
 import { FaPen } from "react-icons/fa";
 import { UserContext } from "../../context/UserContext";
-import useSWR from "swr";
 import SearchLocalidadBox from "../comboBox/SearchLocalidadBox";
 import DialogUpdateCliente from "../dialog/DialogUpdateCliente";
 
@@ -25,10 +24,6 @@ import DialogNewCliente from "../dialog/DialogNewCliente";
 import toast from "react-hot-toast";
 import { ClientesContext } from "../../context/ClientesContext";
 
-const fetcher = (url) => {
-  return axios.get(url).then((result) => result.data);
-};
-
 export default function TableClientes() {
   const {
     table,
@@ -37,7 +32,11 @@ export default function TableClientes() {
     setIndex,
     api: data,
     refreshTable,
-    deleteTable
+    deleteTable,
+    descripcion,
+    setDescripcion,
+    localidad,
+    setLocalidad,
   } = useContext(ClientesContext);
   const { BASE_URL, userSupabase } = useContext(UserContext);
 
@@ -49,7 +48,10 @@ export default function TableClientes() {
   const [dialogNewProduct, setDialogNewProduct] = useState(false);
 
   const getPrevius = () => {
-    setTable(data);
+    if (localidad != "")
+      setTable(data.filter((elem) => elem.ciudad == localidad));
+    else setTable(data);
+
     resetTable();
   };
 
@@ -104,23 +106,39 @@ export default function TableClientes() {
             <TextField
               label="Buscar Cliente"
               size="small"
+              value={descripcion}
               onChange={(evt) => {
                 const text = evt.target.value;
+                setDescripcion(text);
                 if (text != "") {
-                  const filterByDescripcion = data.filter((elem) => {
-                    return elem.cliente
+                  if (localidad != "") {
+                    const filterByDescripcion = data.filter((elem) => {
+                      if (elem.ciudad == localidad) {
+                        return elem.cliente
+                          .toLowerCase()
+                          .includes(text.toLowerCase().trim());
+                      }
+                    });
+                    setTable(filterByDescripcion);
+                  } else {
+                    const filterByDescripcion = data.filter((elem) => {
+                      return elem.cliente
                       .toLowerCase()
                       .includes(text.toLowerCase().trim());
-                  });
+                    });
+                    setTable(filterByDescripcion);
+                  }
                   resetTable();
-                  setTable(filterByDescripcion);
                 } else getPrevius();
               }}
             />
             <SearchLocalidadBox
               filterTable={setTable}
-              refresh={getPrevius}
+              refresh={() => {
+                setTable(data);
+              }}
               apiOriginal={data}
+              setLocalidad={setLocalidad}
             />
             <Tooltip title="Nuevo Cliente">
               <IconButton
@@ -246,7 +264,6 @@ export default function TableClientes() {
         close={() => {
           setDialogNewProduct(false);
         }}
-        refreshTable={refreshTable}
       />
       <Dialog open={dialogDelete} onClose={() => setDialogDelete(false)}>
         <DialogTitle>Eliminar Cliente</DialogTitle>

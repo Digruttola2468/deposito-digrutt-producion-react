@@ -11,6 +11,7 @@ export default function SearchLocalidadBox({
   filterTable,
   refresh,
   apiOriginal,
+  setLocalidad = () => {}
 }) {
   const { data, isLoading, error, mutate } = useSWR(
     `https://deposito-digrutt-express-production.up.railway.app/api/localidad`,
@@ -32,14 +33,14 @@ export default function SearchLocalidadBox({
           label="Localidad"
           onChange={(evt) => {
             const comboBoxLocalidad = evt.target.value;
+            setLocalidad(comboBoxLocalidad);
+            setLocalidades(comboBoxLocalidad);
 
             if (comboBoxLocalidad != "")
               filterTable(
                 apiOriginal.filter((elem) => elem.ciudad == comboBoxLocalidad)
               );
             else refresh();
-
-            setLocalidades(comboBoxLocalidad);
           }}
         >
           <MenuItem value="">

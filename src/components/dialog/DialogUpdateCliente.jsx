@@ -29,9 +29,7 @@ export default function DialogUpdateCliente({
   index,
   refreshTable = () => {},
 }) {
-  const {
-    updateTable,
-  } = useContext(ClientesContext);
+  const { updateTable } = useContext(ClientesContext);
   const { userSupabase, BASE_URL } = useContext(UserContext);
 
   const { data, isLoading, error, mutate } = useSWR(
@@ -44,6 +42,12 @@ export default function DialogUpdateCliente({
   const [domicilio, setDomicilio] = useState("");
   const [cuit, setCuit] = useState("");
   const [cliente, setCliente] = useState("");
+
+  const [requestError, setRequestError] = useState({ campus: null });
+
+  const emptyRequestError = () => {
+    setRequestError({ campus: null });
+  };
 
   useEffect(() => {
     if (index != null) {
@@ -68,16 +72,20 @@ export default function DialogUpdateCliente({
           }
         )
         .then((result) => {
-          updateTable(index.id, result.data.data)
-          //refreshTable();
+          updateTable(index.id, result.data.data);
+          
+          close();
         }),
       {
         loading: "Actualizando...",
         success: "Operacion Exitosa",
-        error: (err) => err.response.data.message
+        error: (err) => {
+          setRequestError({ campus: err.response.data.campus });
+          return err.response.data.message;
+        },
       }
     );
-    close();
+    
   };
 
   const empty = () => {
@@ -86,6 +94,7 @@ export default function DialogUpdateCliente({
     setDomicilio("");
     //setLocalidad("");
     setMail("");
+    emptyRequestError();
   };
 
   if (isLoading) return <></>;
@@ -105,7 +114,8 @@ export default function DialogUpdateCliente({
           sx={{ marginTop: 1 }}
           label="Cliente"
           value={cliente}
-          onChange={(evt) => setCliente(evt.target.value)}
+          onChange={(evt) => {emptyRequestError();setCliente(evt.target.value)}}
+          error={requestError.campus == 'cliente' ? true : false}
         />
         <TextField
           sx={{ marginTop: 3 }}

@@ -257,6 +257,37 @@ export default function Menu() {
     );
   };
 
+  const renderMaquinaParada = () => {
+    return (
+      <li>
+        <a
+          onClick={() => {
+            setMenuActive({
+              produccion: false,
+              paradaMaquina: true,
+              matrices: false,
+              pedidos: false,
+              remitos: false,
+              notaEnvios: false,
+              mercaderia: false,
+              inventario: false,
+              home: false,
+              envios: false,
+            });
+            navegate("/maquinaParada");
+          }}
+          className={`block py-2 px-3 rounded md:bg-transparent ${
+            menuActive.paradaMaquina
+              ? "text-white bg-blue-700 md:text-blue-700 cursor-default"
+              : "text-gray-900 md:text-gray-900 cursor-pointer"
+          } md:p-0 `}
+        >
+          Maquinas Paradas
+        </a>
+      </li>
+    );
+  };
+
   const renderMenuMatriceria = (role) => {
     return (
       <>
@@ -308,6 +339,8 @@ export default function Menu() {
       return <>{renderMenuEnvios()}</>;
     } else if (userSupabase.role == "matriceria") {
       return <>{renderMenuMatriceria()}</>;
+    } else if (userSupabase.role == "inyected") {
+      return <>{renderMaquinaParada()}</>;
     }
   };
 

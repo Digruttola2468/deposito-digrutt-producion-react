@@ -18,7 +18,7 @@ export default function DialogNewInventario({
   close = () => {},
   refreshTable = () => {},
 }) {
-  const {postTable} = useContext(InventarioContext)
+  const { postTable } = useContext(InventarioContext);
   const { BASE_URL, userSupabase } = useContext(UserContext);
 
   const [nombre, setNombre] = useState("");
@@ -26,12 +26,23 @@ export default function DialogNewInventario({
   const [pesoUnidad, setPesoUnidad] = useState("");
   const [cliente, setCliente] = useState(null);
 
+  const [requestError, setRequestError] = useState({ campus: null });
+
+  const emptyRequestError = () => {
+    setRequestError({ campus: null });
+  };
+
   const handleCreateNewProduct = () => {
     toast.promise(
       axios
         .post(
           `${BASE_URL}/inventario`,
-          { nombre, descripcion, pesoUnidad: pesoUnidad != '' ? pesoUnidad : null, idCliente: cliente?.id ?? null },
+          {
+            nombre,
+            descripcion,
+            pesoUnidad: pesoUnidad != "" ? pesoUnidad : null,
+            idCliente: cliente?.id ?? null,
+          },
           {
             headers: {
               Authorization: `Bearer ${userSupabase.token}`,
@@ -48,8 +59,9 @@ export default function DialogNewInventario({
         loading: "Creando Producto...",
         success: "Operacion exitosa",
         error: (err) => {
-          console.log(err);
-          return err.response.data?.message ?? 'Ocurrio un error';
+          setRequestError({ campus: err.response.data.campus });
+          console.log(err.response.data.campus);
+          return err.response.data?.message ?? "Ocurrio un error";
         },
       }
     );
@@ -60,6 +72,7 @@ export default function DialogNewInventario({
     setDescripcion("");
     setPesoUnidad("");
     setCliente(null);
+    emptyRequestError();
   };
 
   return (
@@ -76,8 +89,12 @@ export default function DialogNewInventario({
           sx={{ marginTop: 2 }}
           label="Cod. Producto"
           value={nombre}
-          onChange={(evt) => setNombre(evt.target.value)}
+          onChange={(evt) => {
+            emptyRequestError();
+            setNombre(evt.target.value);
+          }}
           required
+          error={requestError.campus == "codProducto" ? true : false}
         />
         <TextField
           sx={{ marginTop: 2 }}
@@ -85,7 +102,11 @@ export default function DialogNewInventario({
           multiline
           rows={2}
           value={descripcion}
-          onChange={(evt) => setDescripcion(evt.target.value)}
+          onChange={(evt) => {
+            emptyRequestError();
+            setDescripcion(evt.target.value);
+          }}
+          error={requestError.campus == "descripcion" ? true : false}
           required
         />
         <TextField

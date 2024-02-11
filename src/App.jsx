@@ -165,7 +165,7 @@ function App() {
   }
   function validarMaquinaParada() {
     if (userSupabase != null) {
-      if (role === "admin" || role == "produccion")
+      if (role === "admin" || role == "produccion" || role == "inyected")
         return renderMaquinaParada();
       else return renderNotPermissos();
     } else return renderNotPermissos();

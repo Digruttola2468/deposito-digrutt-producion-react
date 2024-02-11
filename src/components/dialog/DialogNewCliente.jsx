@@ -13,14 +13,8 @@ import {
 import BoxLocalidad from "../comboBox/BoxLocalidad";
 import { ClientesContext } from "../../context/ClientesContext";
 
-export default function DialogNewCliente({
-  show = false,
-  close = () => {},
-  refreshTable = () => {},
-}) {
-  const {
-    postTable,
-  } = useContext(ClientesContext);
+export default function DialogNewCliente({ show = false, close = () => {} }) {
+  const { postTable } = useContext(ClientesContext);
   const { BASE_URL, userSupabase } = useContext(UserContext);
 
   const [cliente, setCliente] = useState("");
@@ -28,6 +22,12 @@ export default function DialogNewCliente({
   const [localidad, setLocalidad] = useState("");
   const [mail, setMail] = useState("");
   const [cuit, setCuit] = useState("");
+
+  const [requestError, setRequestError] = useState({ campus: null });
+
+  const emptyRequestError = () => {
+    setRequestError({ campus: null });
+  };
 
   const handleNewCliente = () => {
     toast.promise(
@@ -43,8 +43,6 @@ export default function DialogNewCliente({
         )
         .then((result) => {
           postTable(result.data.data);
-
-          //refreshTable();
           empty();
           close();
         }),
@@ -52,7 +50,7 @@ export default function DialogNewCliente({
         loading: "Creando Cliente...",
         success: "Operacion exitosa",
         error: (err) => {
-          console.log();
+          setRequestError({ campus: err.response.data.campus });
           return err.response.data?.message ?? "Something Wrong";
         },
       }
@@ -65,6 +63,7 @@ export default function DialogNewCliente({
     setLocalidad("");
     setDomicilio("");
     setCliente("");
+    emptyRequestError();
   };
 
   return (
@@ -79,11 +78,12 @@ export default function DialogNewCliente({
       <DialogContent className="flex flex-col">
         <TextField
           value={cliente}
-          onChange={(event) => setCliente(event.target.value)}
+          onChange={(event) => {emptyRequestError();setCliente(event.target.value)}}
           label="Cliente"
           autoFocus
           required
           sx={{ marginTop: 2 }}
+          error={requestError.campus == "cliente" ? true : false}
         />
         <TextField
           value={mail}

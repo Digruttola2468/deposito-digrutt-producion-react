@@ -6,6 +6,7 @@ import {
   DialogContent,
   DialogTitle,
   TextField,
+  TextareaAutosize,
 } from "@mui/material";
 import axios from "axios";
 import { useContext, useEffect, useState } from "react";
@@ -21,30 +22,32 @@ const fetcher = (url) => {
 export default function DialogUpdateInventario({
   show = false,
   close = () => {},
-  index,
-  refreshTable = () => {},
 }) {
-  const {updateTable} = useContext(InventarioContext)
+  const { updateTable, index } = useContext(InventarioContext);
   const { userSupabase, BASE_URL } = useContext(UserContext);
 
   const { data, error, isLoading } = useSWR(`${BASE_URL}/clientes`, fetcher);
 
-  const [articulo, setArticulo] = useState("");
   const [nombre, setNombre] = useState("");
   const [descripcion, setDescripcion] = useState("");
   const [pesoUnidad, setPesoUnidad] = useState("");
   const [ubicacion, setUbicacion] = useState("");
   const [cliente, setCodCliente] = useState(null);
 
+  const [requestError, setRequestError] = useState({ campus: null });
+
   useEffect(() => {
     if (index != null) {
-      setArticulo(index.articulo);
       setNombre(index.nombre);
       setDescripcion(index.descripcion);
-      setPesoUnidad(index.pesoUnidad);  
-      setUbicacion(index?.ubicacion ?? "")
+      setPesoUnidad(index?.pesoUnidad ?? "");
+      setUbicacion(index?.ubicacion ?? "");
     }
   }, [index]);
+
+  const emptyRequestError = () => {
+    setRequestError({ campus: null });
+  };
 
   const handleUpdate = () => {
     toast.promise(
@@ -52,7 +55,6 @@ export default function DialogUpdateInventario({
         .put(
           `${BASE_URL}/inventario/${index.id}`,
           {
-            articulo,
             nombre,
             descripcion,
             pesoUnidad: parseFloat(pesoUnidad),
@@ -66,15 +68,18 @@ export default function DialogUpdateInventario({
           }
         )
         .then((result) => {
-          updateTable(index.id, result.data.data)
+          updateTable(index.id, result.data.data);
+          close();
         }),
       {
         loading: "Actualizando...",
         success: "Operacion Exitosa",
-        error: (err) => err.response.data.message,
+        error: (err) => {
+          setRequestError({ campus: err.response.data.campus });
+          return err.response.data.message;
+        },
       }
     );
-    close();
   };
 
   if (error) return <></>;
@@ -85,28 +90,27 @@ export default function DialogUpdateInventario({
       <DialogTitle>Actualizar Inventario</DialogTitle>
       <DialogContent className="flex flex-col">
         <TextField
-          sx={{ marginTop: 1, marginLeft: 1 }}
-          label="Articulo"
-          value={articulo}
-          onChange={(evt) => setArticulo(evt.target.value.toUpperCase())}
-        />
-        <TextField
           sx={{ marginTop: 3, marginLeft: 1 }}
           label="Cod. Producto"
           value={nombre}
-          onChange={(evt) => setNombre(evt.target.value)}
+          onChange={(evt) => {
+            emptyRequestError();
+            setNombre(evt.target.value);
+          }}
+          error={requestError.campus == "codProducto" ? true : false}
         />
-        <TextField
-          sx={{ marginTop: 3, marginLeft: 1 }}
-          label="Descripcion"
-          multiline
-          rows={3}
+        <TextareaAutosize
+          className={`mt-4 ml-2 px-[14px] py-[16px] border border-[#c4c4c4] focus:outline-[2px] focus:outline-[#007fff] rounded-md `}
+          placeholder="Descripcion"
           value={descripcion}
           onChange={(evt) => setDescripcion(evt.target.value)}
         />
         <TextField
           value={pesoUnidad}
-          onChange={(event) => setPesoUnidad(event.target.value)}
+          onChange={(event) => {
+            emptyRequestError();
+            setPesoUnidad(event.target.value);
+          }}
           label="Peso x Unidad"
           type="number"
           autoFocus
@@ -114,7 +118,10 @@ export default function DialogUpdateInventario({
         />
         <TextField
           value={ubicacion}
-          onChange={(event) => setUbicacion(event.target.value)}
+          onChange={(event) => {
+            emptyRequestError();
+            setUbicacion(event.target.value);
+          }}
           label="Ubicacion"
           autoFocus
           sx={{ marginTop: 3, marginLeft: 1 }}

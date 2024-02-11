@@ -23,7 +23,9 @@ export const UserProvider = (props) => {
     else navegate("/login");
   }, []);
 
-  const signOut = async () => {};
+  const signOut = () => {
+    setUserSupabase(null);
+  };
 
   const logIn = (email, password) => {
     toast.promise(

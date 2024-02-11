@@ -1,7 +1,8 @@
 import { Box, FormControl, InputLabel, MenuItem, Select } from "@mui/material";
 import axios from "axios";
-import { useState } from "react";
+import { useContext, useState } from "react";
 import useSWR from "swr";
+import { InventarioContext } from "../../context/InventarioContext";
 
 const fetcher = (url) => {
   return axios.get(url).then((result) => result.data);

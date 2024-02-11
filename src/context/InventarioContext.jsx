@@ -20,37 +20,43 @@ export default function InventarioContextProvider(props) {
 
   const [index, setIndex] = useState(null);
   const [table, setTable] = useState([]);
+  const [apiOriginal, setApiOriginal] = useState([]);
 
-  let { data, isLoading, error, mutate } = useSWR(
+  const [descripcion, setDescripcion] = useState("");
+  const [cliente, setCliente] = useState("");
+
+  const { data, isLoading, error, mutate } = useSWR(
     [`${BASE_URL}/inventario`, userSupabase.token],
     fetcherToken,
     {
       onSuccess: (data, evt, config) => {
         setTable(data);
+        setApiOriginal(data);
       },
     }
   );
 
   const getOne = () => {
-    return data.find((elem) => elem.id == index);
+    return apiOriginal.find((elem) => elem.id == index);
   };
 
   const updateTable = (idInventario, object) => {
-    data = data.map((elem) => {
+    const update = apiOriginal.map((elem) => {
       if (idInventario == elem.id) return { ...elem, ...object };
       else return elem;
     });
-    setTable(data);
+    setTable(update);
+    setApiOriginal(update);
   };
 
   const postTable = (object) => {
-    data.push(object);
-    setTable(data);
+    setTable([object, ...apiOriginal]);
+    setApiOriginal([object, ...apiOriginal]);
   };
 
   const deleteTable = (idInventario) => {
-    data = data.filter((elem) => elem.id != idInventario);
-    setTable(data);
+    setTable(apiOriginal.filter((elem) => elem.id != idInventario));
+    setApiOriginal(apiOriginal.filter((elem) => elem.id != idInventario));
   };
 
   if (isLoading) return <></>;
@@ -59,7 +65,7 @@ export default function InventarioContextProvider(props) {
   return (
     <InventarioContext.Provider
       value={{
-        api: data,
+        api: apiOriginal,
         table,
         setTable,
         refreshTable: mutate,
@@ -71,6 +77,10 @@ export default function InventarioContextProvider(props) {
         getOne,
         setIndex,
         index,
+        descripcion, 
+        setDescripcion,
+        cliente, 
+        setCliente
       }}
     >
       {props.children}

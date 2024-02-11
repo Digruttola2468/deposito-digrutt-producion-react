@@ -1,7 +1,6 @@
 import { useContext, useState } from "react";
 import { UserContext } from "../../context/UserContext";
 import axios from "axios";
-import useSWR from "swr";
 import {
   Button,
   Dialog,
@@ -21,19 +20,21 @@ import toast from "react-hot-toast";
 import { CiSquarePlus } from "react-icons/ci";
 import DialogNewInventario from "../dialog/DialogNewInventario";
 import { InventarioContext } from "../../context/InventarioContext";
-const fetcher = ([url, token]) => {
-  return axios
-    .get(url, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    })
-    .then((result) => result.data);
-};
 
 export default function TableInventario() {
-  const { table, refreshTable, setTable, setIndex, index, deleteTable, api: data } =
-    useContext(InventarioContext);
+  const {
+    table,
+    refreshTable,
+    setTable,
+    setIndex,
+    index,
+    deleteTable,
+    api: data,
+    descripcion,
+    setDescripcion,
+    setCliente,
+    cliente,
+  } = useContext(InventarioContext);
   const { userSupabase, BASE_URL } = useContext(UserContext);
 
   const [start, setStart] = useState(0);
@@ -44,7 +45,10 @@ export default function TableInventario() {
   const [dialogNewProduct, setDialogNewProduct] = useState(false);
 
   const getPrevius = () => {
-    refreshTable();
+    if (cliente != "")
+      setTable(data.filter((elem) => elem.idcliente == cliente));
+    else setTable(data);
+
     resetTable();
   };
 
@@ -81,24 +85,38 @@ export default function TableInventario() {
             <TextField
               label="Buscar Descripcion"
               size="small"
+              value={descripcion}
               onChange={(evt) => {
                 const text = evt.target.value;
+                setDescripcion(text);
                 if (text != "") {
-                  const filterByDescripcion = data.filter((elem) => {
-                    return elem.descripcion
-                      .toLowerCase()
-                      .includes(text.toLowerCase().trim());
-                  });
+                  if (cliente != "") {
+                    const filterByDescripcion = data.filter((elem) => {
+                      if (elem.idcliente == cliente) {
+                        return elem.descripcion
+                          .toLowerCase()
+                          .includes(text.toLowerCase().trim());
+                      }
+                    });
+                    setTable(filterByDescripcion);
+                  } else {
+                    const filterByDescripcion = data.filter((elem) => {
+                      return elem.descripcion
+                        .toLowerCase()
+                        .includes(text.toLowerCase().trim());
+                    });
+                    setTable(filterByDescripcion);
+                  }
                   resetTable();
-                  setTable(filterByDescripcion);
                 } else getPrevius();
               }}
             />
             <SearchClientesBox
               filterTable={setTable}
               table={table}
-              refresh={getPrevius}
+              refresh={() => setTable(data)}
               apiOriginal={data}
+              setCliente={setCliente}
             />
             <Tooltip title="Nuevo Producto">
               <IconButton
@@ -232,7 +250,6 @@ export default function TableInventario() {
             setDialogUpdate(false);
           }}
           refreshTable={refreshTable}
-          index={index}
         />
         <DialogNewInventario
           show={dialogNewProduct}
