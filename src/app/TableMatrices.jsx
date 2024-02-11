@@ -31,7 +31,7 @@ export default function TableMatrices() {
     setIndex,
     index,
     apiOriginal,
-    refreshTable: mutate,
+    deleteTable
   } = useContext(MatricesContext);
   const { index: indexHistorial } = useContext(HistorialMatrizContext);
 
@@ -92,7 +92,7 @@ export default function TableMatrices() {
           },
         })
         .then((result) => {
-          mutate();
+          deleteTable(index.id);
           setDialogDelete(false);
         }),
       {
@@ -254,7 +254,6 @@ export default function TableMatrices() {
         show={dialogUpdate}
         index={index}
         close={() => setDialogUpdate(false)}
-        refreshTable={mutate}
       />
       <DialogNewMatriz
         show={dialogNewMatriz}

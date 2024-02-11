@@ -16,6 +16,7 @@ import { useContext, useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import useSWR from "swr";
 import { UserContext } from "../../context/UserContext";
+import { MatricesContext } from "../../context/MatricesContext";
 
 const fetcher = (url) => {
   return axios.get(url).then((result) => result.data);
@@ -25,49 +26,46 @@ export default function DialogUpdateMatrices({
   show = false,
   close = () => {},
   index,
-  refreshTable = () => {},
 }) {
   const { BASE_URL, userSupabase } = useContext(UserContext);
+  const { updateTable } = useContext(MatricesContext);
 
   const { data, isLoading, error, mutate } = useSWR(
     `https://deposito-digrutt-express-production.up.railway.app/api/materiaPrima`,
     fetcher
   );
 
-  const swrCliente = useSWR(
-    `https://deposito-digrutt-express-production.up.railway.app/api/clientes`,
-    fetcher
-  );
-
   const [descripcion, setDescripcion] = useState("");
   const [material, setMaterial] = useState("");
-  const [cliente, setCliente] = useState("");
   const [cantPiezaGolpe, setCantPiezaGolpe] = useState("");
 
   useEffect(() => {
     if (index != null) {
       setDescripcion(index.descripcion);
-      setCliente(index.idcliente);
       setCantPiezaGolpe(index.cantPiezaGolpe);
     }
   }, [index]);
 
   const handleUpdate = () => {
     toast.promise(
-      axios.put(
-        `${BASE_URL}/matrices/${index.id}`,
-        {
-          descripcion,
-          idmaterial: material != "" ? material : null,
-          idcliente: cliente,
-          cantPiezaGolpe,
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${userSupabase.token}`,
+      axios
+        .put(
+          `${BASE_URL}/matrices/${index.id}`,
+          {
+            descripcion,
+            idmaterial: material != "" ? material : null,
+            cantPiezaGolpe,
           },
-        }
-      ).then(result => {refreshTable(); close()}),
+          {
+            headers: {
+              Authorization: `Bearer ${userSupabase.token}`,
+            },
+          }
+        )
+        .then((result) => {
+          updateTable(index.id, result.data.data)
+          close();
+        }),
       {
         loading: "Actualizando Matriz...",
         success: "Operacion Exitosa",
@@ -82,15 +80,11 @@ export default function DialogUpdateMatrices({
   const empty = () => {
     setDescripcion("");
     setMaterial("");
-    setCliente("");
     setCantPiezaGolpe("");
   };
 
   if (isLoading) return <></>;
   if (error) return <></>;
-
-  if (swrCliente.isLoading) return <></>;
-  if (swrCliente.error) return <></>;
 
   return (
     <Dialog
@@ -139,27 +133,6 @@ export default function DialogUpdateMatrices({
           type="number"
           onChange={(evt) => setCantPiezaGolpe(evt.target.value)}
         />
-        <Box>
-          <FormControl fullWidth sx={{ marginTop: 2 }}>
-            <InputLabel>Cliente</InputLabel>
-            <Select
-              value={cliente}
-              label="Cliente"
-              onChange={(evt) => setCliente(evt.target.value)}
-            >
-              <MenuItem value="">
-                <em>None</em>
-              </MenuItem>
-              {swrCliente.data.map((elem) => {
-                return (
-                  <MenuItem key={elem.id} value={elem.id}>
-                    {elem.cliente}
-                  </MenuItem>
-                );
-              })}
-            </Select>
-          </FormControl>
-        </Box>
       </DialogContent>
       <DialogActions>
         <Button

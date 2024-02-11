@@ -13,6 +13,7 @@ import {
 import BoxLocalidad from "../comboBox/BoxLocalidad";
 import AutoCompleteClient from "../autoComplete/AutoCompleteClient";
 import BoxMaterial from "../comboBox/BoxMaterial";
+import { MatricesContext } from "../../context/MatricesContext";
 
 export default function DialogNewMatriz({
   show = false,
@@ -20,15 +21,16 @@ export default function DialogNewMatriz({
   refreshTable = () => {},
 }) {
   const { BASE_URL, userSupabase } = useContext(UserContext);
+  const { postTable } = useContext(MatricesContext);
 
-  const [codMatriz, setCodMatriz] = useState("");
+  const [numMatriz, setNumMatriz] = useState("");
   const [descripcion, setDescripcion] = useState("");
   const [material, setMaterial] = useState("");
   const [cliente, setCliente] = useState(null);
   const [cantPiezaGolpe, setCantPiezaGolpe] = useState("");
 
   const empty = () => {
-    setCodMatriz("");
+    setNumMatriz("");
     setDescripcion("");
     setMaterial("");
     setCantPiezaGolpe("");
@@ -41,10 +43,10 @@ export default function DialogNewMatriz({
         .post(
           `${BASE_URL}/matrices`,
           {
-            cod_matriz: codMatriz,
+            numero_matriz: numMatriz,
             descripcion,
             idmaterial: material != "" ? material : null,
-            idcliente: cliente,
+            idcliente: cliente.id,
             cantPiezaGolpe,
           },
           {
@@ -54,17 +56,14 @@ export default function DialogNewMatriz({
           }
         )
         .then((result) => {
-          refreshTable();
+          postTable(result.data.data);
           empty();
           close();
         }),
       {
         loading: "Creando Matriz...",
         success: "Operacion exitosa",
-        error: (err) => {
-          console.log();
-          return err.response.data?.message ?? "Something Wrong";
-        },
+        error: (err) => err.response.data?.message ?? "Something Wrong",
       }
     );
   };
@@ -80,11 +79,12 @@ export default function DialogNewMatriz({
       <DialogTitle>Nuevo Matriz</DialogTitle>
       <DialogContent className="flex flex-col">
         <TextField
-          value={codMatriz}
-          onChange={(event) => setCodMatriz(event.target.value)}
-          label="Cod Matriz"
+          value={numMatriz}
+          onChange={(event) => setNumMatriz(event.target.value)}
+          label="Numero Matriz"
           autoFocus
           required
+          type="number"
           sx={{ marginTop: 2 }}
         />
         <TextField
@@ -99,6 +99,7 @@ export default function DialogNewMatriz({
           onChange={(event) => setCantPiezaGolpe(event.target.value)}
           label="Cant Pieza x Golpe"
           required
+          type="number"
           sx={{ marginTop: 2 }}
         />
         <BoxMaterial materiaPrima={material} setMateriaPrima={setMaterial} />
