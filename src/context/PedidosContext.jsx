@@ -19,43 +19,58 @@ export default function PedidosProvider(props) {
   const { userSupabase } = useContext(UserContext);
   const BASE_URL = import.meta.env.VITE_BASE_URL;
 
-  let { data, isLoading, error, mutate } = useSWR(
+  const [index, setIndex] = useState(null);
+  const [table, setTable] = useState([]);
+  const [apiOriginal, setApiOriginal] = useState([]);
+
+  const { data, isLoading, error, mutate } = useSWR(
     [`${BASE_URL}/pedidos`, userSupabase.token],
-    fetcherToken
+    fetcherToken,
+    {
+      onSuccess: (data, evt, config) => {
+        setTable(data);
+        setApiOriginal(data);
+      },
+    }
   );
 
-  const [index, setIndex] = useState();
-
   const getOne = () => {
-    return data.find((elem) => elem.id == index);
+    return apiOriginal.find((elem) => elem.id == index);
   };
 
   const updateIsDone = (idPedido, isDone) => {
     const value = isDone ? "1" : "0";
-    data = data.map((elem) => {
+    const update = apiOriginal.map((elem) => {
       if (idPedido == elem.id) return { ...elem, is_done: value };
       else return elem;
     });
-    return data;
+    setTable(update);
+    setApiOriginal(update);
   };
 
-  const updateTable = (idPedido, object) => {
-    data = data.map((elem) => {
-      if (idPedido == elem.id) return { ...elem, object };
-      else return elem;
-    });
-
-    return data;
+  const updateTable = (idMatriz, object) => {
+    setTable(
+      apiOriginal.map((elem) => {
+        if (idMatriz == elem.id) return { ...elem, ...object };
+        else return elem;
+      })
+    );
+    setApiOriginal(
+      apiOriginal.map((elem) => {
+        if (idMatriz == elem.id) return { ...elem, ...object };
+        else return elem;
+      })
+    );
   };
 
   const postTable = (object) => {
-    data.push(object);
-    return data;
+    setApiOriginal([object, ...apiOriginal]);
+    setTable([object, ...apiOriginal]);
   };
 
-  const deleteTable = (idPedido) => {
-    data = data.filter((elem) => elem.id != idPedido);
-    return data;
+  const deleteTable = (idMatriz) => {
+    setTable(apiOriginal.filter((elem) => elem.id != idMatriz));
+    setApiOriginal(apiOriginal.filter((elem) => elem.id != idMatriz));
   };
 
   if (isLoading) return <></>;
@@ -64,17 +79,19 @@ export default function PedidosProvider(props) {
   return (
     <PedidosContext.Provider
       value={{
-        tableOriginal: data,
+        apiOriginal,
+        table,
+        setTable,
         refreshTable: mutate,
         token: userSupabase.token,
-        base_url: BASE_URL,
-        fetcherToken,
-        updateIsDone,
+        BASE_URL,
         updateTable,
-        postItemTable: postTable,
-        deleteItemTable: deleteTable,
+        postTable,
+        deleteTable,
         getOne,
         setIndex,
+        index,
+        updateIsDone,
       }}
     >
       {props.children}

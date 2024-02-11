@@ -9,7 +9,7 @@ import {
   TextField,
   Tooltip,
 } from "@mui/material";
-import { useContext, useEffect, useState } from "react";
+import { useContext, useState } from "react";
 import { PedidosContext } from "../../context/PedidosContext";
 import {
   FaCheck,
@@ -28,12 +28,15 @@ import DialogUpdatePedido from "../dialog/DialogUpdatePedido";
 
 export default function TablePedidos() {
   const { BASE_URL, userSupabase } = useContext(UserContext);
-  const { tableOriginal, updateIsDone, deleteItemTable } =
-    useContext(PedidosContext);
-
-  const [index, setIndex] = useState(null);
-
-  const [table, setTable] = useState(() => tableOriginal);
+  const {
+    apiOriginal,
+    updateIsDone,
+    deleteTable,
+    table,
+    setTable,
+    index,
+    setIndex,
+  } = useContext(PedidosContext);
 
   const [arrow, setArrow] = useState({ order: "ASC", campus: null });
 
@@ -44,13 +47,9 @@ export default function TablePedidos() {
   const [dialogUpdate, setDialogUpdate] = useState(false);
   const [dialogDelete, setDialogDelete] = useState(false);
 
-  useEffect(() => {
-    setStart(end - 10);
-  }, [end]);
-
   const getPrevius = () => {
     resetTable();
-    setTable(tableOriginal);
+    setTable(apiOriginal);
   };
 
   const resetTable = () => {
@@ -74,7 +73,7 @@ export default function TablePedidos() {
           }
         )
         .then((result) => {
-          setTable(updateIsDone(idPedido, isDone));
+          updateIsDone(idPedido, isDone)
         }),
       {
         loading: "Creando Pedido...",
@@ -96,14 +95,13 @@ export default function TablePedidos() {
           },
         })
         .then((result) => {
-          setTable(deleteItemTable(index.id));
+          deleteTable(index.id);
           setDialogDelete(false);
         }),
       {
         loading: "Eliminando Pedido...",
         success: "Operacion Exitosa",
         error: (err) => {
-          console.log(err);
           return "Ocurrio un Error";
         },
       }
@@ -188,13 +186,13 @@ export default function TablePedidos() {
       <div className="flex flex-col lg:justify-center lg:items-center ">
         <div className="flex flex-row flex-wrap gap-1">
           <TextField
-            label="Buscar Descripcion"
+            label="Buscar Orden Compra"
             size="small"
             onChange={(evt) => {
               const text = evt.target.value;
               if (text != "") {
-                const filterByDescripcion = tableOriginal.filter((elem) => {
-                  return elem.descripcion
+                const filterByDescripcion = apiOriginal.filter((elem) => {
+                  return elem.ordenCompra
                     .toLowerCase()
                     .includes(text.toLowerCase());
                 });
@@ -205,11 +203,11 @@ export default function TablePedidos() {
           <TextField
             size="small"
             type="date"
-            sx={{minWidth: '100px'}}
+            sx={{ minWidth: "100px" }}
             onChange={(evt) => {
               const fecha = evt.target.value;
               if (fecha != "") {
-                const filterByDescripcion = tableOriginal.filter((elem) => {
+                const filterByDescripcion = apiOriginal.filter((elem) => {
                   return elem.fecha_entrega == fecha;
                 });
                 if (filterByDescripcion.length != 0) {
@@ -409,27 +407,23 @@ export default function TablePedidos() {
         </div>
         <div className="flex flex-row justify-center ">
           <Pagination
-            count={Math.ceil(tableOriginal.length / 10)}
+            count={Math.ceil(table.length / 10)}
             onChange={(evt, value) => {
-              setEnd(10 * parseInt(value));
+              const endValue = 10 * parseInt(value);
+              setStart(endValue - 10);
+              setEnd(endValue);
             }}
           />
         </div>
       </div>
       <DialogNewPedidos
         show={dialogNewPedido}
-        close={() => {
-          setDialogNewPedido(false);
-        }}
+        close={() => setDialogNewPedido(false)}
       />
       <DialogUpdatePedido
         show={dialogUpdate}
         index={index}
-        close={() => {
-          setDialogUpdate(false);
-          getPrevius();
-        }}
-        refreshTable={getPrevius}
+        close={() => setDialogUpdate(false)}
       />
       <Dialog open={dialogDelete} onClose={() => setDialogDelete(false)}>
         <DialogTitle>Eliminar Pedido</DialogTitle>

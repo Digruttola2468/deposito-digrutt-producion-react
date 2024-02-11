@@ -12,13 +12,14 @@ import {
   DialogTitle,
   TextField,
 } from "@mui/material";
+import { PedidosContext } from "../../context/PedidosContext";
 
 export default function DialogNewPedidos({
   show = false,
   close = () => {},
-  refreshTable = () => {},
 }) {
   const { BASE_URL, userSupabase } = useContext(UserContext);
+  const {postTable} = useContext(PedidosContext);
 
   const [producto, setProducto] = useState(null);
   const [cliente, setCliente] = useState("");
@@ -39,9 +40,9 @@ export default function DialogNewPedidos({
         .post(
           `${BASE_URL}/pedidos`,
           {
-            idinventario: producto != null ? producto.id : null,
+            idInventario: producto != null ? producto.id : null,
             idcliente: cliente,
-            stock,
+            cantidadEnviar: stock,
             fecha_entrega: fechaEntrega,
           },
           {
@@ -51,7 +52,7 @@ export default function DialogNewPedidos({
           }
         )
         .then((result) => {
-          refreshTable();
+          postTable(result.data.data);
           close();
         }),
       {

@@ -17,8 +17,7 @@ import { PedidosContext } from "../../context/PedidosContext";
 export default function DialogUpdatePedido({
   show = false,
   close = () => {},
-  index,
-  refreshTable = () => {},
+  index
 }) {
   const { BASE_URL, userSupabase } = useContext(UserContext);
   const { updateTable } = useContext(PedidosContext);
@@ -68,7 +67,6 @@ export default function DialogUpdatePedido({
         )
         .then((result) => {
           updateTable(index.id, result.data.update);
-          refreshTable();
           empty();
           close();
         }),
