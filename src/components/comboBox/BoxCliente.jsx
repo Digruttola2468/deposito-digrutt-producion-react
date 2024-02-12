@@ -8,7 +8,7 @@ import {
 import axios from "axios";
 import useSWR from "swr";
 
-export default function BoxCliente({ cliente, setCliente, size = "small" }) {
+export default function BoxCliente({ cliente, setCliente, size = "small", errorValue = false }) {
   const { data, isLoading, error } = useSWR(
     `https://deposito-digrutt-express-production.up.railway.app/api/clientes`,
     (url) => {
@@ -27,6 +27,7 @@ export default function BoxCliente({ cliente, setCliente, size = "small" }) {
           size={size}
           value={cliente}
           label="Cliente"
+          error={errorValue}
           onChange={(evt) => setCliente(evt.target.value)}
         >
           <MenuItem value="">

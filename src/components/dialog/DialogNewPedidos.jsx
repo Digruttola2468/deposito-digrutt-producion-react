@@ -14,12 +14,9 @@ import {
 } from "@mui/material";
 import { PedidosContext } from "../../context/PedidosContext";
 
-export default function DialogNewPedidos({
-  show = false,
-  close = () => {},
-}) {
+export default function DialogNewPedidos({ show = false, close = () => {} }) {
   const { BASE_URL, userSupabase } = useContext(UserContext);
-  const {postTable} = useContext(PedidosContext);
+  const { postTable } = useContext(PedidosContext);
 
   const [producto, setProducto] = useState(null);
   const [cliente, setCliente] = useState("");
@@ -27,11 +24,18 @@ export default function DialogNewPedidos({
   const [fechaEntrega, setFechaEntrega] = useState("");
   const [ordenCompra, setOrdenCompra] = useState("");
 
+  const [requestError, setRequestError] = useState({ campus: null });
+
+  const emptyRequestError = (campus) => {
+    if (requestError.campus == campus) setRequestError({ campus: null });
+  };
+
   const empty = () => {
     setProducto(null);
     setCliente("");
     setStock("");
     setFechaEntrega("");
+    setRequestError();
   };
 
   const handleNewPedido = () => {
@@ -59,8 +63,9 @@ export default function DialogNewPedidos({
         loading: "Creando Pedido...",
         success: "Operacion Exitosa",
         error: (err) => {
-          console.log(err);
-          return "Ocurrio un error";
+          console.log(err.response.data.campus);
+          setRequestError({ campus: err.response.data.campus });
+          return err.response.data.message;
         },
       }
     );
@@ -76,11 +81,15 @@ export default function DialogNewPedidos({
     >
       <DialogTitle>Nuevo Pedido</DialogTitle>
       <DialogContent className="flex flex-col">
-        <BoxCliente size="medium" cliente={cliente} setCliente={setCliente} />
+        <BoxCliente size="medium" cliente={cliente} setCliente={(value) => {emptyRequestError('cliente');setCliente(value)}} errorValue={requestError.campus == 'cliente' ? true : false} />
         <AutoCompleteInventario
           producto={producto}
-          setProducto={setProducto}
+          setProducto={(value) => {
+            emptyRequestError("idInventario");
+            setProducto(value);
+          }}
           required={true}
+          errorValue={requestError.campus == "idInventario" ? true : false}
         />
         <TextField
           value={ordenCompra}
@@ -89,17 +98,22 @@ export default function DialogNewPedidos({
         />
         <TextField
           value={stock}
-          onChange={(event) => setStock(event.target.value)}
+          onChange={(event) => {emptyRequestError('cantidadEnviar');setStock(event.target.value)}}
           label="Cantidad Enviar"
           required
           sx={{ marginTop: 2 }}
+          error={requestError.campus == 'cantidadEnviar' ? true : false}
         />
         <TextField
           value={fechaEntrega}
-          onChange={(event) => setFechaEntrega(event.target.value)}
+          onChange={(event) => {
+            emptyRequestError("fechaEntrega");
+            setFechaEntrega(event.target.value);
+          }}
           type="date"
           required
           sx={{ marginTop: 2 }}
+          error={requestError.campus == "fechaEntrega" ? true : false}
         />
       </DialogContent>
       <DialogActions>

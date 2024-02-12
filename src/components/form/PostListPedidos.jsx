@@ -19,6 +19,7 @@ import {
   TextField,
 } from "@mui/material";
 import useSWR from "swr";
+import { PedidosContext } from "../../context/PedidosContext";
 
 const fetcher = (url) => {
   return axios.get(url).then((result) => result.data);
@@ -31,6 +32,7 @@ export default function PostListPedidos({
   setCliente,
 }) {
   const { BASE_URL, userSupabase } = useContext(UserContext);
+  const { refreshTable } = useContext(PedidosContext);
 
   const { data, error, isLoading } = useSWR(`${BASE_URL}/clientes`, fetcher);
 
@@ -64,8 +66,14 @@ export default function PostListPedidos({
       const cantidadEnviar = document.querySelector(
         `#cantidadEnviar-${idProduct}`
       ).value;
+      const fecha = document.querySelector(`#fecha-${idProduct}`).value;
 
-      list.push({ cantidadEnviar, idProduct, ...codProductoArray });
+      list.push({
+        fechaEntrega: fecha,
+        cantidadEnviar,
+        idProduct,
+        ...codProductoArray,
+      });
     }
     return list;
   };
@@ -78,7 +86,7 @@ export default function PostListPedidos({
     enviar.products = getDataListPedido();
 
     console.log(enviar);
-    
+
     toast.promise(
       axios
         .post(`${BASE_URL}/pedidos/list`, enviar, {
@@ -87,12 +95,12 @@ export default function PostListPedidos({
           },
         })
         .then((result) => {
-          console.log(result);
+          refreshTable();
           empty();
         }),
       {
         loading: "Enviando...",
-        success: 'Operacion Exitosa',
+        success: "Operacion Exitosa",
         error: (err) => err.response?.data.message ?? "",
       }
     );
@@ -136,16 +144,6 @@ export default function PostListPedidos({
               </Select>
             </FormControl>
           </Box>
-        </div>
-        <div className="mt-2 w-[300px]">
-          <TextField
-            type="date"
-            value={fecha}
-            onChange={(evt) => setFecha(evt.target.value)}
-            sx={{}}
-            required
-            className="w-full"
-          />
         </div>
         <div className="mt-2 w-[300px]">
           <TextField
@@ -203,8 +201,16 @@ export default function PostListPedidos({
                     </p>
                   </div>
                 </div>
-                <div className="flex flex-row">
-                  <div className="mr-4 ">
+                <div className="flex flex-col">
+                  <div className="mr-4 min-w-[100px]">
+                    <TextField
+                      type="date"
+                      required
+                      className="w-full"
+                      id={`fecha-${elem.id}`}
+                    />
+                  </div>
+                  <div className="mr-4 min-w-[100px]">
                     <TextField
                       label="Cantidad Enviar"
                       type="number"
