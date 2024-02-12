@@ -6,7 +6,8 @@ export default function BoxVehiculos({
   vehiculo,
   setVehiculo,
   size = "medium",
-  sx = {}
+  sx = {},
+  errorValue = false
 }) {
   const { data, isLoading, error } = useSWR(
     `https://deposito-digrutt-express-production.up.railway.app/api/vehiculos`,
@@ -26,7 +27,7 @@ export default function BoxVehiculos({
           size={size}
           value={vehiculo}
           label="Vehiculos"
-          
+          error={errorValue}
           onChange={(evt) => setVehiculo(evt.target.value)}
         >
           {data.map((elem) => {

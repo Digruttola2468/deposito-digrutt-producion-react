@@ -31,12 +31,19 @@ export default function DialogNewEnvio({
 
   const [objLugarVisitado, setLugarVisitado] = useState("");
 
+  const [requestError, setRequestError] = useState({ campus: null });
+
+  const emptyRequestError = (campus) => {
+    if (requestError.campus == campus) setRequestError({ campus: null });
+  };
+
   const empty = () => {
     setVehiculo("");
     setUbicacion("");
     setDescripcion("");
     setFechaDate("");
-    setLugarVisitado("")
+    setLugarVisitado("");
+    setRequestError({ campus: null });
   };
 
   const handleNewEnvio = () => {
@@ -67,7 +74,8 @@ export default function DialogNewEnvio({
         loading: "Creando Cliente...",
         success: "Operacion exitosa",
         error: (err) => {
-          console.log();
+          console.log(err.response.data.campus);
+          setRequestError({ campus: err.response.data.campus });
           return err.response.data?.message ?? "Something Wrong";
         },
       }
@@ -85,9 +93,13 @@ export default function DialogNewEnvio({
       <DialogTitle>Nuevo Envio</DialogTitle>
       <DialogContent className="flex flex-col">
         <BoxVehiculos
-          setVehiculo={setVehiculo}
+          setVehiculo={(value) => {
+            emptyRequestError("idVehiculo");
+            setVehiculo(value);
+          }}
           vehiculo={vehiculo}
           sx={{ marginTop: 2 }}
+          errorValue={requestError.campus == "idVehiculo" ? true : false}
         />
         <BoxLugaresVisitados
           setLugarVisitado={(evt) => {
@@ -101,14 +113,22 @@ export default function DialogNewEnvio({
         />
         <TextField
           value={ubicacion}
-          onChange={(event) => setUbicacion(event.target.value)}
+          onChange={(event) => {
+            emptyRequestError("ubicacion");
+            setUbicacion(event.target.value);
+          }}
           label="Ubicacion"
           sx={{ marginTop: 2 }}
+          error={requestError.campus == "ubicacion" ? true : false}
         />
         <BoxLocalidad
           localidad={localidad}
-          setLocalidad={setLocalidad}
+          setLocalidad={(value) => {
+            emptyRequestError("idLocalidad");
+            setLocalidad(value);
+          }}
           sx={{ marginTop: 2 }}
+          errorValue={requestError.campus == "idLocalidad" ? true : false}
         />
         <TextField
           value={descripcion}

@@ -6,7 +6,8 @@ export default function BoxLocalidad({
   localidad,
   setLocalidad,
   size = "medium",
-  sx = {marginTop: 1}
+  sx = {marginTop: 1},
+  errorValue = false
 }) {
   const { data, isLoading, error } = useSWR(
     `https://deposito-digrutt-express-production.up.railway.app/api/localidad`,
@@ -26,6 +27,7 @@ export default function BoxLocalidad({
           size={size}
           value={localidad}
           label="Localidad"
+          error={errorValue}
           onChange={(evt) => setLocalidad(evt.target.value)}
         >
           <MenuItem value="">
