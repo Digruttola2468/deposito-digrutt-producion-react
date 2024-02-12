@@ -43,8 +43,7 @@ export default function ItemTableMercaderia({ index }) {
         </Typography>
       </>
     );
-      console.log(data);
-
+    
   return (
     <>
       {data != null && (

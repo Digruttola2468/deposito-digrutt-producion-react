@@ -85,8 +85,6 @@ export default function PostListPedidos({
     enviar.nroOrden = nroOrden;
     enviar.products = getDataListPedido();
 
-    console.log(enviar);
-
     toast.promise(
       axios
         .post(`${BASE_URL}/pedidos/list`, enviar, {

@@ -42,6 +42,8 @@ export default function TableMercaderia() {
     descripcion,
     setDescripcion,
     deleteTable,
+    setCliente,
+    cliente
   } = useContext(MercaderiaContext);
   const { userSupabase, BASE_URL } = useContext(UserContext);
 
@@ -53,7 +55,10 @@ export default function TableMercaderia() {
   const [dialogDelete, setDialogDelete] = useState(false);
 
   const getPrevius = () => {
-    setTable(data);
+    if (cliente != "")
+      setTable(data.filter((elem) => elem.idcliente == cliente));
+    else setTable(data);
+
     resetTable();
   };
 
@@ -96,11 +101,24 @@ export default function TableMercaderia() {
                 const text = evt.target.value;
                 setDescripcion(text);
                 if (text != "") {
-                  const filterByDescripcion = data.filter((elem) => {
-                    return elem.descripcion.includes(text);
-                  });
+                  if (cliente != "") {
+                    const filterByDescripcion = data.filter((elem) => {
+                      if (elem.idcliente == cliente) {
+                        return elem.descripcion
+                          .toLowerCase()
+                          .includes(text.toLowerCase().trim());
+                      }
+                    });
+                    setTable(filterByDescripcion);
+                  } else {
+                    const filterByDescripcion = data.filter((elem) => {
+                      return elem.descripcion
+                        .toLowerCase()
+                        .includes(text.toLowerCase().trim());
+                    });
+                    setTable(filterByDescripcion);
+                  }
                   resetTable();
-                  setTable(filterByDescripcion);
                 } else getPrevius();
               }}
             />
@@ -109,6 +127,7 @@ export default function TableMercaderia() {
               table={table}
               refresh={getPrevius}
               apiOriginal={data}
+              setCliente={setCliente}
             />
           </div>
           <div className="overflow-x-auto sm:-mx-6 lg:-mx-8">

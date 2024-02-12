@@ -23,6 +23,7 @@ export default function MercaderiaProvider(props) {
   const [apiOriginal, setApiOriginal] = useState([]);
 
   const [descripcion, setDescripcion] = useState("");
+  const [cliente, setCliente] = useState("");
 
   const verify = () => {
     if (descripcion != "") {
@@ -97,6 +98,8 @@ export default function MercaderiaProvider(props) {
         index,
         descripcion,
         setDescripcion,
+        cliente, 
+        setCliente
       }}
     >
       {props.children}

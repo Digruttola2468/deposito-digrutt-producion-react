@@ -39,6 +39,12 @@ export default function PostMercaderia() {
 
   const [isEntrada, setIsEntrada] = useState(true);
 
+  const [requestError, setRequestError] = useState({ campus: null });
+
+  const emptyRequestError = (campus) => {
+    if (requestError.campus == campus) setRequestError({ campus: null });
+  };
+
   const handleSubmitPost = (evt) => {
     evt.preventDefault();
 
@@ -67,7 +73,10 @@ export default function PostMercaderia() {
           {
             loading: "Enviando...",
             success: "Operacion Exitosa",
-            error: (err) => err.response.data.message,
+            error: (err) => {
+              setRequestError({ campus: err.response.data.campus });
+              return err.response.data.message;
+            },
           }
         );
       } else {
@@ -93,16 +102,23 @@ export default function PostMercaderia() {
           {
             loading: "Enviando...",
             success: "Operacion Exitosa",
-            error: (err) => err.response.data.message,
+            error: (err) => {
+              setRequestError({ campus: err.response.data.campus });
+              return err.response.data.message;
+            },
           }
         );
       }
+    } else {
+      setRequestError({ campus: "codProducto" });
+      toast.error("Campo Cod.Producto vacio");
     }
   };
 
   const empty = () => {
     setStock("");
     setcodProducto(null);
+    setObservacion("");
   };
 
   if (isLoading) return <></>;
@@ -137,17 +153,28 @@ export default function PostMercaderia() {
           getOptionLabel={(elem) => elem.nombre}
           sx={{ width: 200, marginTop: 1 }}
           value={codProducto}
-          onChange={(evt, newValue) => setcodProducto(newValue)}
+          onChange={(evt, newValue) => {
+            emptyRequestError("codProducto");
+            setcodProducto(newValue);
+          }}
           renderInput={(params) => (
-            <TextField {...params} label="Cod Producto" />
+            <TextField
+              {...params}
+              label="Cod Producto"
+              error={requestError.campus == "codProducto"}
+            />
           )}
         />
         <TextField
           label="Cantidad"
           value={stock}
           type="number"
-          onChange={(evt) => setStock(evt.target.value)}
+          onChange={(evt) => {
+            emptyRequestError("stock");
+            setStock(evt.target.value);
+          }}
           variant="outlined"
+          error={requestError.campus == "stock" ? true : false}
           sx={{ width: 100, marginLeft: 1, marginTop: 1 }}
         />
       </div>
@@ -155,9 +182,13 @@ export default function PostMercaderia() {
         <TextField
           value={fecha}
           type="date"
-          onChange={(evt) => setFecha(evt.target.value)}
+          onChange={(evt) => {
+            emptyRequestError("fecha");
+            setFecha(evt.target.value);
+          }}
           variant="outlined"
           sx={{ width: "100%", marginTop: 1 }}
+          error={requestError.campus == "fecha" ? true : false}
         />
       </div>
       {isEntrada == false && (
@@ -165,9 +196,10 @@ export default function PostMercaderia() {
           <TextField
             label="Descripcion Salida"
             value={observacion}
-            onChange={(evt) => setObservacion(evt.target.value)}
+            onChange={(evt) => {emptyRequestError("observacion");setObservacion(evt.target.value)}}
             variant="outlined"
             sx={{ width: "100%", marginTop: 1 }}
+            error={requestError.campus == "observacion"}
           />
         </div>
       )}
