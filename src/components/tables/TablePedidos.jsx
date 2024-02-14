@@ -25,6 +25,9 @@ import { CiSquarePlus } from "react-icons/ci";
 import toast from "react-hot-toast";
 import { BiTrashAlt } from "react-icons/bi";
 import DialogUpdatePedido from "../dialog/DialogUpdatePedido";
+import { TbPdf } from "react-icons/tb";
+import { PDFDownloadLink } from "@react-pdf/renderer";
+import OrdenCompraA4PDF from "../pdf/OrdenCompraA4PDF";
 
 export default function TablePedidos() {
   const { BASE_URL, userSupabase } = useContext(UserContext);
@@ -36,6 +39,8 @@ export default function TablePedidos() {
     setTable,
     index,
     setIndex,
+    ordenCompra, 
+    setOrdenCompra
   } = useContext(PedidosContext);
 
   const [arrow, setArrow] = useState({ order: "ASC", campus: null });
@@ -73,7 +78,7 @@ export default function TablePedidos() {
           }
         )
         .then((result) => {
-          updateIsDone(idPedido, isDone)
+          updateIsDone(idPedido, isDone);
         }),
       {
         loading: "Creando Pedido...",
@@ -188,8 +193,10 @@ export default function TablePedidos() {
           <TextField
             label="Buscar Orden Compra"
             size="small"
+            value={ordenCompra}
             onChange={(evt) => {
               const text = evt.target.value;
+              setOrdenCompra(text)
               if (text != "") {
                 const filterByDescripcion = apiOriginal.filter((elem) => {
                   return elem.ordenCompra
@@ -223,6 +230,21 @@ export default function TablePedidos() {
               onClick={() => setDialogNewPedido(true)}
             >
               <CiSquarePlus />
+            </IconButton>
+          </Tooltip>
+          <Tooltip title="Crear PDF">
+            <IconButton className="hover:text-red-500 cursor-pointer transition-all duration-300">
+              <PDFDownloadLink
+                document={
+                  <OrdenCompraA4PDF
+                    list={table}
+                    ordenCompra={ordenCompra}
+                  />
+                }
+                fileName={`${ordenCompra}.pdf`}
+              >
+                <TbPdf  />
+              </PDFDownloadLink>
             </IconButton>
           </Tooltip>
         </div>
