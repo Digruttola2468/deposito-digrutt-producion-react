@@ -1,29 +1,66 @@
 import { Document, Page, Text, View } from "@react-pdf/renderer";
+import { jsPDF } from "jspdf";
+import "jspdf-autotable";
 
-export default function OrdenCompraA4PDF({ list = [] }) {
-  const formatDate = (date) => {
-    const fecha = new Date(date);
-    const dia = fecha.getDate();
-    const mes = fecha.getMonth() + 1;
+const formatDate = (date) => {
+  const fecha = new Date(date);
+  const dia = fecha.getDate() + 1;
+  const mes = fecha.getMonth() + 1;
 
-    const listMeses = [
-      "",
-      "Ene",
-      "Feb",
-      "Mar",
-      "Abr",
-      "May",
-      "Jun",
-      "Jul",
-      "Ago",
-      "Sep",
-      "Oct",
-      "Nov",
-      "Dic",
+  const listMeses = [
+    "",
+    "Ene",
+    "Feb",
+    "Mar",
+    "Abr",
+    "May",
+    "Jun",
+    "Jul",
+    "Ago",
+    "Sep",
+    "Oct",
+    "Nov",
+    "Dic",
+  ];
+
+  return ` ${dia} ${listMeses[mes]}`;
+};
+
+export const generarPDF = (list = []) => {
+  const doc = new jsPDF();
+  
+  if (list.length != 0) {
+    const columns = [
+      "descripcion",
+      "Cantidad pedida",
+      "Cantidad Enviada",
+      "Fecha Entrega",
     ];
 
-    return ` ${dia} ${listMeses[mes]}`;
-  };
+    let data = [];
+
+    for (let i = 0; i < list.length; i++) {
+      const element = list[i];
+
+      data.push([
+        element.descripcion,
+        element.cantidadEnviar,
+        element?.cantidad_enviada ?? "0",
+        formatDate(element.fecha_entrega),
+      ]);
+    }
+
+    doc.autoTable({
+      startY: 30,
+      head: [columns],
+      body: data,
+    });
+
+    doc.save(`OrdenCompra.pdf`);
+  }
+};
+
+export default function OrdenCompraA4PDF({ list = [] }) {
 
   if (list.length == 0)
     return (
