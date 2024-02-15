@@ -2,13 +2,17 @@ import {
   Card,
   CardActions,
   CardContent,
+  IconButton,
   Skeleton,
+  Tooltip,
   Typography,
 } from "@mui/material";
 
 import useSWR from "swr";
 
+import fileDownload from "js-file-download";
 import axios from "axios";
+
 import { toast } from "react-hot-toast";
 import { useContext, useState } from "react";
 import { UserContext } from "../../context/UserContext";
@@ -53,6 +57,19 @@ export default function ItemTableNotaEnvio({ index, refreshTableOficina }) {
   const handleClickUpdate = () => setDialogUpdateRemito(true);
   const handleClickDelete = () => setDialogDeleteNotaEnvio(true);
   const handleClickUpdateNewMercaderia = () => setDialogNewMercaderia(true);
+
+  const handleClickExcel = async () => {
+    axios({
+      url: `${BASE_URL}/excel/notaEnvio/${data.notaEnvio.id}`,
+      headers: {
+        Authorization: `Bearer ${userSupabase.token}`,
+      },
+      method: "GET",
+      responseType: "blob",
+    }).then((res) => {
+      fileDownload(res.data, `NotaEnvio_${data.notaEnvio.nro_envio}.xlsx`);
+    });
+  };
 
   const handleClickDeleteRemito = async () => {
     toast.error("No esa habilitado");
@@ -115,17 +132,25 @@ export default function ItemTableNotaEnvio({ index, refreshTableOficina }) {
           <h5 className="relative text-xl font-medium leading-tight text-neutral-800 dark:text-neutral-50">
             {data.notaEnvio.nro_envio}
             <span className="absolute right-1">
-              <FaFileExcel className="hover:text-green-700 cursor-pointer transition-all duration-300" onClick={() => {}} />
+              <Tooltip title="Crear Excel">
+                <IconButton
+                  className="hover:text-green-700 cursor-pointer transition-all duration-300"
+                  onClick={() => handleClickExcel()}
+                >
+                  <FaFileExcel />
+                </IconButton>
+              </Tooltip>
             </span>
           </h5>
           <p className="mb-4  text-neutral-600 dark:text-neutral-200 text-sm">
-            {data.notaEnvio.fecha} - {data.notaEnvio.cliente} - {`$${data.notaEnvio.valorDeclarado}`}
+            {data.notaEnvio.fecha} - {data.notaEnvio.cliente} -{" "}
+            {`$${data.notaEnvio.valorDeclarado}`}
           </p>
           {data.mercaderia.map((elem) => {
             return (
               <div key={elem.id}>
                 <p>
-                 ✔️{elem.nombre} - {elem.descripcion} -{" "}
+                  ✔️{elem.nombre} - {elem.descripcion} -{" "}
                   <span className="text-red-400">{elem.stock}</span>
                 </p>{" "}
                 <p></p>
