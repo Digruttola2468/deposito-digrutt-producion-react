@@ -1,34 +1,20 @@
-import { useContext, useEffect, useState } from "react";
-import { UserContext } from "../../context/UserContext";
-import axios from "axios";
-import useSWR from "swr";
-import { InputAdornment, Pagination, TextField } from "@mui/material";
+import { useContext, useState } from "react";
+import { Pagination, TextField } from "@mui/material";
 import SearchClientesBox from "../comboBox/SearchClientesBox";
 import ItemTableOficina from "../ItemsTables/ItemTableOficina";
-
-const fetcher = ([url, token]) => {
-  return axios
-    .get(url, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    })
-    .then((result) => result.data);
-};
+import { RemitosContext } from "../../context/RemitosContext";
 
 export default function TableOficina() {
-  const { userSupabase, BASE_URL } = useContext(UserContext);
+  const {
+    table,
+    setTable,
+    index,
+    setIndex,
+    apiOriginal: data,
+  } = useContext(RemitosContext);
 
-  const { data, isLoading, error,mutate } = useSWR(
-    [`${BASE_URL}/remito`, userSupabase.token],
-    fetcher,
-    { onSuccess: (data, key, config) => setTable(data) }
-  );
-
-  const [table, setTable] = useState([]);
   const [start, setStart] = useState(0);
   const [end, setEnd] = useState(10);
-  const [index, setIndex] = useState(null)
 
   const getPrevius = () => {
     setTable(data);
@@ -39,9 +25,6 @@ export default function TableOficina() {
     setStart(0);
     setEnd(10);
   };
-
-  if (isLoading) return <></>;
-  if (error) return <></>;
 
   return (
     <>
@@ -55,7 +38,7 @@ export default function TableOficina() {
                 const text = evt.target.value;
                 if (text != "") {
                   const filterByDescripcion = data.filter((elem) => {
-                    return elem.num_remito.slice(4).includes(text)
+                    return elem.num_remito.slice(4).includes(text);
                   });
                   setTable(filterByDescripcion);
                 } else getPrevius();
@@ -97,7 +80,9 @@ export default function TableOficina() {
                         <tr
                           className={`border-b dark:border-neutral-500 hover:border-info-200 hover:bg-cyan-200 hover:text-neutral-800`}
                           key={elem.id}
-                          onClick={() => {setIndex(elem.id)}}
+                          onClick={() => {
+                            setIndex(elem);
+                          }}
                         >
                           <td className="whitespace-nowrap px-6 py-4 font-medium">
                             {elem.num_remito}
@@ -133,7 +118,7 @@ export default function TableOficina() {
             />
           </div>
         </div>
-        {index != null && <ItemTableOficina index={index} refreshTableOficina={mutate} />}
+        {index != null && <ItemTableOficina />}
       </section>
     </>
   );

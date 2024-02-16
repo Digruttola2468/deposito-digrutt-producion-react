@@ -1,34 +1,22 @@
 import { Pagination, TextField } from "@mui/material";
 import SearchClientesBox from "../comboBox/SearchClientesBox";
 import ItemTableNotaEnvio from "../ItemsTables/ItemTableNotaEnvio";
-import useSWR from "swr";
 import { useContext, useState } from "react";
 import { UserContext } from "../../context/UserContext";
 import axios from "axios";
-
-const fetcher = ([url, token]) => {
-  return axios
-    .get(url, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    })
-    .then((result) => result.data);
-};
+import { NotaEnvioContext } from "../../context/NotaEnvioContext";
 
 export default function TableNotaEnvios() {
-  const { userSupabase, BASE_URL } = useContext(UserContext);
+  const {
+    table,
+    setTable,
+    setIndex,
+    index,
+    apiOriginal: data,
+  } = useContext(NotaEnvioContext);
 
-  const { data, isLoading, error, mutate } = useSWR(
-    [`${BASE_URL}/facturaNegro`, userSupabase.token],
-    fetcher,
-    { onSuccess: (data, key, config) => setTable(data) }
-  );
-
-  const [table, setTable] = useState([]);
   const [start, setStart] = useState(0);
   const [end, setEnd] = useState(10);
-  const [index, setIndex] = useState(null);
 
   const getPrevius = () => {
     setTable(data);
@@ -40,11 +28,8 @@ export default function TableNotaEnvios() {
     setEnd(10);
   };
 
-  if (isLoading) return <></>;
-  if (error) return <></>;
-
   return (
-    <section className="grid grid-cols-1 lg:grid-cols-2 place-content-center mt-4">
+    <section className="grid grid-cols-1 place-content-center mt-4">
       <div className="flex flex-col lg:justify-center lg:items-center ">
         <div className="flex flex-row items-center">
           <TextField
@@ -94,7 +79,7 @@ export default function TableNotaEnvios() {
                         className={`border-b dark:border-neutral-500 hover:border-info-200 hover:bg-cyan-200 hover:text-neutral-800`}
                         key={elem.id}
                         onClick={() => {
-                          setIndex(elem.id);
+                          setIndex(elem);
                         }}
                       >
                         <td className="whitespace-nowrap px-6 py-4 font-medium">
@@ -107,7 +92,9 @@ export default function TableNotaEnvios() {
                           {elem.cliente}
                         </td>
                         <td className="whitespace-nowrap px-6 py-4 ">
-                          {elem.valorDeclarado == 0 ? "" : `$${elem.valorDeclarado}ARG`}
+                          {elem.valorDeclarado == 0
+                            ? ""
+                            : `$${elem.valorDeclarado}ARG`}
                         </td>
                       </tr>
                     );
@@ -128,9 +115,7 @@ export default function TableNotaEnvios() {
           />
         </div>
       </div>
-      {index != null && (
-        <ItemTableNotaEnvio index={index} refreshTableOficina={mutate} />
-      )}
+      {index != null && <ItemTableNotaEnvio />}
     </section>
   );
 }

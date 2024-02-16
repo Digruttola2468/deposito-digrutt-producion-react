@@ -26,6 +26,7 @@ import { toast } from "react-hot-toast";
 import { useContext, useState } from "react";
 import { UserContext } from "../../context/UserContext";
 import RemitoA4PDF from "../pdf/RemitoA4PDF";
+import { RemitosContext } from "../../context/RemitosContext";
 
 const monthNames = [
   "Ene",
@@ -52,11 +53,12 @@ const fetcher = ([url, token]) => {
     .then((result) => result.data);
 };
 
-export default function ItemTableOficina({ index, refreshTableOficina }) {
+export default function ItemTableOficina() {
   const { userSupabase, BASE_URL } = useContext(UserContext);
+  const { index, deleteTable } = useContext(RemitosContext);
 
   const { data, isLoading, error, mutate } = useSWR(
-    [`${BASE_URL}/remito/${index}`, userSupabase.token],
+    [`${BASE_URL}/remito/${index.id}`, userSupabase.token],
     fetcher
   );
 
@@ -65,23 +67,25 @@ export default function ItemTableOficina({ index, refreshTableOficina }) {
   const [dialogUpdateRemito, setDialogUpdateRemito] = useState(false);
   const [dialogDeleteRemito, setDialogDeleteRemito] = useState(false);
 
-  const handleClickUpdate = () => setDialogUpdateRemito(true);
-  const handleClickDelete = () => setDialogDeleteRemito(true);
-  const handleClickUpdateNewMercaderia = () => setDialogNewMercaderia(true);
-
   const handleClickDeleteRemito = async () => {
     toast.promise(
       axios
-        .delete(`${BASE_URL}/remito/${data.remito.id}`, {
+        .delete(`${BASE_URL}/remito/${index.id}`, {
           headers: {
             Authorization: `Bearer ${userSupabase.token}`,
           },
         })
-        .then((result) => {mutate(); refreshTableOficina()}),
+        .then((result) => {
+          deleteTable(index.id);
+          setDialogDeleteRemito(false);
+          toast.success("Eliminado Correctamente");
+        })
+        .catch((er) => {
+          console.log(er);
+          toast.error("No existe ese remito");
+        }),
       {
         loading: "Eliminando...",
-        success: "Eliminado Con Exito",
-        error: "No se elimino",
       }
     );
   };
@@ -146,8 +150,7 @@ export default function ItemTableOficina({ index, refreshTableOficina }) {
             </span>
           </h5>
           <p className="mb-4  text-neutral-600 dark:text-neutral-200 text-sm">
-            {data.remito.fecha} -{" "}
-            {data.remito.cliente} -{" "}
+            {data.remito.fecha} - {data.remito.cliente} -{" "}
             {`$${data.remito.total}`}
           </p>
           {data.mercaderia.map((elem) => {
@@ -165,7 +168,7 @@ export default function ItemTableOficina({ index, refreshTableOficina }) {
               <Tooltip
                 title="Agregar nueva mercaderia"
                 className=" hover:text-blue-400"
-                onClick={handleClickUpdateNewMercaderia}
+                onClick={() => setDialogNewMercaderia(true)}
               >
                 <IconButton>
                   <CiSquarePlus />
@@ -175,7 +178,7 @@ export default function ItemTableOficina({ index, refreshTableOficina }) {
             <Tooltip
               title="Actualizar"
               className=" hover:text-blue-400"
-              onClick={handleClickUpdate}
+              onClick={() => setDialogUpdateRemito(true)}
             >
               <IconButton size="small">
                 <FaPen />
@@ -184,7 +187,7 @@ export default function ItemTableOficina({ index, refreshTableOficina }) {
             <Tooltip
               title="Eliminar"
               className="hover:text-red-400"
-              onClick={handleClickDelete}
+              onClick={() => setDialogDeleteRemito(true)}
             >
               <IconButton size="small">
                 <FaTrash />

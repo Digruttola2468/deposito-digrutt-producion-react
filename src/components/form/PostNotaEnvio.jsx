@@ -18,6 +18,7 @@ import {
   TextField,
 } from "@mui/material";
 import useSWR from "swr";
+import { NotaEnvioContext } from "../../context/NotaEnvioContext";
 
 const fetcher = (url) => {
   return axios.get(url).then((result) => result.data);
@@ -25,6 +26,7 @@ const fetcher = (url) => {
 
 export default function PostNotaEnvio({ listInventario, setListInventario }) {
   const { BASE_URL, userSupabase } = useContext(UserContext);
+  const { postTable } = useContext(NotaEnvioContext)
 
   const { data, error, isLoading } = useSWR(`${BASE_URL}/clientes`, fetcher);
 
@@ -36,6 +38,12 @@ export default function PostNotaEnvio({ listInventario, setListInventario }) {
   const [fecha, setFecha] = useState("");
   const [cliente, setCliente] = useState("");
   const [valorDeclarado, setValorDeclarado] = useState(0);
+
+  const [requestError, setRequestError] = useState({ campus: null });
+
+  const emptyRequestError = (campus) => {
+    if (campus == requestError.campus) setRequestError({ campus: null });
+  };
 
   const getDataListPedido = () => {
     let list = [];
@@ -83,13 +91,16 @@ export default function PostNotaEnvio({ listInventario, setListInventario }) {
           },
         })
         .then((result) => {
-          console.log(result);
+          postTable(result.data.data);
           empty();
         }),
       {
         loading: "Enviando...",
-        success: (data) => data.data.message,
-        error: (err) => err.response.data.message
+        success: 'Operacion Exitosa',
+        error: (err) => {
+          setRequestError({ campus: err.response.data.campus });
+          return err.response.data.message;
+        },
       }
     );
     setDialogConfirm(false);
@@ -101,6 +112,7 @@ export default function PostNotaEnvio({ listInventario, setListInventario }) {
     setCliente("");
     setNumNotaEnvio("");
     setListInventario([]);
+    setRequestError({campus: null})
   };
 
   if (isLoading) return <></>;
@@ -116,8 +128,12 @@ export default function PostNotaEnvio({ listInventario, setListInventario }) {
               value={numNotaEnvio}
               type="number"
               placeholder="Nota Envio"
-              onChange={(evt) => setNumNotaEnvio(evt.target.value)}
+              onChange={(evt) => {
+                emptyRequestError("nroEnvio");
+                setNumNotaEnvio(evt.target.value);
+              }}
               className="w-full"
+              error={requestError.campus == "nroEnvio" ? true : false}
             />
           </div>
 
@@ -125,9 +141,13 @@ export default function PostNotaEnvio({ listInventario, setListInventario }) {
             <TextField
               type="date"
               value={fecha}
-              onChange={(evt) => setFecha(evt.target.value)}
+              onChange={(evt) => {
+                emptyRequestError("fecha");
+                setFecha(evt.target.value);
+              }}
               sx={{}}
               className="w-full"
+              error={requestError.campus == "fecha" ? true : false}
             />
           </div>
           <div className="mt-3 w-[300px]">
@@ -137,7 +157,8 @@ export default function PostNotaEnvio({ listInventario, setListInventario }) {
                 <Select
                   value={cliente}
                   label="Cliente"
-                  onChange={(evt) => setCliente(evt.target.value)}
+                  error={requestError.campus == "cliente" ? true : false}
+                  onChange={(evt) => {emptyRequestError('cliente');setCliente(evt.target.value)}}
                 >
                   <MenuItem value="">
                     <em>None</em>
@@ -248,9 +269,6 @@ export default function PostNotaEnvio({ listInventario, setListInventario }) {
               {numNotaEnvio}
             </p>
             <p className="px-1 font-semibold text-lg text-gray-400">{fecha}</p>
-            <p className="px-1 font-semibold text-lg uppercase text-gray-400">
-              {cliente}
-            </p>
           </div>
           <Divider />
           {listPedidosDialog.map((elem) => {

@@ -25,7 +25,7 @@ export default function RemitoA4PDF({
   return (
     <>
       <Document>
-        <Page size={"A4"}>
+        <Page size={"A5"}>
           <div>
             <Text style={{ paddingLeft: 470, color: "black", paddingTop: 100 }}>
               {formatDate(fecha)}

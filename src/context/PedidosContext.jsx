@@ -23,6 +23,8 @@ export default function PedidosProvider(props) {
   const [table, setTable] = useState([]);
   const [apiOriginal, setApiOriginal] = useState([]);
 
+  const [ordenCompra, setOrdenCompra] = useState("");
+
   const { data, isLoading, error, mutate } = useSWR(
     [`${BASE_URL}/pedidos`, userSupabase.token],
     fetcherToken,
@@ -92,6 +94,8 @@ export default function PedidosProvider(props) {
         setIndex,
         index,
         updateIsDone,
+        ordenCompra, 
+        setOrdenCompra
       }}
     >
       {props.children}

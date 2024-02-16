@@ -19,6 +19,7 @@ import {
   TextField,
 } from "@mui/material";
 import useSWR from "swr";
+import { RemitosContext } from "../../context/RemitosContext";
 
 const fetcher = (url) => {
   return axios.get(url).then((result) => result.data);
@@ -26,6 +27,7 @@ const fetcher = (url) => {
 
 export default function PostRemito({ listInventario, setListInventario }) {
   const { BASE_URL, userSupabase } = useContext(UserContext);
+  const { postTable } = useContext(RemitosContext);
 
   const { data, error, isLoading } = useSWR(`${BASE_URL}/clientes`, fetcher);
 
@@ -41,6 +43,12 @@ export default function PostRemito({ listInventario, setListInventario }) {
 
   //View PDF
   const [viewPdf, setViewPdf] = useState(false);
+
+  const [requestError, setRequestError] = useState({ campus: null });
+
+  const emptyRequestError = (campus) => {
+    if (campus == requestError.campus) setRequestError({ campus: null });
+  };
 
   const getDataListPedido = () => {
     let list = [];
@@ -90,55 +98,21 @@ export default function PostRemito({ listInventario, setListInventario }) {
           },
         })
         .then((result) => {
-          console.log(result);
+          postTable(result.data.data)
           empty();
         }),
       {
         loading: "Enviando...",
-        success: (data) => data.data.message,
-        error: (err) => err.response?.data.message ?? "",
+        success: "Operacion Exitosa",
+        error: (err) => {
+          setRequestError({ campus: err.response.data.campus });
+          return err.response?.data.message ?? "Algo salio Mal";
+        },
       }
     );
     setDialogConfirm(false);
   };
-  /*
-  const handleClickShowPdf = (evt) => {
-    evt.preventDefault();
 
-    let enviar = {};
-    enviar.fecha = fecha;
-    enviar.numRemito = numRemito;
-    enviar.idCliente = cliente;
-    enviar.nroOrden = nroOrden;
-    enviar.products = [];
-
-    let valorDeclarado = 0;
-    for (let i = 0; i < pedidos.length; i++) {
-      const codProductoArray = pedidos[i];
-      console.log(codProductoArray);
-
-      let idProduct = codProductoArray.id;
-
-      let stock = document.querySelector(`#stock-${codProductoArray.id}`).value;
-
-      let precio = document.querySelector(
-        `#precio-${codProductoArray.id}`
-      ).value;
-
-      if (stock == "") stock = 1;
-      if (stock <= 0) stock = 1;
-
-      if (precio == "") precio = 0;
-      if (precio <= 0) precio = 0;
-
-      valorDeclarado += parseFloat(precio);
-      enviar.products.push({ stock, idProduct, precio });
-    }
-    enviar.valorDeclarado = valorDeclarado;
-
-    setListProducts(enviar.products);
-  };
-*/
   const empty = () => {
     setNumRemito("");
     setFecha("");
@@ -146,6 +120,7 @@ export default function PostRemito({ listInventario, setListInventario }) {
     setNroOrden("");
     setListInventario([]);
     setViewPdf(false);
+    setRequestError({ campus: null });
   };
 
   if (isLoading) return <></>;
@@ -161,8 +136,12 @@ export default function PostRemito({ listInventario, setListInventario }) {
               value={numRemito}
               type="number"
               placeholder="N° Remito"
-              onChange={(evt) => setNumRemito(evt.target.value)}
+              onChange={(evt) => {
+                emptyRequestError("nroRemito");
+                setNumRemito(evt.target.value);
+              }}
               className="w-full"
+              error={requestError.campus == "nroRemito" ? true : false}
             />
           </div>
 
@@ -170,9 +149,13 @@ export default function PostRemito({ listInventario, setListInventario }) {
             <TextField
               type="date"
               value={fecha}
-              onChange={(evt) => setFecha(evt.target.value)}
+              onChange={(evt) => {
+                emptyRequestError("fecha");
+                setFecha(evt.target.value);
+              }}
               sx={{}}
               className="w-full"
+              error={requestError.campus == "fecha" ? true : false}
             />
           </div>
           <div className="mt-3 w-[300px]">
@@ -182,10 +165,11 @@ export default function PostRemito({ listInventario, setListInventario }) {
                 <Select
                   value={cliente}
                   label="Cliente"
+                  error={requestError.campus == "cliente" ? true : false}
                   onChange={(evt) => {
                     const comboBoxCliente = evt.target.value;
                     setCliente(comboBoxCliente);
-
+                    emptyRequestError("cliente");
                     //Filtrar los elementos seleccionados
                     const filterByCliente = listInventario.filter(
                       (list) => list.idcliente == comboBoxCliente
@@ -310,9 +294,6 @@ export default function PostRemito({ listInventario, setListInventario }) {
               {numRemito}
             </p>
             <p className="px-1 font-semibold text-lg text-gray-400">{fecha}</p>
-            <p className="px-1 font-semibold text-lg uppercase text-gray-400">
-              {cliente}
-            </p>
           </div>
           <Divider />
           {listPedidosDialog.map((elem) => {

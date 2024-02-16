@@ -1,8 +1,13 @@
 import {
+  Button,
   Card,
   CardActions,
   CardContent,
   IconButton,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
   Skeleton,
   Tooltip,
   Typography,
@@ -16,22 +21,8 @@ import axios from "axios";
 import { toast } from "react-hot-toast";
 import { useContext, useState } from "react";
 import { UserContext } from "../../context/UserContext";
-import { FaFileExcel } from "react-icons/fa";
-
-const monthNames = [
-  "Ene",
-  "Feb",
-  "Mar",
-  "Apr",
-  "May",
-  "Jun",
-  "Jul",
-  "Aug",
-  "Sep",
-  "Oct",
-  "Nov",
-  "Dec",
-];
+import { FaFileExcel, FaPen, FaTrash } from "react-icons/fa";
+import { NotaEnvioContext } from "../../context/NotaEnvioContext";
 
 const fetcher = ([url, token]) => {
   return axios
@@ -43,20 +34,18 @@ const fetcher = ([url, token]) => {
     .then((result) => result.data);
 };
 
-export default function ItemTableNotaEnvio({ index, refreshTableOficina }) {
+export default function ItemTableNotaEnvio() {
   const { userSupabase, BASE_URL } = useContext(UserContext);
+  const { index, deleteTable } = useContext(NotaEnvioContext);
 
   const { data, isLoading, error, mutate } = useSWR(
-    [`${BASE_URL}/facturaNegro/${index}`, userSupabase.token],
+    [`${BASE_URL}/facturaNegro/${index.id}`, userSupabase.token],
     fetcher
   );
 
   //Dialogs
   const [dialogDeleteNotaEnvio, setDialogDeleteNotaEnvio] = useState(false);
-
-  const handleClickUpdate = () => setDialogUpdateRemito(true);
-  const handleClickDelete = () => setDialogDeleteNotaEnvio(true);
-  const handleClickUpdateNewMercaderia = () => setDialogNewMercaderia(true);
+  const [dialogUpdateNotaEnvio, setDialogUpdateNotaEnvio] = useState(false);
 
   const handleClickExcel = async () => {
     axios({
@@ -72,21 +61,25 @@ export default function ItemTableNotaEnvio({ index, refreshTableOficina }) {
   };
 
   const handleClickDeleteRemito = async () => {
-    toast.error("No esa habilitado");
-    /*toast.promise(
+    toast.promise(
       axios
-        .delete(`${BASE_URL}/facturaNegro/${data.remito.id}`, {
+        .delete(`${BASE_URL}/facturaNegro/${index.id}`, {
           headers: {
             Authorization: `Bearer ${userSupabase.token}`,
           },
         })
-        .then((result) => {mutate(); refreshTableOficina()}),
+        .then((result) => {
+          toast.success("Eliminado Correctamente");
+          deleteTable(index.id);
+          setDialogDeleteNotaEnvio(false);
+        })
+        .catch((er) => {
+          toast.error("No se Elimino");
+        }),
       {
         loading: "Eliminando...",
-        success: "Eliminado Con Exito",
-        error: "No se elimino",
       }
-    );*/
+    );
   };
 
   if (isLoading)
@@ -123,7 +116,54 @@ export default function ItemTableNotaEnvio({ index, refreshTableOficina }) {
       </Card>
     );
 
-  if (error) return <></>;
+  if (data.error)
+    return (
+      <div>
+        <h1>No tiene salida de mercaderia</h1>
+        <div className="mt-5 flex flex-row gap-2">
+          <Tooltip
+            title="Actualizar"
+            className=" hover:text-blue-400"
+            onClick={() => {}}
+          >
+            <IconButton size="small">
+              <FaPen />
+            </IconButton>
+          </Tooltip>
+          <Tooltip
+            title="Eliminar"
+            className="hover:text-red-400"
+            onClick={() => {
+              setDialogDeleteNotaEnvio(true);
+            }}
+          >
+            <IconButton size="small">
+              <FaTrash />
+            </IconButton>
+          </Tooltip>
+        </div>
+        <Dialog
+          open={dialogDeleteNotaEnvio}
+          onClose={() => setDialogDeleteNotaEnvio(false)}
+        >
+          <DialogTitle>Eliminar Nota Envio {index.nro_envio}</DialogTitle>
+          <DialogContent>
+            Estas seguro en eliminar la nota envio ?
+          </DialogContent>
+          <DialogActions>
+            <Button
+              onClick={() => setDialogDeleteNotaEnvio(false)}
+              variant="text"
+            >
+              Cancelar
+            </Button>
+            <Button onClick={handleClickDeleteRemito} variant="outlined">
+              Delete
+            </Button>
+          </DialogActions>
+        </Dialog>
+      </div>
+    );
 
   return (
     <>
@@ -157,10 +197,50 @@ export default function ItemTableNotaEnvio({ index, refreshTableOficina }) {
               </div>
             );
           })}
+
+          <div className="mt-5 flex flex-row gap-2">
+            <Tooltip
+              title="Actualizar"
+              className=" hover:text-blue-400"
+              onClick={() => {}}
+            >
+              <IconButton size="small">
+                <FaPen />
+              </IconButton>
+            </Tooltip>
+            <Tooltip
+              title="Eliminar"
+              className="hover:text-red-400"
+              onClick={() => setDialogDeleteNotaEnvio(true)}
+            >
+              <IconButton size="small">
+                <FaTrash />
+              </IconButton>
+            </Tooltip>
+          </div>
         </div>
       ) : (
         <></>
       )}
+
+      <Dialog
+        open={dialogDeleteNotaEnvio}
+        onClose={() => setDialogDeleteNotaEnvio(false)}
+      >
+        <DialogTitle>Eliminar Nota Envio {index.nro_envio}</DialogTitle>
+        <DialogContent>Estas seguro en eliminar la nota envio ?</DialogContent>
+        <DialogActions>
+          <Button
+            onClick={() => setDialogDeleteNotaEnvio(false)}
+            variant="text"
+          >
+            Cancelar
+          </Button>
+          <Button onClick={handleClickDeleteRemito} variant="outlined">
+            Delete
+          </Button>
+        </DialogActions>
+      </Dialog>
     </>
   );
 }

@@ -1,5 +1,5 @@
 import { useContext } from "react";
-import { Route, Routes } from "react-router-dom";
+import { Route, Routes, useParams } from "react-router-dom";
 
 import { UserContext } from "./context/UserContext";
 import MaquinaParadaProvider from "./context/MaquinaParadaContext";
@@ -32,6 +32,8 @@ import InventarioContextProvider from "./context/InventarioContext";
 import MercaderiaProvider from "./context/MercaderiaContext";
 import ClientesProvider from "./context/ClientesContext";
 import HistorialMatrizProvider from "./context/HistorialMatrizContext";
+import RemitosContextProvider from "./context/RemitosContext";
+import NotaEnvioContextProvider from "./context/NotaEnvioContext";
 
 function App() {
   const { userSupabase } = useContext(UserContext);
@@ -96,12 +98,14 @@ function App() {
   const renderRemito = () => {
     return (
       <>
-        <section>
-          <TableOficina />
-        </section>
-        <section className="mt-8">
-          <TableInventarioNombres type={"remito"} />
-        </section>
+        <RemitosContextProvider>
+          <section>
+            <TableOficina />
+          </section>
+          <section className="mt-8">
+            <TableInventarioNombres type={"remito"} />
+          </section>
+        </RemitosContextProvider>
       </>
     );
   };
@@ -109,12 +113,14 @@ function App() {
   const renderNotaEnvio = () => {
     return (
       <>
-        <section>
-          <TableNotaEnvios />
-        </section>
-        <section className="mt-8">
-          <TableInventarioNombres type={"notaEnvio"} />
-        </section>
+        <NotaEnvioContextProvider>
+          <section>
+            <TableNotaEnvios />
+          </section>
+          <section className="mt-8">
+            <TableInventarioNombres type={"notaEnvio"} />
+          </section>
+        </NotaEnvioContextProvider>
       </>
     );
   };
@@ -231,10 +237,13 @@ function App() {
           <Route path="/maquinaParada" element={validarMaquinaParada()} />
           <Route path="/matrices" element={validarMatrices()} />
           <Route path="/pedidos" element={validarPedidos()} />
-          <Route path="/remitos" element={validarRemito()} />
+
+          <Route path="/remitos" element={validarRemito()}></Route>
+
           <Route path="/notaEnvios" element={validarNotaEnvio()} />
           <Route path="/mercaderia" element={validarMercaderia()} />
           <Route path="/inventario" element={validarInventario()} />
+
           <Route path="/login" element={<IniciarSesion />} />
           <Route path="/signUp" element={<SignUp />} />
           <Route path="/sendGmail" element={<SendEmail />} />

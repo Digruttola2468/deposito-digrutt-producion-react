@@ -235,7 +235,16 @@ export default function TablePedidos() {
           <Tooltip title="Crear PDF">
             <IconButton
               className="hover:text-red-500 cursor-pointer transition-all duration-300"
-              onClick={() => generarPDF(table)}
+              onClick={() => {
+                const filterByIsDone = table.filter(
+                  (elem) => elem.is_done == 0
+                );
+                if (filterByIsDone.length == 0)
+                  return toast.error(
+                    "La tabla mostrada tiene todos los pedidos completados"
+                  );
+                generarPDF(filterByIsDone);
+              }}
             >
               <TbPdf />
             </IconButton>
