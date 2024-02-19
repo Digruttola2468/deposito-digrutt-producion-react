@@ -191,7 +191,7 @@ export default function TableEnvios() {
             </div>
           </div>
         </div>
-        <div className="flex flex-row justify-center items-center">
+        <div className="flex flex-col md:flex-row justify-center items-center">
           <Pagination
             count={Math.ceil(table.length / 10)}
             onChange={(evt, value) => {

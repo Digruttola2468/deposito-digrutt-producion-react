@@ -19,6 +19,8 @@ export default function NotaEnvioContextProvider(props) {
   const { userSupabase, BASE_URL } = useContext(UserContext);
 
   const [index, setIndex] = useState(null);
+  const [indexMercaderia, setIndexMercaderia] = useState([]);
+
   const [table, setTable] = useState([]);
   const [apiOriginal, setApiOriginal] = useState([]);
 
@@ -54,8 +56,8 @@ export default function NotaEnvioContextProvider(props) {
   );
 
   useEffect(() => {
-    if (!verify()) setTable(data);
-
+    //if (!verify()) setTable(data);
+    setTable(data);
     setApiOriginal(data);
   }, [data]);
 
@@ -86,6 +88,8 @@ export default function NotaEnvioContextProvider(props) {
   const deleteTable = (idNotaEnvio) => {
     setTable(apiOriginal.filter((elem) => elem.id != idNotaEnvio));
     setApiOriginal(apiOriginal.filter((elem) => elem.id != idNotaEnvio));
+    setIndex(null);
+    setIndexMercaderia([]);
   };
 
   if (isLoading) return <></>;
@@ -110,6 +114,8 @@ export default function NotaEnvioContextProvider(props) {
         setDescripcion,
         fecha,
         setFecha,
+        indexMercaderia,
+        setIndexMercaderia,
       }}
     >
       {props.children}

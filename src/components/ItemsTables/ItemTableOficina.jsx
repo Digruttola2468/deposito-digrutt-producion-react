@@ -27,6 +27,7 @@ import { useContext, useState } from "react";
 import { UserContext } from "../../context/UserContext";
 import RemitoA4PDF from "../pdf/RemitoA4PDF";
 import { RemitosContext } from "../../context/RemitosContext";
+import DialogUpdateRemitoNewMercaderia from "../dialog/DialogNewOneRemito";
 
 const monthNames = [
   "Ene",
@@ -55,11 +56,16 @@ const fetcher = ([url, token]) => {
 
 export default function ItemTableOficina() {
   const { userSupabase, BASE_URL } = useContext(UserContext);
-  const { index, deleteTable } = useContext(RemitosContext);
+  const { index, deleteTable, setIndexMercaderia } = useContext(RemitosContext);
 
   const { data, isLoading, error, mutate } = useSWR(
     [`${BASE_URL}/remito/${index.id}`, userSupabase.token],
-    fetcher
+    fetcher,
+    {
+      onSuccess: (data, evt, con) => {
+        setIndexMercaderia(data.mercaderia);
+      },
+    }
   );
 
   //Dialogs
@@ -176,15 +182,6 @@ export default function ItemTableOficina() {
               </Tooltip>
             </div>
             <Tooltip
-              title="Actualizar"
-              className=" hover:text-blue-400"
-              onClick={() => setDialogUpdateRemito(true)}
-            >
-              <IconButton size="small">
-                <FaPen />
-              </IconButton>
-            </Tooltip>
-            <Tooltip
               title="Eliminar"
               className="hover:text-red-400"
               onClick={() => setDialogDeleteRemito(true)}
@@ -213,6 +210,12 @@ export default function ItemTableOficina() {
       ) : (
         <></>
       )}
+      <DialogUpdateRemitoNewMercaderia
+        open={dialogNewMercaderia}
+        close={() => {
+          setDialogNewMercaderia(false);
+        }}
+      />
     </>
   );
 }

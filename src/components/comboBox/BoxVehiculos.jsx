@@ -33,7 +33,7 @@ export default function BoxVehiculos({
           {data.map((elem) => {
             return (
               <MenuItem key={elem.id} value={elem.id}>
-                {elem.marca} - {elem.patente}
+                {elem.modelo} - {elem.patente}
               </MenuItem>
             );
           })}

@@ -26,9 +26,30 @@ const formatDate = (date) => {
   return ` ${dia} ${listMeses[mes]}`;
 };
 
+const eliminarValoresRepetidos = (list) => {
+  const x = list.map((elem) => elem.ordenCompra);
+  var uniqs = x.filter(function (item, index, array) {
+    return array.indexOf(item) === index;
+  });
+  return uniqs;
+};
+
 export const generarPDF = (list = []) => {
   const doc = new jsPDF();
-  
+  const ordenesCompraList = eliminarValoresRepetidos(list);
+
+  doc.text("Orden Compra: ", 20,20)
+
+  let init = 60
+  for (let i = 0; i < ordenesCompraList.length; i++) {
+    const text = ordenesCompraList[i];
+
+    doc.setFontSize(12)
+    doc.text(text,init,20);
+
+    init += 20;
+  }
+
   if (list.length != 0) {
     const columns = [
       "descripcion",
@@ -61,7 +82,6 @@ export const generarPDF = (list = []) => {
 };
 
 export default function OrdenCompraA4PDF({ list = [] }) {
-
   if (list.length == 0)
     return (
       <>

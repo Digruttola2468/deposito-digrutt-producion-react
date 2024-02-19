@@ -47,6 +47,14 @@ export default function DialogNewEnvio({
   };
 
   const handleNewEnvio = () => {
+    let lat = null;
+    let lon = null;
+
+    if (objLugarVisitado != "" && objLugarVisitado != null) {
+      lat = objLugarVisitado.lat;
+      lon = objLugarVisitado.lon;
+    }
+
     toast.promise(
       axios
         .post(
@@ -57,6 +65,8 @@ export default function DialogNewEnvio({
             descripcion,
             fechaDate,
             idLocalidad: localidad,
+            lat,
+            lon
           },
           {
             headers: {

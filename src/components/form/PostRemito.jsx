@@ -276,12 +276,6 @@ export default function PostRemito({ listInventario, setListInventario }) {
               >
                 Enviar
               </button>
-              <button
-                onClick={() => {}}
-                className="ml-2 p-3  gap-2 active:scale-[.98] active:duration-75 transition-all hover:scale-[1.01] ease-in-out"
-              >
-                Agregar PDF
-              </button>
             </div>
           )}
         </section>

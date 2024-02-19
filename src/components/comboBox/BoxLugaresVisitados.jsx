@@ -23,8 +23,9 @@ export default function BoxLugaresVisitados({
       <FormControl fullWidth sx={sx}>
         <InputLabel>Lugares Comunes</InputLabel>
         <Select
+          defaultValue={""}
           size={size}
-          value={lugarVisitado}
+          value={lugarVisitado.nombreUbicacion}
           label="Lugares Comunes"
           onChange={setLugarVisitado}
         >

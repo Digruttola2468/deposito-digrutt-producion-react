@@ -14,7 +14,7 @@ const fetcherToken = ([url, token]) => {
     .then((result) => result.data);
 };
 
-export default function AutoCompleteInventario({ producto, setProducto, required = false, errorValue = false }) {
+export default function AutoCompleteInventario({ producto, setProducto, required = false, errorValue = false, sx = { marginY: 2} }) {
   const { BASE_URL, userSupabase } = useContext(UserContext);
 
   const { data, isLoading, error } = useSWR(
@@ -31,7 +31,7 @@ export default function AutoCompleteInventario({ producto, setProducto, required
       getOptionLabel={(elem) => elem.nombre}
       value={producto}
       onChange={(evt, newValue) => setProducto(newValue)}
-      sx={{ marginY: 2,}}
+      sx={sx}
       required={required}
       renderInput={(params) => (
         <TextField {...params} label="Cod Producto" variant="outlined" error={errorValue} />

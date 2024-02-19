@@ -29,7 +29,7 @@ export default function TableNotaEnvios() {
   };
 
   return (
-    <section className="grid grid-cols-1 place-content-center mt-4">
+    <section className="grid grid-cols-1 justify-center items-center mt-4">
       <div className="flex flex-col lg:justify-center lg:items-center ">
         <div className="flex flex-row items-center">
           <TextField

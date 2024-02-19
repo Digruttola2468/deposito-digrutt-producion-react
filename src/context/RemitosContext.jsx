@@ -25,6 +25,8 @@ export default function RemitosContextProvider(props) {
   const [descripcion, setDescripcion] = useState("");
   const [fecha, setFecha] = useState("");
 
+  const [indexMercaderia, setIndexMercaderia] = useState([]);
+
   const verify = () => {
     if (descripcion != "") {
       const filterByDescripcion = apiOriginal.filter((elem) => {
@@ -86,6 +88,8 @@ export default function RemitosContextProvider(props) {
   const deleteTable = (idRemito) => {
     setTable(apiOriginal.filter((elem) => elem.id != idRemito));
     setApiOriginal(apiOriginal.filter((elem) => elem.id != idRemito));
+    setIndex(null)
+    setIndexMercaderia([]);
   };
 
   if (isLoading) return <></>;
@@ -110,6 +114,8 @@ export default function RemitosContextProvider(props) {
         setDescripcion,
         fecha,
         setFecha,
+        indexMercaderia,
+        setIndexMercaderia,
       }}
     >
       {props.children}

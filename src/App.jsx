@@ -34,6 +34,9 @@ import ClientesProvider from "./context/ClientesContext";
 import HistorialMatrizProvider from "./context/HistorialMatrizContext";
 import RemitosContextProvider from "./context/RemitosContext";
 import NotaEnvioContextProvider from "./context/NotaEnvioContext";
+import MapBox from "./components/maps/MapBox";
+import UpdateRemito from "./app/UpdateRemito";
+import UpdateNotaEnvio from "./app/UpdateNotaEnvio";
 
 function App() {
   const { userSupabase } = useContext(UserContext);
@@ -44,6 +47,7 @@ function App() {
     return (
       <EnviosContextProvider>
         <TableEnvios />
+        <MapBox />
       </EnviosContextProvider>
     );
   };
@@ -104,6 +108,7 @@ function App() {
           </section>
           <section className="mt-8">
             <TableInventarioNombres type={"remito"} />
+            <UpdateRemito />
           </section>
         </RemitosContextProvider>
       </>
@@ -119,6 +124,7 @@ function App() {
           </section>
           <section className="mt-8">
             <TableInventarioNombres type={"notaEnvio"} />
+            <UpdateNotaEnvio />
           </section>
         </NotaEnvioContextProvider>
       </>
