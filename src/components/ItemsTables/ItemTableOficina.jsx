@@ -28,6 +28,7 @@ import { UserContext } from "../../context/UserContext";
 import RemitoA4PDF from "../pdf/RemitoA4PDF";
 import { RemitosContext } from "../../context/RemitosContext";
 import DialogUpdateRemitoNewMercaderia from "../dialog/DialogNewOneRemito";
+import RemitoA5PDF from "../pdf/RemitoA5PDF";
 
 const monthNames = [
   "Ene",
@@ -131,6 +132,7 @@ export default function ItemTableOficina() {
     );
   if (error) return <></>;
 
+  console.log(data);
   return (
     <>
       {data.remito != null ? (
@@ -152,6 +154,24 @@ export default function ItemTableOficina() {
                 fileName={`${data.remito.num_remito}-remito.pdf`}
               >
                 <TbPdf className="hover:text-red-500 cursor-pointer transition-all duration-300" />
+              </PDFDownloadLink>
+            </span>
+            <span className="absolute right-10">
+              <PDFDownloadLink
+                document={
+                  <RemitoA5PDF
+                    CUIT={data.remito.cuit}
+                    cliente={data.remito.cliente}
+                    fecha={data.remito.fecha}
+                    domicilio={data.remito.domicilio}
+                    localidad={"-"}
+                    totalDeclarado={data.remito.total}
+                    products={data.mercaderia}
+                  />
+                }
+                fileName={`${data.remito.num_remito}-remito.pdf`}
+              >
+                <TbPdf className="hover:text-red-950 cursor-pointer transition-all duration-300" />
               </PDFDownloadLink>
             </span>
           </h5>
