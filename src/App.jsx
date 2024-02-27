@@ -1,5 +1,5 @@
 import { useContext } from "react";
-import { Route, Routes, useParams } from "react-router-dom";
+import { Route, Routes } from "react-router-dom";
 
 import { UserContext } from "./context/UserContext";
 import MaquinaParadaProvider from "./context/MaquinaParadaContext";
@@ -37,6 +37,9 @@ import NotaEnvioContextProvider from "./context/NotaEnvioContext";
 import MapBox from "./components/maps/MapBox";
 import UpdateRemito from "./app/UpdateRemito";
 import UpdateNotaEnvio from "./app/UpdateNotaEnvio";
+import TableNombresMatrices from "./components/tables/TableNombresMatrices";
+import PostMatricesContextProvider from "./context/PostMatricesContext";
+import PostProduccion from "./components/form/PostProduccion";
 
 function App() {
   const { userSupabase } = useContext(UserContext);
@@ -57,7 +60,9 @@ function App() {
       <ProduccionContextProvider>
         <section className="relative mt-2">
           <TableProducion />
-          <TableInventarioNombres type={"produccion"} />
+          <PostMatricesContextProvider>
+            <TableNombresMatrices elements={ <PostProduccion/> } />
+          </PostMatricesContextProvider>
 
           <GraficaProduccion />
         </section>

@@ -161,7 +161,7 @@ export default function TableProducion() {
                         {elem.nombre}
                       </td>
                       <td className="whitespace-nowrap px-6 py-4">
-                        {elem.descripcion.length >= 50
+                        {new String(elem.descripcion).length >= 50
                           ? `${elem.descripcion.slice(0, 50)} ...`
                           : elem.descripcion}
                       </td>

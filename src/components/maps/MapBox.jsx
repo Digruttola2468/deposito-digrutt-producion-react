@@ -27,7 +27,7 @@ const listLocalidad = [
   },
   {
     id: 5,
-    ciudad: "Villa Gobernador Galvez",
+    ciudad: "Villa Diego",
   },
   {
     id: 6,
@@ -48,13 +48,13 @@ const MAPBOX_TOKEN = import.meta.env.VITE_MAPBOX_TOKEN;
 mapboxgl.accessToken = MAPBOX_TOKEN;
 
 export default function MapBox() {
-  const {userSupabase, BASE_URL} = useContext(UserContext);
+  const { userSupabase, BASE_URL } = useContext(UserContext);
   const { postTable } = useContext(EnviosContext);
   const mapContainer = useRef(null);
   const map = useRef(null);
 
-  const [lng, setLng] = useState(-60.628);
-  const [lat, setLat] = useState(-33.0183);
+  const [lng, setLng] = useState(-60.6275);
+  const [lat, setLat] = useState(-33.01597);
   const [zoom, setZoom] = useState(15);
 
   const [vehiculo, setVehiculo] = useState("2");
@@ -63,6 +63,8 @@ export default function MapBox() {
   const [lugarVisitado, setLugarVisitado] = useState("");
 
   const [altura, setAltura] = useState("");
+
+  const marker = new mapboxgl.Marker();
 
   const empty = () => {
     setVehiculo("2");
@@ -74,6 +76,15 @@ export default function MapBox() {
     setLat(-33.0183);
     setLng(-60.628);
   };
+
+  useEffect(() => {
+    if (lugarVisitado != null && lugarVisitado != "") {
+      const { lat, lon } = lugarVisitado;
+      setLat(lat);
+      setLng(lon);
+      marker.setLngLat([lon, lat]);
+    }
+  }, [lugarVisitado]);
 
   useEffect(() => {
     if (map.current) return; // initialize map only once
@@ -97,14 +108,23 @@ export default function MapBox() {
       })
     );
 
+    //new mapboxgl.Marker().setLngLat([-60.6275, -33.01597]).addTo(map.current);
+
+    marker.setLngLat([lng, lat]).addTo(map.current);
+
     map.current.on("move", () => {
       setLng(map.current.getCenter().lng.toFixed(4));
       setLat(map.current.getCenter().lat.toFixed(4));
       setZoom(map.current.getZoom().toFixed(2));
     });
-    /*map.current.on("click", (event) => {
-      
-    });*/
+
+    map.current.on("click", (event) => {
+      const lat = event.lngLat.lat;
+      const long = event.lngLat.lng;
+      setLat(lat);
+      setLng(long);
+      marker.setLngLat([long, lat]);
+    });
   });
 
   const send = (obj) => {
@@ -142,6 +162,23 @@ export default function MapBox() {
       lat: null,
       lon: null,
     };
+
+    if (enviar.fechaDate == null || enviar.fechaDate == "") {
+      const dateNow = new Date();
+
+      const mes = dateNow.getMonth() + 1;
+      const dia = dateNow.getDate();
+      const minutos = dateNow.getMinutes();
+      const hora = dateNow.getHours();
+
+      const fechaYhora = `${dateNow.getFullYear()}-${
+        mes < 10 ? `0${mes}` : mes
+      }-${dia < 10 ? `0${dia}` : dia}T${hora < 10 ? `0${hora}` : hora}:${
+        minutos < 10 ? `0${minutos}` : minutos
+      }`;
+
+      enviar.fechaDate = fechaYhora;
+    }
 
     if (lugarVisitado != "") {
       enviar.lat = lugarVisitado.lat;
@@ -189,6 +226,7 @@ export default function MapBox() {
 
             setLng(lugar.lon);
             setLat(lugar.lat);
+
             setAltura("");
           }}
         />

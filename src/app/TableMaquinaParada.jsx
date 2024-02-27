@@ -9,7 +9,7 @@ import {
   TextField,
   Tooltip,
 } from "@mui/material";
-import { useContext, useEffect, useState } from "react";
+import { useContext, useState } from "react";
 import { MaquinaParadaContext } from "../context/MaquinaParadaContext";
 import PostMaquinaParada from "../components/form/PostMaquinaParada";
 import { FaPen } from "react-icons/fa";

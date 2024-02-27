@@ -12,6 +12,7 @@ import useSWR from "swr";
 import { ProducionContext } from "../../context/ProduccionContext";
 import { AiOutlineDelete } from "react-icons/ai";
 import toast from "react-hot-toast";
+import { PostMatricesContext } from "../../context/PostMatricesContext";
 
 const fetcherToken = ([url, token]) => {
   return axios
@@ -23,8 +24,9 @@ const fetcherToken = ([url, token]) => {
     .then((result) => result.data);
 };
 
-export default function PostProduccion({ listInventario, setListInventario }) {
+export default function PostProduccion() {
   const { token, BASE_URL, refreshTable } = useContext(ProducionContext);
+  const { listMatrices, setListMatrices } = useContext(PostMatricesContext)
 
   const { data, isLoading, error } = useSWR(
     [`${BASE_URL}/inventario/nombres`, token],
@@ -38,19 +40,19 @@ export default function PostProduccion({ listInventario, setListInventario }) {
     evt.preventDefault();
 
     let enviar = [];
-    for (let i = 0; i < listInventario.length; i++) {
-      const codProductoent = listInventario[i];
+    for (let i = 0; i < listMatrices.length; i++) {
+      const elemMatriz = listMatrices[i];
 
-      const numMaquina = evt.target[`numMaquina-${codProductoent.id}`].value
-      const golpes = evt.target[`golpes-${codProductoent.id}`].value;
-      const piezasXGolpe = evt.target[`piezas-${codProductoent.id}`].value;
+      const numMaquina = evt.target[`numMaquina-${elemMatriz.id}`].value
+      const golpes = evt.target[`golpes-${elemMatriz.id}`].value;
+      const piezasXGolpe = evt.target[`piezas-${elemMatriz.id}`].value;
       const piezasProducidas = piezasXGolpe * golpes;
       const golpesHora = golpes / 24;
 
       const enviarcodProducto = {
         numMaquina: numMaquina,
         fecha,
-        idInventario: parseInt(codProductoent.id),
+        idMatriz: parseInt(elemMatriz.id),
         golpesReales: golpes,
         piezasProducidas: piezasProducidas,
         promGolpesHora: golpesHora,
@@ -89,15 +91,15 @@ export default function PostProduccion({ listInventario, setListInventario }) {
 
   const empty = () => {
     setRequeterror({ campo: null, index: null });
-    setListInventario([]);
+    setListMatrices([]);
     setFecha("");
   };
 
   const handleClickDeletePost = (unique) => {
-    const filterList = listInventario.filter(
+    const filterList = listMatrices.filter(
       (codProducto) => codProducto.id != unique
     );
-    setListInventario(filterList);
+    setListMatrices(filterList);
   };
 
   const emptyRequestError = () => {
@@ -115,20 +117,9 @@ export default function PostProduccion({ listInventario, setListInventario }) {
         className="relative flex flex-col mx-2 border p-2 rounded-md hover:translate-x-1 hover:translate-y-1 transition-transform duration-300"
       >
         <div className="flex flex-row">
-          {codProducto.urlImage ? (
-            <div>
-              <img
-                src={codProducto.urlImage}
-                alt="img"
-                className="w-15 h-10 "
-              />
-            </div>
-          ) : (
-            <></>
-          )}
           <div>
             <h2 className="font-bold uppercase">
-              {codProducto.nombre}
+              {codProducto.cod_matriz}
               <span className="font-medium text-xs">
                 {" " + codProducto.cliente}
               </span>
@@ -211,7 +202,7 @@ export default function PostProduccion({ listInventario, setListInventario }) {
           />
         </div>
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-2 w-full">
-          {listInventario.map((codProducto,index) => {
+          {listMatrices.map((codProducto,index) => {
             return (
               <div key={codProducto.id}>
                 {renderPost(codProducto.id, codProducto, index)}
