@@ -13,6 +13,7 @@ import { ProducionContext } from "../../context/ProduccionContext";
 import { AiOutlineDelete } from "react-icons/ai";
 import toast from "react-hot-toast";
 import { PostMatricesContext } from "../../context/PostMatricesContext";
+import BoxTurnoProducion from "../comboBox/BoxTurnoProducion";
 
 const fetcherToken = ([url, token]) => {
   return axios
@@ -26,7 +27,7 @@ const fetcherToken = ([url, token]) => {
 
 export default function PostProduccion() {
   const { token, BASE_URL, refreshTable } = useContext(ProducionContext);
-  const { listMatrices, setListMatrices } = useContext(PostMatricesContext)
+  const { listMatrices, setListMatrices } = useContext(PostMatricesContext);
 
   const { data, isLoading, error } = useSWR(
     [`${BASE_URL}/inventario/nombres`, token],
@@ -35,6 +36,7 @@ export default function PostProduccion() {
 
   const [requesterror, setRequeterror] = useState({ campo: null, index: null });
   const [fecha, setFecha] = useState("");
+  const [turnoProduccion, setTurnoProduccion] = useState({});
 
   const handleSubmitSend = (evt) => {
     evt.preventDefault();
@@ -43,7 +45,7 @@ export default function PostProduccion() {
     for (let i = 0; i < listMatrices.length; i++) {
       const elemMatriz = listMatrices[i];
 
-      const numMaquina = evt.target[`numMaquina-${elemMatriz.id}`].value
+      const numMaquina = evt.target[`numMaquina-${elemMatriz.id}`].value;
       const golpes = evt.target[`golpes-${elemMatriz.id}`].value;
       const piezasXGolpe = evt.target[`piezas-${elemMatriz.id}`].value;
       const piezasProducidas = piezasXGolpe * golpes;
@@ -59,7 +61,9 @@ export default function PostProduccion() {
       };
       enviar.push(enviarcodProducto);
     }
+    console.log(enviar);
 
+    /*
     toast.promise(
       axios
         .post(`${BASE_URL}/producion/list`, enviar, {
@@ -82,11 +86,11 @@ export default function PostProduccion() {
           console.log(err.response.data);
 
           if (err.response.data.message == "Campo piezas producidas esta vacio")
-            return "Campo Piezas x Golpe esta vacio"
+            return "Campo Piezas x Golpe esta vacio";
           return err.response.data.message;
         },
       }
-    );
+    );*/
   };
 
   const empty = () => {
@@ -188,21 +192,31 @@ export default function PostProduccion() {
         className="flex flex-col w-full items-center"
         onSubmit={handleSubmitSend}
       >
-        <div className="w-full sm:max-w-[200px] ">
-          <TextField
-            type="date"
-            sx={{ margin: 1, minWidth: "100px" }}
-            size="small"
-            value={fecha}
-            onChange={(evt) => {
-              setFecha(evt.target.value);
-              emptyRequestError();
-            }}
-            error={requesterror.campo == "fecha" ? true : false}
-          />
+        <div className="flex flex-row items-center justify-center">
+          <div className="w-full sm:max-w-[200px]">
+            <TextField
+              type="date"
+              sx={{ minWidth: "100px" }}
+              size="small"
+              value={fecha}
+              onChange={(evt) => {
+                setFecha(evt.target.value);
+                emptyRequestError();
+              }}
+              error={requesterror.campo == "fecha" ? true : false}
+            />
+          </div>
+          <div>
+            <BoxTurnoProducion
+              turnoProducion={turnoProduccion}
+              setTurnoProducion={setTurnoProduccion}
+              size="small"
+            />
+          </div>
         </div>
+
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-2 w-full">
-          {listMatrices.map((codProducto,index) => {
+          {listMatrices.map((codProducto, index) => {
             return (
               <div key={codProducto.id}>
                 {renderPost(codProducto.id, codProducto, index)}
