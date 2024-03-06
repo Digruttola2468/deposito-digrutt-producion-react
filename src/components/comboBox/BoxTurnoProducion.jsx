@@ -33,7 +33,7 @@ export default function BoxTurnoProducion({
           {data.map((elem) => {
             return (
               <MenuItem key={elem.id} value={elem}>
-                {elem.turno}
+                {elem.turno} - {elem.horaInicio} a {elem.horaFinal}
               </MenuItem>
             );
           })}

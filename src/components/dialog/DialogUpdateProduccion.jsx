@@ -11,6 +11,7 @@ import { useContext, useEffect, useState } from "react";
 import { UserContext } from "../../context/UserContext";
 import toast from "react-hot-toast";
 import { ProducionContext } from "../../context/ProduccionContext";
+import BoxTurnoProducion from "../comboBox/BoxTurnoProducion";
 
 export default function DialogUpdateProduccion({
   show = false,
@@ -25,14 +26,17 @@ export default function DialogUpdateProduccion({
   const [golpesReales, setGolpesReales] = useState("");
   const [piezasProducidas, setPiezasProducidas] = useState("");
   const [promGolpesHora, setPromGolpesHora] = useState("");
+  const [turnoProducion, setTurnoProducion] = useState("");
 
   useEffect(() => {
+    console.log();
     if (index != null) {
       setFecha(index.fecha);
       setNumMaquina(index.num_maquina);
       setGolpesReales(index.golpesReales);
       setPiezasProducidas(index.piezasProducidas);
       setPromGolpesHora(index.prom_golpeshora);
+      //setTurnoProducion(index.idTurno );
     }
   }, [index]);
 
@@ -121,6 +125,7 @@ export default function DialogUpdateProduccion({
           type="number"
           onChange={(evt) => setPromGolpesHora(evt.target.value)}
         />
+        <BoxTurnoProducion turnoProducion={turnoProducion} setTurnoProducion={setTurnoProducion}/>
       </DialogContent>
       <DialogActions>
         <Button

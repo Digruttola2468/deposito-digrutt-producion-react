@@ -7,7 +7,7 @@ import {
   Tooltip,
 } from "@mui/material";
 import axios from "axios";
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import useSWR from "swr";
 import { ProducionContext } from "../../context/ProduccionContext";
 import { AiOutlineDelete } from "react-icons/ai";
@@ -38,6 +38,15 @@ export default function PostProduccion() {
   const [fecha, setFecha] = useState("");
   const [turnoProduccion, setTurnoProduccion] = useState({});
 
+  useEffect(() => {
+    for (let i = 0; i < listMatrices.length; i++) {
+      const elemMatriz = listMatrices[i];
+
+      document.querySelector(`#hrMaquina-${elemMatriz.id}`).value =
+        turnoProduccion.diferenciaHoras;
+    }
+  }, [turnoProduccion]);
+
   const handleSubmitSend = (evt) => {
     evt.preventDefault();
 
@@ -46,10 +55,11 @@ export default function PostProduccion() {
       const elemMatriz = listMatrices[i];
 
       const numMaquina = evt.target[`numMaquina-${elemMatriz.id}`].value;
+      const hrsMaquina = evt.target[`hrMaquina-${elemMatriz.id}`].value;
       const golpes = evt.target[`golpes-${elemMatriz.id}`].value;
       const piezasXGolpe = evt.target[`piezas-${elemMatriz.id}`].value;
       const piezasProducidas = piezasXGolpe * golpes;
-      const golpesHora = golpes / 24;
+      const golpesHora = parseInt(golpes) / parseFloat(hrsMaquina);
 
       const enviarcodProducto = {
         numMaquina: numMaquina,
@@ -58,12 +68,11 @@ export default function PostProduccion() {
         golpesReales: golpes,
         piezasProducidas: piezasProducidas,
         promGolpesHora: golpesHora,
+        idTurno: turnoProduccion.id
       };
       enviar.push(enviarcodProducto);
     }
-    console.log(enviar);
-
-    /*
+    
     toast.promise(
       axios
         .post(`${BASE_URL}/producion/list`, enviar, {
@@ -90,7 +99,7 @@ export default function PostProduccion() {
           return err.response.data.message;
         },
       }
-    );*/
+    );
   };
 
   const empty = () => {
@@ -181,6 +190,15 @@ export default function PostProduccion() {
               if (evt.target.value != "") emptyRequestError();
             }}
           />
+          <TextField
+            type="number"
+            value={turnoProduccion?.diferenciaHoras || 0}
+            placeholder="Hrs maquina"
+            sx={{ margin: 1, width: "100%", maxWidth: "150px" }}
+            helperText="Hrs Maquina"
+            size="small"
+            id={`hrMaquina-${unique}`}
+          />
         </div>
       </div>
     );
@@ -193,26 +211,22 @@ export default function PostProduccion() {
         onSubmit={handleSubmitSend}
       >
         <div className="flex flex-row items-center justify-center">
-          <div className="w-full sm:max-w-[200px]">
-            <TextField
-              type="date"
-              sx={{ minWidth: "100px" }}
-              size="small"
-              value={fecha}
-              onChange={(evt) => {
-                setFecha(evt.target.value);
-                emptyRequestError();
-              }}
-              error={requesterror.campo == "fecha" ? true : false}
-            />
-          </div>
-          <div>
-            <BoxTurnoProducion
-              turnoProducion={turnoProduccion}
-              setTurnoProducion={setTurnoProduccion}
-              size="small"
-            />
-          </div>
+          <TextField
+            type="date"
+            sx={{ minWidth: "100px" }}
+            size="small"
+            value={fecha}
+            onChange={(evt) => {
+              setFecha(evt.target.value);
+              emptyRequestError();
+            }}
+            error={requesterror.campo == "fecha" ? true : false}
+          />
+          <BoxTurnoProducion
+            turnoProducion={turnoProduccion}
+            setTurnoProducion={setTurnoProduccion}
+            size="small"
+          />
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-2 w-full">
