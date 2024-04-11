@@ -192,7 +192,6 @@ export default function PostProduccion() {
           />
           <TextField
             type="number"
-            value={turnoProduccion?.diferenciaHoras || 0}
             placeholder="Hrs maquina"
             sx={{ margin: 1, width: "100%", maxWidth: "150px" }}
             helperText="Hrs Maquina"
