@@ -33,7 +33,7 @@ export default function DialogUpdateCliente({
   const { userSupabase, BASE_URL } = useContext(UserContext);
 
   const { data, isLoading, error, mutate } = useSWR(
-    `https://deposito-digrutt-express-production.up.railway.app/api/localidad`,
+    `${BASE_URL}/localidad`,
     fetcher
   );
 

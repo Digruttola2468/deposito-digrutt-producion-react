@@ -26,8 +26,6 @@ import toast from "react-hot-toast";
 import { BiTrashAlt } from "react-icons/bi";
 import DialogUpdatePedido from "../dialog/DialogUpdatePedido";
 import { TbPdf } from "react-icons/tb";
-import { PDFDownloadLink } from "@react-pdf/renderer";
-import OrdenCompraA4PDF, { generarPDF } from "../pdf/OrdenCompraA4PDF";
 
 export default function TablePedidos() {
   const { BASE_URL, userSupabase } = useContext(UserContext);
@@ -63,7 +61,7 @@ export default function TablePedidos() {
   };
 
   const handleUpdateIsDone = (idPedido, isDone) => {
-    const value = isDone ? "1" : "0";
+    const value = isDone ? true : false;
     toast.promise(
       axios
         .put(

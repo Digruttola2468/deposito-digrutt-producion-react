@@ -1,10 +1,11 @@
 import { Box, FormControl, InputLabel, MenuItem, Select } from "@mui/material";
 import axios from "axios";
-import { useState } from "react";
+import { useContext, useState } from "react";
 import useSWR from "swr";
+import { UserContext } from "../../context/UserContext";
 
 const fetcher = (url) => {
-  return axios.get(url).then((result) => result.data);
+  return axios.get(url).then((result) =>  result.data);
 };
 
 export default function SearchLocalidadBox({
@@ -13,8 +14,9 @@ export default function SearchLocalidadBox({
   apiOriginal,
   setLocalidad = () => {}
 }) {
+  const { BASE_URL } = useContext(UserContext);
   const { data, isLoading, error, mutate } = useSWR(
-    `https://deposito-digrutt-express-production.up.railway.app/api/localidad`,
+    `${BASE_URL}/localidad`,
     fetcher
   );
 

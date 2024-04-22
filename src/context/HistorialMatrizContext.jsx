@@ -12,7 +12,7 @@ const fetcherToken = ([url, token]) => {
         Authorization: `Bearer ${token}`,
       },
     })
-    .then((result) => result.data);
+    .then((result) => result.data.data);
 };
 
 export default function HistorialMatrizProvider(props) {
@@ -47,7 +47,7 @@ export default function HistorialMatrizProvider(props) {
     {
       onSuccess: (data, evt, config) => {
         if (!verify()) setTable(data);
-
+        
         setApiOriginal(data);
       },
     }

@@ -12,12 +12,11 @@ const fetcherToken = ([url, token]) => {
         Authorization: `Bearer ${token}`,
       },
     })
-    .then((result) => result.data);
+    .then((result) => result.data.data);
 };
 
 export default function PedidosProvider(props) {
-  const { userSupabase } = useContext(UserContext);
-  const BASE_URL = import.meta.env.VITE_BASE_URL;
+  const { userSupabase, BASE_URL } = useContext(UserContext);
 
   const [index, setIndex] = useState(null);
   const [table, setTable] = useState([]);

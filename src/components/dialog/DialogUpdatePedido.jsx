@@ -17,7 +17,7 @@ import { PedidosContext } from "../../context/PedidosContext";
 export default function DialogUpdatePedido({
   show = false,
   close = () => {},
-  index
+  index,
 }) {
   const { BASE_URL, userSupabase } = useContext(UserContext);
   const { updateTable } = useContext(PedidosContext);
@@ -52,12 +52,12 @@ export default function DialogUpdatePedido({
         .put(
           `${BASE_URL}/pedidos/${index.id}`,
           {
-            idInventario: producto?.id ?? null,
-            idcliente: cliente,
-            cantidadEnviar: stock,
+            idInventario: parseInt(producto?.id) ?? null,
+            idcliente: parseInt(cliente),
+            cantidadEnviar: parseInt(stock),
             fecha_entrega: fechaEntrega,
             ordenCompra,
-            cantidadEnviada,
+            cantidadEnviada: parseInt(cantidadEnviada),
           },
           {
             headers: {

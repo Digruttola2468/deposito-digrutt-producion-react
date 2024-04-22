@@ -12,7 +12,7 @@ const fetcherToken = ([url, token]) => {
         Authorization: `Bearer ${token}`,
       },
     })
-    .then((result) => result.data);
+    .then((result) => result.data.data);
 };
 
 export default function PostMatricesContextProvider(props) {
@@ -28,7 +28,7 @@ export default function PostMatricesContextProvider(props) {
     [`${BASE_URL}/matrices`, userSupabase.token],
     fetcherToken,
     {
-      onSuccess: (data, evt, config) => {
+      onSuccess: (data, evt, config) => { 
         setTable(data);
         setApiOriginal(data);
       },

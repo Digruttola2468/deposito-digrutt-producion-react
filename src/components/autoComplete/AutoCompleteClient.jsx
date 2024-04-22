@@ -1,11 +1,14 @@
 import { Autocomplete, TextField } from "@mui/material";
 import useSWR from "swr";
+import { UserContext } from "../../context/UserContext";
+import { useContext } from "react";
 
 export default function AutoCompleteClient({cliente, setCliente, sx = { marginTop: 2 }, errorClient = false}) {
+  const { BASE_URL } = useContext(UserContext);
   const { data, isLoading, error } = useSWR(
-    `https://deposito-digrutt-express-production.up.railway.app/api/clientes`,
+    `${BASE_URL}/clientes`,
     (url) => {
-      return axios.get(url).then((result) => result.data);
+      return axios.get(url).then((result) => result.data.data);
     }
   );
   

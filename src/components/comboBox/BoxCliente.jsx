@@ -7,12 +7,15 @@ import {
 } from "@mui/material";
 import axios from "axios";
 import useSWR from "swr";
+import { UserContext } from "../../context/UserContext";
+import { useContext } from "react";
 
 export default function BoxCliente({ cliente, setCliente, size = "small", errorValue = false }) {
+  const { BASE_URL } = useContext(UserContext);
   const { data, isLoading, error } = useSWR(
-    `https://deposito-digrutt-express-production.up.railway.app/api/clientes`,
+    `${BASE_URL}/clientes`,
     (url) => {
-      return axios.get(url).then((result) => result.data);
+      return axios.get(url).then((result) => result.data.data);
     }
   );
 

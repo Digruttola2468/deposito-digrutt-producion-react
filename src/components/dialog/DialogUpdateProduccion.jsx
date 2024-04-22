@@ -29,7 +29,6 @@ export default function DialogUpdateProduccion({
   const [turnoProducion, setTurnoProducion] = useState("");
 
   useEffect(() => {
-    console.log();
     if (index != null) {
       setFecha(index.fecha);
       setNumMaquina(index.num_maquina);

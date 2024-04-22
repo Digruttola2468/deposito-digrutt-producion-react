@@ -30,17 +30,17 @@ export const UserProvider = (props) => {
   const logIn = (email, password) => {
     toast.promise(
       axios
-        .get(`${BASE_URL}/login?email=${email}&password=${password}`)
+        .post(`${BASE_URL}/session/login`, {
+          email,
+          password,
+        })
         .then((result) => {
-          setUserSupabase(result.data);
-          toast.success(
-            `Bienvendio ${result.data.nombre} ${result.data.apellido}`
-          );
+          setUserSupabase({token: result.data.token, ...result.data.user});
           navegate("/");
         }),
       {
         loading: "Cargando...",
-        error: (err) => err.response.data.message,
+        error: (err) => err.response?.data.message ?? "No se logro iniciar session",
       }
     );
   };
@@ -48,11 +48,11 @@ export const UserProvider = (props) => {
   const signUp = (nombre, apellido, email, password) => {
     toast.promise(
       axios
-        .post(`${BASE_URL}/register`, {
-          nombre: nombre,
-          apellido: apellido,
+        .post(`${BASE_URL}/session/register`, {
+          first_name: nombre,
+          last_name: apellido,
           password: password,
-          gmail: email,
+          email: email,
         })
         .then((result) => {
           navegate("/sendGmail");

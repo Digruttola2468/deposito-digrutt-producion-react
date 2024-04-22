@@ -4,15 +4,7 @@ import toast from "react-hot-toast";
 import { UserContext } from "../../context/UserContext";
 import {
   Box,
-  Button,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogTitle,
-  Divider,
   FormControl,
-  IconButton,
-  InputAdornment,
   InputLabel,
   MenuItem,
   Select,
@@ -69,25 +61,21 @@ export default function PostListPedidos({
       const fecha = document.querySelector(`#fecha-${idProduct}`).value;
 
       list.push({
-        fechaEntrega: fecha,
-        cantidadEnviar,
-        idProduct,
-        ...codProductoArray,
+        fecha_entrega: fecha,
+        cantidadEnviar: parseInt(cantidadEnviar),
+        idinventario: parseInt(idProduct),
+        idcliente: parseInt(cliente),
+        ordenCompra: nroOrden
       });
     }
     return list;
   };
 
   const handleClickSend = () => {
-    let enviar = {};
-    enviar.fechaEntrega = fecha;
-    enviar.idCliente = cliente;
-    enviar.nroOrden = nroOrden;
-    enviar.products = getDataListPedido();
 
     toast.promise(
       axios
-        .post(`${BASE_URL}/pedidos/list`, enviar, {
+        .post(`${BASE_URL}/pedidos/list`, getDataListPedido() , {
           headers: {
             Authorization: `Bearer ${userSupabase.token}`,
           },

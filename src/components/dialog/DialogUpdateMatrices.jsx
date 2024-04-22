@@ -31,7 +31,7 @@ export default function DialogUpdateMatrices({
   const { updateTable } = useContext(MatricesContext);
 
   const { data, isLoading, error, mutate } = useSWR(
-    `https://deposito-digrutt-express-production.up.railway.app/api/materiaPrima`,
+    `${BASE_URL}/materiaPrima`,
     fetcher
   );
 

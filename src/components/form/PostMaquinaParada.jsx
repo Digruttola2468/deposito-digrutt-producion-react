@@ -39,9 +39,9 @@ export default function PostMaquinaParada() {
   const handleClickSend = (evt) => {
     evt.preventDefault();
     const enviar = {
-      idMotivoMaquinaParada: motivoMaquina?.id ?? null,
-      hrs,
-      idMaquina: numMaquina,
+      idMotivoMaquinaParada: parseInt(motivoMaquina?.id) ?? null,
+      hrs: parseInt(hrs),
+      idMaquina: parseInt(numMaquina),
       fecha,
     };
 
@@ -60,7 +60,6 @@ export default function PostMaquinaParada() {
         loading: "Cargando...",
         success: "Operacion Exitosa",
         error: (err) => {
-          console.log(err.response.data.campus);
           setRequestError({ campus: err.response.data.campus });
           return err.response.data.message;
         },

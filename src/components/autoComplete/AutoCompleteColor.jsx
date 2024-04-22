@@ -1,10 +1,13 @@
 import { Autocomplete, TextField } from "@mui/material";
 import axios from "axios";
 import useSWR from "swr";
+import { UserContext } from "../../context/UserContext";
+import { useContext } from "react";
 
 export default function AutoCompleteColor({color, setColor}) {
+  const { BASE_URL } = useContext(UserContext);
   const { data, isLoading, error } = useSWR(
-    `https://deposito-digrutt-express-production.up.railway.app/api/colores`,
+    `${BASE_URL}/colores`,
     (url) => {
       return axios.get(url).then((result) => result.data);
     }

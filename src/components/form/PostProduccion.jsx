@@ -62,13 +62,13 @@ export default function PostProduccion() {
       const golpesHora = parseInt(golpes) / parseFloat(hrsMaquina);
 
       const enviarcodProducto = {
-        numMaquina: numMaquina,
+        numMaquina: parseInt(numMaquina),
         fecha,
         idMatriz: parseInt(elemMatriz.id),
-        golpesReales: golpes,
-        piezasProducidas: piezasProducidas,
+        golpesReales: parseInt(golpes),
+        piezasProducidas: parseInt(piezasProducidas),
         promGolpesHora: golpesHora,
-        idTurno: turnoProduccion.id
+        idTurno: parseInt(turnoProduccion.id)
       };
       enviar.push(enviarcodProducto);
     }

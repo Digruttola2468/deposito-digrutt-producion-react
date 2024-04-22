@@ -6,7 +6,7 @@ import { UserContext } from "./UserContext";
 export const ClientesContext = createContext();
 
 const fetcher = (url) => {
-  return axios.get(url).then((result) => result.data);
+  return axios.get(url).then((result) => {console.log(result.data.data); return result.data.data});
 };
 
 export default function ClientesProvider(props) {

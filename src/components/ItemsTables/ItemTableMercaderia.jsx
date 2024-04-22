@@ -13,7 +13,7 @@ const fetcher = ([url, token]) => {
         Authorization: `Bearer ${token}`,
       },
     })
-    .then((result) => result.data);
+    .then((result) => result.data.data);
 };
 
 export default function ItemTableMercaderia({ index }) {
@@ -43,7 +43,7 @@ export default function ItemTableMercaderia({ index }) {
         </Typography>
       </>
     );
-    
+
   return (
     <>
       {data != null && (

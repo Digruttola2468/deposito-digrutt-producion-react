@@ -1,6 +1,8 @@
 import { Box, FormControl, InputLabel, MenuItem, Select } from "@mui/material";
 import axios from "axios";
 import useSWR from "swr";
+import { UserContext } from "../../context/UserContext";
+import { useContext } from "react";
 
 export default function BoxLugaresVisitados({
   lugarVisitado,
@@ -8,8 +10,9 @@ export default function BoxLugaresVisitados({
   size = "medium",
   sx = { marginTop: 1 },
 }) {
+  const { BASE_URL } = useContext(UserContext);
   const { data, isLoading, error } = useSWR(
-    `https://deposito-digrutt-express-production.up.railway.app/api/savedPlacesEnviados`,
+    `${BASE_URL}/savedPlacesEnviados`,
     (url) => {
       return axios.get(url).then((result) => result.data);
     }

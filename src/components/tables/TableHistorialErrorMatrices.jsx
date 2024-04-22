@@ -53,7 +53,7 @@ export default function TableHistorialErrorMatrices() {
           },
         })
         .then((result) => {
-          const response = result.data;
+          const response = result.data.data;
           updateTable(idHistorial, response);
         }),
       {
@@ -242,7 +242,7 @@ export default function TableHistorialErrorMatrices() {
                           {elem.cod_matriz}
                         </td>
                         <td className="whitespace-nowrap px-6 py-4">
-                          {elem.descripcion_deterioro.length >= 150 ? `${elem.descripcion_deterioro.slice(0,150)} ...` : elem.descripcion_deterioro}
+                          {elem.descripcion_deterioro}
                         </td>
                         <td className="whitespace-nowrap px-6 py-4">
                           {elem.categoria}

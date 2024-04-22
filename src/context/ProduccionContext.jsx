@@ -12,7 +12,7 @@ const fetcherToken = ([url, token]) => {
         Authorization: `Bearer ${token}`,
       },
     })
-    .then((result) => result.data);
+    .then((result) => result.data.data);
 };
 
 export default function ProduccionContextProvider(props) {

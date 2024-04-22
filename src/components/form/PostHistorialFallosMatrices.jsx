@@ -16,7 +16,7 @@ const fetcherToken = ([url, token]) => {
         Authorization: `Bearer ${token}`,
       },
     })
-    .then((result) => result.data);
+    .then((result) => result.data.data);
 };
 
 export default function PostHistorialFalloseMatrices() {
@@ -32,7 +32,7 @@ export default function PostHistorialFalloseMatrices() {
 
   const { data, isLoading, error, mutate } = useSWR(
     [
-      `https://deposito-digrutt-express-production.up.railway.app/api/matrices`,
+      `${BASE_URL}/matrices`,
       userSupabase.token,
     ],
     fetcherToken

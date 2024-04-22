@@ -1,14 +1,17 @@
 import { Box, FormControl, InputLabel, MenuItem, Select } from "@mui/material";
 import axios from "axios";
 import useSWR from "swr";
+import { UserContext } from "../../context/UserContext";
+import { useContext } from "react";
 
 export default function BoxMaterial({
   materiaPrima,
   setMateriaPrima,
   size = "medium",
 }) {
+  const { BASE_URL } = useContext(UserContext);
   const { data, isLoading, error } = useSWR(
-    `https://deposito-digrutt-express-production.up.railway.app/api/materiaPrima`,
+    `${BASE_URL}/materiaPrima`,
     (url) => {
       return axios.get(url).then((result) => result.data);
     }

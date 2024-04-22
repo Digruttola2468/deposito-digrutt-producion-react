@@ -3,9 +3,10 @@ import axios from "axios";
 import { useContext, useState } from "react";
 import useSWR from "swr";
 import { InventarioContext } from "../../context/InventarioContext";
+import { UserContext } from "../../context/UserContext";
 
 const fetcher = (url) => {
-  return axios.get(url).then((result) => result.data);
+  return axios.get(url).then((result) => result.data.data);
 };
 
 export default function SearchClientesBox({
@@ -14,8 +15,9 @@ export default function SearchClientesBox({
   apiOriginal,
   setCliente = (v) => {}
 }) {
+  const { BASE_URL } = useContext(UserContext);
   const { data, isLoading, error, mutate } = useSWR(
-    `https://deposito-digrutt-express-production.up.railway.app/api/clientes`,
+    `${BASE_URL}/clientes`,
     fetcher
   );
 

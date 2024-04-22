@@ -1,14 +1,17 @@
 import { Box, FormControl, InputLabel, MenuItem, Select } from "@mui/material";
 import axios from "axios";
 import useSWR from "swr";
+import { UserContext } from "../../context/UserContext";
+import { useContext } from "react";
 
 export default function BoxTurnoProducion({
   turnoProducion,
   setTurnoProducion,
   size = "medium",
 }) {
+  const { BASE_URL } = useContext(UserContext);
   const { data, isLoading, error } = useSWR(
-    `https://deposito-digrutt-express-production.up.railway.app/api/turnosProducion`,
+    `${BASE_URL}/turnosProducion`,
     (url) => {
       return axios.get(url).then((result) => result.data);
     }

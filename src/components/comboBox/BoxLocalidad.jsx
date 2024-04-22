@@ -1,6 +1,8 @@
 import { Box, FormControl, InputLabel, MenuItem, Select } from "@mui/material";
 import axios from "axios";
 import useSWR from "swr";
+import { UserContext } from "../../context/UserContext";
+import { useContext } from "react";
 
 export default function BoxLocalidad({
   localidad,
@@ -9,8 +11,9 @@ export default function BoxLocalidad({
   sx = {marginTop: 1},
   errorValue = false
 }) {
+  const { BASE_URL } = useContext(UserContext);
   const { data, isLoading, error } = useSWR(
-    `https://deposito-digrutt-express-production.up.railway.app/api/localidad`,
+    `${BASE_URL}/localidad`,
     (url) => {
       return axios.get(url).then((result) => result.data);
     }
